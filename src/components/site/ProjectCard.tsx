@@ -7,10 +7,14 @@ export function ProjectCard({
   project,
   priority = false,
   className,
+  // The card sits under a section heading on the home page but directly under
+  // the page h1 on /work, so the caller decides its level rather than skipping one.
+  headingLevel: Heading = "h3",
 }: {
   project: ProjectSummary;
   priority?: boolean;
   className?: string;
+  headingLevel?: "h2" | "h3";
 }) {
   return (
     <Link
@@ -63,7 +67,9 @@ export function ProjectCard({
           ))}
         </div>
 
-        <h3 className="serif text-[26px] leading-tight">{project.title}</h3>
+        <Heading className="serif text-[26px] leading-tight">
+          {project.title}
+        </Heading>
 
         {project.tagline && (
           <p

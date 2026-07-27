@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { pageMetadata } from "@/lib/site-metadata";
 import { ProjectCard } from "@/components/site/ProjectCard";
 import { VideoPlayer } from "@/components/site/VideoPlayer";
 import { Reveal } from "@/components/site/Reveal";
@@ -7,6 +9,14 @@ import {
   getProjects,
   getStudioStats,
 } from "@/server/services/content.service";
+
+export const metadata: Metadata = pageMetadata({
+  title: "Unhuman Stud — Aiden Vu",
+  exactTitle: true,
+  description:
+    "Unhuman Stud is the studio of Aiden Vu — cinematic AI films, creature design, and campaign visuals. Written, directed, scored and edited by one person.",
+  path: "/",
+});
 
 export default async function HomePage() {
   const [projects, films, stats] = await Promise.all([
@@ -81,15 +91,19 @@ export default async function HomePage() {
 
         <Reveal delay={300}>
           <dl className="mt-16 flex flex-wrap gap-x-14 gap-y-8 border-t border-line pt-8">
+            {/*
+              A definition list needs its <dt> before its <dd>; the design shows
+              the number first, so the pair is reversed visually, not in the DOM.
+            */}
             {stats.map((stat) => (
-              <div key={stat.label}>
+              <div key={stat.label} className="flex flex-col-reverse">
+                <dt className="mono mt-2 text-[11px] uppercase tracking-[0.14em] text-bone-faint">
+                  {stat.label}
+                </dt>
                 <dd className="serif text-[40px] font-semibold leading-none">
                   {stat.value}
                   {stat.suffix && <span className="text-gold">{stat.suffix}</span>}
                 </dd>
-                <dt className="mono mt-2 text-[11px] uppercase tracking-[0.14em] text-bone-faint">
-                  {stat.label}
-                </dt>
               </div>
             ))}
           </dl>

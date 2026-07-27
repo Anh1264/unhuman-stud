@@ -5,6 +5,7 @@ import { GalleryGrid } from "@/components/site/GalleryGrid";
 import { VideoPlayer } from "@/components/site/VideoPlayer";
 import { Reveal } from "@/components/site/Reveal";
 import { getProject, getProjectSlugs } from "@/server/services/content.service";
+import { pageMetadata } from "@/lib/site-metadata";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -17,17 +18,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Next 16: params is a Promise and must be awaited.
   const { slug } = await params;
   const project = await getProject(slug);
-  if (!project) return {};
 
-  return {
+  // The page itself calls notFound(); keep the 404's metadata out of search.
+  if (!project) {
+    return { title: "Project not found", robots: { index: false, follow: true } };
+  }
+
+  return pageMetadata({
     title: project.title,
     description: project.summary,
-    openGraph: {
-      title: `${project.title} — Unhuman Stud`,
-      description: project.summary,
-      images: project.cover ? [{ url: project.cover.url }] : undefined,
-    },
-  };
+    path: `/work/${project.slug}`,
+    image: project.cover
+      ? {
+          url: project.cover.url,
+          width: project.cover.width,
+          height: project.cover.height,
+          alt: project.cover.alt,
+        }
+      : undefined,
+  });
 }
 
 export default async function ProjectPage({ params }: Props) {

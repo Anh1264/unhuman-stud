@@ -111,10 +111,46 @@ h4 {
 
 /* ---------- focus ---------- */
 
-:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+:where(a, button, summary, input, textarea, select, [tabindex]):focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 3px;
   border-radius: 4px;
+}
+
+/*
+  The skip link moves focus to <main> so the next Tab continues inside the
+  content. That focus is a scroll target, not an interactive control, so it
+  gets no ring of its own.
+*/
+main:focus,
+main:focus-visible {
+  outline: none;
+}
+
+/* ---------- skip link ---------- */
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  padding: 12px 22px;
+  border: 1px solid var(--color-line-2);
+  border-radius: 100px;
+  background: var(--color-panel);
+  color: var(--color-bone);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  /* Off-screen but still in the tab order until it takes focus. */
+  transform: translateY(-250%);
+  pointer-events: none;
+  transition: transform 0.25s var(--ease-out-expo);
+}
+.skip-link:focus {
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 /* ---------- accessibility: honour reduced motion ---------- */
@@ -127,9 +163,14 @@ h4 {
   *::before,
   *::after {
     animation-duration: 0.001ms !important;
+    animation-delay: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+    /* Reveal staggers its entrance with an inline transition-delay. */
+    transition-delay: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
+  /* Scroll reveals, hover lifts and image zooms all resolve to their end state. */
   .reveal {
     opacity: 1;
     transform: none;

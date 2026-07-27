@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter, Space_Mono } from "next/font/google";
+import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from "@/lib/site-metadata";
 import "./globals.css";
 
 /**
@@ -27,22 +28,35 @@ const spaceMono = Space_Mono({
   display: "swap",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const DESCRIPTION =
+  "Unhuman Stud is the studio of Aiden Vu — cinematic AI films, creature design, and campaign visuals. Written, directed and edited by one person.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Unhuman Stud — Aiden Vu",
-    template: "%s — Unhuman Stud",
+    default: `${SITE_NAME} — Aiden Vu`,
+    template: `%s — ${SITE_NAME}`,
   },
-  description:
-    "Unhuman Stud is the studio of Aiden Vu — cinematic AI films, creature design, and campaign visuals. Written, directed and edited by one person.",
+  description: DESCRIPTION,
+  applicationName: SITE_NAME,
+  authors: [{ name: "Aiden Vu" }],
+  creator: "Aiden Vu",
+  publisher: SITE_NAME,
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
-    siteName: "Unhuman Stud",
-    title: "Unhuman Stud — Aiden Vu",
-    description:
-      "Cinematic AI films, creature design, and campaign visuals. Directed by one person.",
+    siteName: SITE_NAME,
+    locale: "en_US",
+    url: "/",
+    title: `${SITE_NAME} — Aiden Vu`,
+    description: DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — Aiden Vu`,
+    description: DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE.url],
   },
   robots: { index: true, follow: true },
 };

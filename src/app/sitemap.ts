@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getProjectSlugs } from "@/server/services/content.service";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+import { SITE_URL } from "@/lib/site-metadata";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = ["", "/work", "/films", "/gallery", "/about", "/contact"];

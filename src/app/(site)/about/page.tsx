@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Reveal } from "@/components/site/Reveal";
+import { pageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Creator",
   description:
     "Aiden Vu — part artist, part engineer. A one-person studio treating AI as a camera, a crew and a paintbrush.",
-};
+  path: "/about",
+});
 
 const CAPABILITIES = [
   { label: "AI video / motion", level: "Advanced", value: 90 },
@@ -36,9 +38,9 @@ export default function AboutPage() {
     <section className="mx-auto max-w-[1180px] px-6 py-16 sm:px-8">
       <Reveal className="mb-12 max-w-[640px]">
         <span className="klabel">04 — The creator</span>
-        <h2 className="mt-3 text-[clamp(32px,5vw,52px)]">
+        <h1 className="mt-3 text-[clamp(32px,5vw,52px)]">
           Aiden <em className="italic text-crimson-br">Vu</em>
-        </h2>
+        </h1>
         <p className="mt-3 max-w-[56ch] text-[16px] text-bone-dim">
           Part artist, part engineer. A one-person studio treating AI as a
           camera, a crew and a paintbrush.
@@ -72,9 +74,9 @@ export default function AboutPage() {
       <div className="mt-16 grid gap-5 md:grid-cols-2">
         <Reveal>
           <div className="h-full rounded-xl border border-line bg-panel p-7">
-            <h3 className="mono mb-6 text-[12px] font-bold uppercase tracking-[0.16em] text-ember">
+            <h2 className="mono mb-6 text-[12px] font-bold uppercase tracking-[0.16em] text-ember">
               Capabilities
-            </h3>
+            </h2>
             {CAPABILITIES.map((c) => (
               <div key={c.label} className="mb-4">
                 <div className="mb-2 flex justify-between text-[14px]">
@@ -83,7 +85,11 @@ export default function AboutPage() {
                     {c.level}
                   </span>
                 </div>
-                <div className="h-1 overflow-hidden rounded-full bg-bone/10">
+                {/* Decorative: the level ("Advanced") already carries the meaning. */}
+                <div
+                  aria-hidden
+                  className="h-1 overflow-hidden rounded-full bg-bone/10"
+                >
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-crimson to-ember"
                     style={{ width: `${c.value}%` }}
@@ -96,9 +102,9 @@ export default function AboutPage() {
 
         <Reveal delay={60}>
           <div className="h-full rounded-xl border border-line bg-panel p-7">
-            <h3 className="mono mb-5 text-[12px] font-bold uppercase tracking-[0.16em] text-ember">
+            <h2 className="mono mb-5 text-[12px] font-bold uppercase tracking-[0.16em] text-ember">
               Toolstack
-            </h3>
+            </h2>
             <div className="flex flex-wrap gap-2">
               {TOOLS.map((tool) => (
                 <span
@@ -110,9 +116,9 @@ export default function AboutPage() {
               ))}
             </div>
 
-            <h3 className="mono mb-5 mt-8 text-[12px] font-bold uppercase tracking-[0.16em] text-ember">
+            <h2 className="mono mb-5 mt-8 text-[12px] font-bold uppercase tracking-[0.16em] text-ember">
               Foundations
-            </h3>
+            </h2>
             <div className="flex flex-wrap gap-2">
               {FOUNDATIONS.map((f) => (
                 <span
@@ -124,9 +130,9 @@ export default function AboutPage() {
               ))}
             </div>
 
-            <h3 className="mono mb-5 mt-8 text-[12px] font-bold uppercase tracking-[0.16em] text-ember">
+            <h2 className="mono mb-5 mt-8 text-[12px] font-bold uppercase tracking-[0.16em] text-ember">
               Languages
-            </h3>
+            </h2>
             <div className="flex flex-wrap gap-2">
               {["English", "Vietnamese"].map((l) => (
                 <span

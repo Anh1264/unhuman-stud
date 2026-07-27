@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import { ContactForm } from "@/components/site/ContactForm";
 import { Reveal } from "@/components/site/Reveal";
 import { getSiteSettings } from "@/server/services/content.service";
+import { pageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact",
   description:
     "Commissions, collaborations and brand campaigns — get in touch with Unhuman Stud.",
-};
+  path: "/contact",
+});
 
 export default async function ContactPage() {
   const { contactEmail, socials } = await getSiteSettings();
@@ -17,11 +19,11 @@ export default async function ContactPage() {
       <div className="grid items-start gap-12 md:grid-cols-2">
         <Reveal>
           <span className="klabel">05 — Contact</span>
-          <h2 className="mt-3 text-[clamp(32px,5vw,54px)] leading-[1.02]">
+          <h1 className="mt-3 text-[clamp(32px,5vw,54px)] leading-[1.02]">
             Let&rsquo;s make
             <br />
             something <em className="italic text-crimson-br">unhuman.</em>
-          </h2>
+          </h1>
           <p className="mt-5 max-w-[42ch] text-[17px] text-bone-dim">
             Open to commissions, collaborations and brand campaigns. Tell me the
             world you want to build.

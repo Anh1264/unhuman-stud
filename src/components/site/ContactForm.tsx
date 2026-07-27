@@ -115,9 +115,9 @@ export function ContactForm() {
   return (
     <div className="rounded-xl border border-line bg-panel p-6 sm:p-8">
       <span className="klabel">Project brief</span>
-      <h3 className="mt-3 text-[clamp(22px,3.2vw,32px)]">
+      <h2 className="mt-3 text-[clamp(22px,3.2vw,32px)]">
         Tell me the <em className="italic text-crimson-br">shape</em> of it.
-      </h3>
+      </h2>
       <p className="mt-3 max-w-[56ch] text-[15px] text-bone-dim">
         Scope, timeline and a few references are enough to start. Everything
         here is stored privately and only ever read by me.

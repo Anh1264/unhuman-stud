@@ -35,7 +35,10 @@ export function SiteHeader() {
         scrolled ? "border-line" : "border-transparent",
       )}
     >
-      <nav className="mx-auto flex h-[74px] max-w-[1180px] items-center justify-between px-6 sm:px-8">
+      <nav
+        aria-label="Primary"
+        className="mx-auto flex h-[74px] max-w-[1180px] items-center justify-between px-6 sm:px-8"
+      >
         <Link href="/" className="flex items-center gap-3" aria-label="Unhuman Stud — home">
           <span className="serif grid h-[30px] w-[30px] place-items-center rounded-full bg-crimson text-[15px] font-semibold text-white">
             U
@@ -51,6 +54,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
+              aria-current={isActive(item.href) ? "page" : undefined}
               className={cn(
                 "relative py-1 text-[13px] font-medium transition-colors",
                 isActive(item.href)
@@ -60,7 +64,10 @@ export function SiteHeader() {
             >
               {item.label}
               {isActive(item.href) && (
-                <span className="absolute -bottom-1.5 left-0 right-0 h-0.5 bg-crimson" />
+                <span
+                  aria-hidden
+                  className="absolute -bottom-1.5 left-0 right-0 h-0.5 bg-crimson"
+                />
               )}
             </Link>
           ))}
@@ -68,6 +75,7 @@ export function SiteHeader() {
 
         <Link
           href="/contact"
+          aria-current={isActive("/contact") ? "page" : undefined}
           className="hidden rounded-full border border-line-2 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.08em] transition-colors hover:border-ember hover:text-ember md:inline-block"
         >
           Contact
@@ -77,21 +85,27 @@ export function SiteHeader() {
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
-          aria-label="Toggle menu"
+          aria-controls="mobile-menu"
+          aria-label={open ? "Close menu" : "Open menu"}
           className="flex cursor-pointer flex-col gap-[5px] p-2 md:hidden"
         >
-          <span className="block h-0.5 w-[22px] bg-bone" />
-          <span className="block h-0.5 w-[22px] bg-bone" />
-          <span className="block h-0.5 w-[22px] bg-bone" />
+          <span aria-hidden className="block h-0.5 w-[22px] bg-bone" />
+          <span aria-hidden className="block h-0.5 w-[22px] bg-bone" />
+          <span aria-hidden className="block h-0.5 w-[22px] bg-bone" />
         </button>
       </nav>
 
       {open && (
-        <div className="flex flex-col border-t border-line bg-bg-2 px-6 pb-6 md:hidden">
+        <nav
+          id="mobile-menu"
+          aria-label="Primary (mobile)"
+          className="flex flex-col border-t border-line bg-bg-2 px-6 pb-6 md:hidden"
+        >
           {[...NAV, { href: "/contact", label: "Contact" }].map((item) => (
             <Link
               key={item.href}
               href={item.href}
+              aria-current={isActive(item.href) ? "page" : undefined}
               // Closed on tap rather than in an effect watching the pathname:
               // setting state from an effect triggers a cascading re-render.
               onClick={() => setOpen(false)}
@@ -100,7 +114,7 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
-        </div>
+        </nav>
       )}
     </header>
   );
