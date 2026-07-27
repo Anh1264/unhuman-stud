@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Unhuman Stud — Aiden Vu</title>
+<meta name="description" content="Unhuman Stud — the studio and portfolio of Aiden Vu. AI filmmaking, campaign visuals, and original short films." />
+
+<!-- ============================================================
+     UNHUMAN STUD — single-file portfolio + résumé site
+     Built for Aiden Vu.
+     HOW TO EDIT:
+       • Search "SWAP" to find every place you drop in your own
+         media (video links, images, resume PDF, socials).
+       • Everything is in this one file. No build step. Just open it.
+       • To publish free: drag this file into netlify.com/drop,
+         or push to a GitHub repo + enable GitHub Pages.
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg:#08080a;
+  --bg-2:#0e0e12;
+  --panel:#111116;
+  --line:rgba(232,227,217,.10);
+  --line-2:rgba(232,227,217,.16);
+  --bone:#e8e3d9;        /* primary text */
+  --bone-dim:#a5a099;    /* secondary text */
+  --bone-faint:#6c6862;  /* tertiary */
+  --accent:#8fe4d8;      /* spectral cyan — used sparingly */
+  --accent-deep:#3fb6a6;
+  --radius:14px;
+  --maxw:1180px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  background:var(--bg);
+  color:var(--bone);
+  font-family:'Inter',system-ui,sans-serif;
+  font-weight:300;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* subtle film grain + vignette */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:
+    radial-gradient(120% 90% at 50% -10%, rgba(143,228,216,.06), transparent 55%),
+    radial-gradient(120% 120% at 50% 120%, rgba(0,0,0,.6), transparent 60%);
+}
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:2;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.mono{font-family:'Space Mono',monospace}
+.display{font-family:'Space Grotesk',sans-serif}
+
+/* ============ LAYOUT HELPERS ============ */
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 28px;position:relative;z-index:5;min-width:0}
+.eyebrow{
+  font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:10px;
+}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--accent);opacity:.6}
+h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:600;line-height:1.05;letter-spacing:-.02em}
+.section-title{font-size:clamp(30px,5vw,54px);margin:14px 0 10px}
+.section-sub{color:var(--bone-dim);max-width:56ch;font-size:16px}
+
+/* ============ NAV ============ */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  backdrop-filter:blur(14px);
+  background:linear-gradient(to bottom, rgba(8,8,10,.86), rgba(8,8,10,.34));
+  border-bottom:1px solid transparent;transition:border-color .4s;
+}
+header.scrolled{border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:72px;max-width:var(--maxw);margin:0 auto;padding:0 28px}
+.brand{display:flex;align-items:center;gap:12px;font-family:'Space Grotesk';font-weight:700;letter-spacing:.02em}
+.brand .glyph{
+  width:30px;height:30px;border:1px solid var(--line-2);border-radius:8px;
+  display:grid;place-items:center;font-family:'Space Mono';font-size:15px;color:var(--accent);
+  box-shadow:inset 0 0 14px rgba(143,228,216,.12);
+}
+.brand b{font-weight:700;font-size:17px}
+.brand span{color:var(--bone-faint);font-weight:400;font-size:17px}
+.tabs{display:flex;gap:4px;align-items:center}
+.tab{
+  font-family:'Space Mono',monospace;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--bone-dim);padding:9px 15px;border-radius:999px;cursor:pointer;
+  border:1px solid transparent;transition:.25s var(--ease);background:none;
+}
+.tab:hover{color:var(--bone)}
+.tab.active{color:var(--bg);background:var(--bone);border-color:var(--bone)}
+.nav-cta{font-family:'Space Mono';font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;
+  border:1px solid var(--line-2);padding:9px 16px;border-radius:999px;color:var(--bone);transition:.25s}
+.nav-cta:hover{border-color:var(--accent);color:var(--accent)}
+.burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;background:none;border:0}
+.burger span{width:22px;height:2px;background:var(--bone);display:block;transition:.3s}
+.mobile-menu{display:none}
+
+/* ============ PANELS (tab switching) ============ */
+.panel{display:none;animation:fade .6s var(--ease)}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+main{padding-top:72px}
+.section{padding:86px 0}
+.section-head{margin-bottom:52px}
+
+/* ============ HOME / HERO ============ */
+.hero{min-height:calc(100vh - 72px);display:flex;flex-direction:column;justify-content:center;position:relative;padding:60px 0}
+.hero-grid-bg{position:absolute;inset:0;z-index:0;opacity:.5;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(70% 60% at 50% 40%,#000 30%,transparent 80%);
+}
+.hero-inner{position:relative;z-index:3}
+.hero h1{font-size:clamp(48px,11vw,150px);font-weight:700;letter-spacing:-.04em;line-height:.92}
+.hero h1 .out{color:transparent;-webkit-text-stroke:1.3px var(--bone-faint)}
+.hero-tag{display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center;margin-top:28px;color:var(--bone-dim);font-size:15px}
+.hero-tag .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+.hero-lead{margin-top:26px;max-width:60ch;font-size:clamp(16px,2vw,19px);color:var(--bone-dim);font-weight:300}
+.hero-lead b{color:var(--bone);font-weight:500}
+.hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:38px}
+.btn{
+  font-family:'Space Mono';font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+  padding:15px 26px;border-radius:999px;cursor:pointer;transition:.28s var(--ease);border:1px solid var(--bone);
+  background:var(--bone);color:var(--bg);display:inline-flex;align-items:center;gap:10px;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:var(--bone);border-color:var(--line-2)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.stats{display:flex;flex-wrap:wrap;gap:44px;margin-top:64px;padding-top:34px;border-top:1px solid var(--line)}
+.stat .n{font-family:'Space Grotesk';font-size:38px;font-weight:600;letter-spacing:-.02em}
+.stat .l{font-family:'Space Mono';font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--bone-faint);margin-top:4px}
+
+/* marquee of tools */
+.marquee{width:100%;margin-top:70px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;padding:18px 0}
+.marquee-track{display:flex;gap:52px;white-space:nowrap;animation:scroll 26s linear infinite;font-family:'Space Mono';color:var(--bone-faint);font-size:13px;letter-spacing:.18em;text-transform:uppercase}
+.marquee-track span{opacity:.7}
+@keyframes scroll{to{transform:translateX(-50%)}}
+
+/* ============ WORK ============ */
+.work-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.card{
+  position:relative;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+  background:var(--panel);min-height:360px;display:flex;flex-direction:column;justify-content:flex-end;
+  cursor:pointer;transition:.4s var(--ease);isolation:isolate;
+}
+.card:hover{border-color:var(--line-2);transform:translateY(-4px)}
+.card .thumb{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;transition:.6s var(--ease);opacity:.9}
+.card:hover .thumb{transform:scale(1.05);opacity:1}
+.card::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(to top,rgba(8,8,10,.95) 8%,rgba(8,8,10,.35) 55%,rgba(8,8,10,.15))}
+.card-body{position:relative;z-index:2;padding:26px}
+.card-tags{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.chip{font-family:'Space Mono';font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--bone-dim);border:1px solid var(--line-2);padding:5px 11px;border-radius:999px;background:rgba(8,8,10,.4)}
+.chip.hl{color:var(--accent);border-color:rgba(143,228,216,.4)}
+.card h3{font-size:26px;margin-bottom:8px}
+.card p{color:var(--bone-dim);font-size:14.5px;max-width:46ch}
+.card .arrow{margin-top:16px;font-family:'Space Mono';font-size:12px;letter-spacing:.1em;color:var(--accent);
+  display:inline-flex;align-items:center;gap:8px;opacity:0;transform:translateX(-6px);transition:.35s}
+.card:hover .arrow{opacity:1;transform:none}
+.card.wide{grid-column:1 / -1;min-height:300px}
+
+/* ============ FILMS ============ */
+.feature-film{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--panel)}
+.video-frame{position:relative;aspect-ratio:16/9;background:#000;display:grid;place-items:center;overflow:hidden}
+.video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video-frame .poster{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.55}
+.play{position:relative;z-index:3;width:78px;height:78px;border-radius:50%;border:1px solid var(--line-2);
+  background:rgba(8,8,10,.5);backdrop-filter:blur(6px);display:grid;place-items:center;cursor:pointer;transition:.3s}
+.play:hover{border-color:var(--accent);transform:scale(1.06);box-shadow:0 0 30px rgba(143,228,216,.25)}
+.play svg{width:24px;height:24px;fill:var(--bone);margin-left:4px}
+.feature-meta{padding:26px}
+.feature-meta h3{font-size:28px;margin-bottom:8px}
+.feature-meta p{color:var(--bone-dim);font-size:15px;max-width:70ch}
+.shorts-head{display:flex;align-items:baseline;justify-content:space-between;margin:56px 0 22px;flex-wrap:wrap;gap:8px}
+.shorts-head h3{font-size:22px}
+.shorts-head .hint{font-family:'Space Mono';font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--bone-faint)}
+.shorts{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.short{position:relative;aspect-ratio:9/16;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--panel);cursor:pointer}
+.short .poster{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.6;transition:.5s}
+.short:hover .poster{opacity:.85;transform:scale(1.04)}
+.short::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,10,.9),transparent 60%)}
+.short .lbl{position:absolute;left:14px;bottom:14px;z-index:2;font-family:'Space Mono';font-size:11px;letter-spacing:.08em;color:var(--bone)}
+.short .mini-play{position:absolute;top:12px;right:12px;z-index:2;width:30px;height:30px;border-radius:50%;background:rgba(8,8,10,.6);border:1px solid var(--line-2);display:grid;place-items:center}
+.short .mini-play svg{width:11px;height:11px;fill:var(--bone);margin-left:2px}
+
+/* ============ GALLERY ============ */
+.gallery{columns:3;column-gap:16px}
+.gitem{break-inside:avoid;margin-bottom:16px;border-radius:12px;overflow:hidden;border:1px solid var(--line);position:relative;cursor:pointer;background:var(--panel)}
+.gitem .ph{background-size:cover;background-position:center;transition:.6s var(--ease)}
+.gitem:hover .ph{transform:scale(1.05)}
+.gitem .cap{position:absolute;left:0;right:0;bottom:0;padding:14px;background:linear-gradient(to top,rgba(8,8,10,.9),transparent);
+  font-family:'Space Mono';font-size:11px;letter-spacing:.08em;color:var(--bone-dim);opacity:0;transition:.3s}
+.gitem:hover .cap{opacity:1}
+
+/* lightbox */
+.lightbox{position:fixed;inset:0;z-index:100;background:rgba(4,4,6,.92);backdrop-filter:blur(8px);display:none;place-items:center;padding:40px}
+.lightbox.open{display:grid}
+.lightbox .lb-inner{max-width:min(1000px,92vw);max-height:88vh;border:1px solid var(--line-2);border-radius:14px;overflow:hidden;background:var(--panel);position:relative}
+.lightbox .lb-img{width:100%;height:100%;min-height:300px;background-size:cover;background-position:center}
+.lb-close{position:absolute;top:18px;right:20px;z-index:110;font-family:'Space Mono';font-size:22px;color:var(--bone);cursor:pointer;background:none;border:0}
+
+/* ============ CREATOR / RESUME ============ */
+.creator-top{display:grid;grid-template-columns:.85fr 1.15fr;gap:48px;align-items:start}
+.portrait{position:relative;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;aspect-ratio:4/5;background:var(--panel)}
+.portrait .ph{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.75}
+.portrait .badge{position:absolute;left:16px;bottom:16px;font-family:'Space Mono';font-size:11px;letter-spacing:.12em;
+  color:var(--bone);background:rgba(8,8,10,.6);border:1px solid var(--line-2);padding:8px 12px;border-radius:999px}
+.bio p{color:var(--bone-dim);font-size:16px;margin-bottom:16px}
+.bio p b{color:var(--bone);font-weight:500}
+.resume-btn{margin-top:8px}
+
+.blocks{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:56px}
+.block{border:1px solid var(--line);border-radius:var(--radius);padding:26px;background:var(--panel)}
+.block h4{font-family:'Space Mono';font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:20px}
+.skill{margin-bottom:16px}
+.skill .row{display:flex;justify-content:space-between;font-size:14px;margin-bottom:7px}
+.skill .row span:last-child{font-family:'Space Mono';font-size:11px;color:var(--bone-faint)}
+.bar{height:4px;border-radius:99px;background:rgba(232,227,217,.1);overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent-deep),var(--accent));border-radius:99px;width:0;transition:width 1.2s var(--ease)}
+.taglist{display:flex;flex-wrap:wrap;gap:9px}
+.taglist .chip{cursor:default}
+
+.timeline{margin-top:22px;position:relative;padding-left:26px}
+.timeline::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:1px;background:var(--line-2)}
+.tl{position:relative;padding-bottom:26px}
+.tl::before{content:"";position:absolute;left:-23px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(143,228,216,.12)}
+.tl .yr{font-family:'Space Mono';font-size:11px;letter-spacing:.12em;color:var(--bone-faint)}
+.tl h5{font-family:'Space Grotesk';font-size:16px;font-weight:600;margin:3px 0 4px}
+.tl p{font-size:14px;color:var(--bone-dim)}
+
+/* ============ CONTACT ============ */
+.contact{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.contact h2{font-size:clamp(32px,5vw,56px)}
+.contact .lead{color:var(--bone-dim);font-size:17px;margin:18px 0 30px;max-width:44ch}
+.socials{display:flex;flex-direction:column;gap:2px}
+.social{display:flex;align-items:center;justify-content:space-between;padding:18px 4px;border-top:1px solid var(--line);transition:.3s;font-family:'Space Grotesk';font-size:18px}
+.social:last-child{border-bottom:1px solid var(--line)}
+.social:hover{padding-left:14px;color:var(--accent)}
+.social .h{font-family:'Space Mono';font-size:12px;color:var(--bone-faint);letter-spacing:.1em}
+.mailcard{border:1px solid var(--line);border-radius:var(--radius);padding:34px;background:var(--panel)}
+.mailcard .eyebrow{margin-bottom:16px}
+.mailcard .big{font-family:'Space Grotesk';font-size:clamp(20px,3vw,26px);font-weight:500;word-break:break-all}
+.mailcard .big:hover{color:var(--accent)}
+
+/* ============ FOOTER ============ */
+footer{border-top:1px solid var(--line);padding:40px 0;margin-top:40px}
+.foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;color:var(--bone-faint);font-family:'Space Mono';font-size:12px;letter-spacing:.06em}
+
+/* ============ REVEAL ============ */
+.reveal{opacity:0;transform:translateY(24px);transition:.8s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:860px){
+  .tabs,.nav-cta{display:none}
+  .burger{display:flex}
+  .mobile-menu{position:fixed;inset:72px 0 auto 0;z-index:49;background:var(--bg-2);border-bottom:1px solid var(--line);
+    display:none;flex-direction:column;padding:14px 28px 24px}
+  .mobile-menu.open{display:flex}
+  .mobile-menu .tab{text-align:left;border-radius:10px;font-size:14px;padding:14px 12px;letter-spacing:.06em}
+  .mobile-menu .tab.active{background:var(--bone);color:var(--bg)}
+  .work-grid{grid-template-columns:1fr}
+  .shorts{grid-template-columns:repeat(2,1fr)}
+  .gallery{columns:2}
+  .creator-top{grid-template-columns:1fr}
+  .blocks{grid-template-columns:1fr}
+  .contact{grid-template-columns:1fr}
+  .stats{gap:30px}
+}
+@media(max-width:480px){
+  .gallery{columns:1}
+  .shorts{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<header id="hdr">
+  <nav class="nav">
+    <a class="brand" data-go="home">
+      <span class="glyph mono">U</span>
+      <span><b>UNHUMAN</b> STUD</span>
+    </a>
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-go="home">Home</button>
+      <button class="tab" data-go="work">Work</button>
+      <button class="tab" data-go="films">Films</button>
+      <button class="tab" data-go="gallery">Gallery</button>
+      <button class="tab" data-go="creator">Creator</button>
+    </div>
+    <a class="nav-cta" data-go="contact">Contact</a>
+    <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="tab active" data-go="home">Home</button>
+    <button class="tab" data-go="work">Work</button>
+    <button class="tab" data-go="films">Films</button>
+    <button class="tab" data-go="gallery">Gallery</button>
+    <button class="tab" data-go="creator">Creator</button>
+    <button class="tab" data-go="contact">Contact</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ================= HOME ================= -->
+<section class="panel active" id="home">
+  <div class="hero">
+    <div class="hero-grid-bg"></div>
+    <div class="wrap hero-inner">
+      <span class="eyebrow reveal">Studio · Portfolio · Aiden Vu</span>
+      <h1 class="reveal display" style="transition-delay:.05s">UNHUMAN<br><span class="out">STUD</span></h1>
+      <div class="hero-tag reveal" style="transition-delay:.1s">
+        <span class="dot"></span><span>AI Filmmaker</span>
+        <span class="dot"></span><span>Campaign Visuals</span>
+        <span class="dot"></span><span>Creative Technologist</span>
+      </div>
+      <p class="hero-lead reveal" style="transition-delay:.15s">
+        I make cinematic worlds with AI — from original short films to brand campaigns —
+        <b>every frame directed by one person.</b> This is where the work lives: films,
+        commissioned pieces, and an ongoing experiment in what a solo studio can build.
+      </p>
+      <div class="hero-actions reveal" style="transition-delay:.2s">
+        <button class="btn" data-go="work">Explore the Work →</button>
+        <button class="btn ghost" data-go="films">Watch Films</button>
+      </div>
+
+      <div class="stats reveal" style="transition-delay:.25s">
+        <div class="stat"><div class="n display">5+</div><div class="l">Projects</div></div>
+        <div class="stat"><div class="n display">2</div><div class="l">Original Films</div></div>
+        <div class="stat"><div class="n display">6+</div><div class="l">AI Tools Mastered</div></div>
+        <div class="stat"><div class="n display">∞</div><div class="l">In Development</div></div>
+      </div>
+
+      <div class="marquee reveal" style="transition-delay:.3s">
+        <div class="marquee-track">
+          <span>HIGGSFIELD</span><span>KLING</span><span>VEO</span><span>FREEPIK</span><span>NANO BANANA</span><span>GPT IMAGE</span><span>PHOTOSHOP</span><span>CODE</span>
+          <span>HIGGSFIELD</span><span>KLING</span><span>VEO</span><span>FREEPIK</span><span>NANO BANANA</span><span>GPT IMAGE</span><span>PHOTOSHOP</span><span>CODE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WORK ================= -->
+<section class="panel" id="work">
+  <div class="wrap section">
+    <div class="section-head reveal">
+      <span class="eyebrow">01 — Selected Work</span>
+      <h2 class="section-title display">Projects & Worlds</h2>
+      <p class="section-sub">Original films, commissioned pieces, and the studio brand — spanning narrative, campaign, and client work.</p>
+    </div>
+
+    <div class="work-grid">
+      <!-- SWAP: replace background-image URLs with your own key visuals -->
+      <div class="card reveal" data-lb="STILLNESS — key visual">
+        <div class="thumb" style="background-image:linear-gradient(135deg,#0b1d1a,#04262a 60%,#071016)"></div>
+        <div class="card-body">
+          <div class="card-tags"><span class="chip hl">Original Film</span><span class="chip">Sci-Fi Short</span><span class="chip">2026</span></div>
+          <h3 class="display">STILLNESS / TĨNH LẶNG</h3>
+          <p>An assassin is disarmed not by a weapon but by an elder's stillness. Wordless, bioluminescent, built around a three-object surrender. Written and directed solo — EN & VN.</p>
+          <span class="arrow mono" data-go="films">Watch →</span>
+        </div>
+      </div>
+
+      <div class="card reveal" style="transition-delay:.05s" data-lb="GIÁP — key visual">
+        <div class="thumb" style="background-image:linear-gradient(135deg,#1c130a,#2a1c0c 55%,#120b06)"></div>
+        <div class="card-body">
+          <div class="card-tags"><span class="chip hl">Commissioned</span><span class="chip">Cinematic · 4 min</span><span class="chip">Historical</span></div>
+          <h3 class="display">GIÁP</h3>
+          <p>A four-minute cinematic short on General Võ Nguyên Giáp — commissioned by an AI video platform as a flagship demo. Four locked chapters, full shot design, original VO.</p>
+          <span class="arrow mono" data-go="films">Watch →</span>
+        </div>
+      </div>
+
+      <div class="card wide reveal" data-lb="WAKAN AI — campaign">
+        <div class="thumb" style="background-image:linear-gradient(120deg,#14100c,#1a1712 50%,#0c0b09)"></div>
+        <div class="card-body">
+          <div class="card-tags"><span class="chip hl">Studio Brand</span><span class="chip">AI Fashion / Campaign</span><span class="chip">Ongoing</span></div>
+          <h3 class="display">WAKAN AI — Campaign Studio</h3>
+          <p>A solo studio producing campaign-quality fashion & product visuals at a fraction of a traditional shoot. Consistent model identity, lighting and editorial coherence across full campaigns — including the in-house brand concept <b>“Intent.”</b></p>
+          <span class="arrow mono" data-go="gallery">See visuals →</span>
+        </div>
+      </div>
+
+      <div class="card reveal" data-lb="boop. — visual world">
+        <div class="thumb" style="background-image:linear-gradient(135deg,#e9e2d3,#cdbcae 60%,#b9a98c);opacity:.85"></div>
+        <div class="card-body">
+          <div class="card-tags"><span class="chip hl">Client Work</span><span class="chip">Soft-Futurist</span></div>
+          <h3 class="display">boop.</h3>
+          <p>A warm, soft-futurist visual world for an app client — cream interiors, arched windows onto fantasy landscapes, and a 6-checkpoint journey map. “Every friendship starts somewhere.”</p>
+          <span class="arrow mono" data-go="gallery">See visuals →</span>
+        </div>
+      </div>
+
+      <div class="card reveal" style="transition-delay:.05s" data-lb="Agent system">
+        <div class="thumb" style="background-image:linear-gradient(135deg,#0a1016,#0d1620 60%,#070b0f)"></div>
+        <div class="card-body">
+          <div class="card-tags"><span class="chip hl">Engineering</span><span class="chip">Automation</span></div>
+          <h3 class="display">Studio Agent System</h3>
+          <p>A custom multi-agent tooling system that automates the studio's production pipeline — prompt guides, batching, and workflow orchestration. The CS side of the practice.</p>
+          <span class="arrow mono" data-go="creator">About the maker →</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FILMS ================= -->
+<section class="panel" id="films">
+  <div class="wrap section">
+    <div class="section-head reveal">
+      <span class="eyebrow">02 — Motion</span>
+      <h2 class="section-title display">Films & Shorts</h2>
+      <p class="section-sub">Long-form narrative and quick vertical cuts. Press play on the featured piece, or scroll the shorts reel.</p>
+    </div>
+
+    <!-- FEATURED FILM -->
+    <div class="feature-film reveal">
+      <div class="video-frame" id="featVideo">
+        <!-- SWAP: put your YouTube/Vimeo embed ID below (data-embed).
+             Example: data-embed="https://www.youtube.com/embed/XXXXXXXX?autoplay=1" -->
+        <div class="poster" style="background-image:linear-gradient(135deg,#0b1d1a,#04262a 60%,#071016)"></div>
+        <button class="play" data-embed="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" aria-label="Play">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+      </div>
+      <div class="feature-meta">
+        <div class="card-tags"><span class="chip hl">Featured</span><span class="chip">Original Film</span></div>
+        <h3 class="display">STILLNESS / TĨNH LẶNG</h3>
+        <p>A near-silent sci-fi short set in a bioluminescent cave. An assassin arrives to kill and is undone by an old man who simply refuses to be afraid. Full script in English & Vietnamese.</p>
+      </div>
+    </div>
+
+    <!-- SHORTS -->
+    <div class="shorts-head reveal">
+      <h3 class="display">Shorts & Reels</h3>
+      <span class="hint mono">9:16 · vertical · tap to play</span>
+    </div>
+    <div class="shorts">
+      <!-- SWAP each: set data-embed to your Short/Reel embed URL, and background-image to a still -->
+      <div class="short reveal" data-embed="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1">
+        <div class="poster" style="background-image:linear-gradient(160deg,#1c130a,#2a1c0c 70%,#120b06)"></div>
+        <div class="mini-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        <div class="lbl mono">GIÁP · teaser</div>
+      </div>
+      <div class="short reveal" style="transition-delay:.05s" data-embed="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1">
+        <div class="poster" style="background-image:linear-gradient(160deg,#0b1d1a,#04262a 70%,#071016)"></div>
+        <div class="mini-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        <div class="lbl mono">STILLNESS · cut</div>
+      </div>
+      <div class="short reveal" style="transition-delay:.1s" data-embed="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1">
+        <div class="poster" style="background-image:linear-gradient(160deg,#14100c,#1a1712 70%,#0c0b09)"></div>
+        <div class="mini-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        <div class="lbl mono">WAKAN · campaign</div>
+      </div>
+      <div class="short reveal" style="transition-delay:.15s" data-embed="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1">
+        <div class="poster" style="background-image:linear-gradient(160deg,#0a1016,#0d1620 70%,#070b0f)"></div>
+        <div class="mini-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        <div class="lbl mono">process · bts</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GALLERY ================= -->
+<section class="panel" id="gallery">
+  <div class="wrap section">
+    <div class="section-head reveal">
+      <span class="eyebrow">03 — Stills</span>
+      <h2 class="section-title display">Gallery</h2>
+      <p class="section-sub">Key visuals, campaign frames, and concept art. Click any image to enlarge.</p>
+    </div>
+    <div class="gallery">
+      <!-- SWAP: replace each .ph background with your image URL, adjust height as needed -->
+      <div class="gitem reveal"><div class="ph" style="height:340px;background-image:linear-gradient(135deg,#0b1d1a,#04262a)"></div><div class="cap">STILLNESS · cave interior</div></div>
+      <div class="gitem reveal"><div class="ph" style="height:260px;background-image:linear-gradient(135deg,#1c130a,#2a1c0c)"></div><div class="cap">GIÁP · chapter I</div></div>
+      <div class="gitem reveal"><div class="ph" style="height:300px;background-image:linear-gradient(135deg,#14100c,#1a1712)"></div><div class="cap">WAKAN · editorial</div></div>
+      <div class="gitem reveal"><div class="ph" style="height:380px;background-image:linear-gradient(135deg,#e9e2d3,#c9b99b);opacity:.85"></div><div class="cap">boop. · interior</div></div>
+      <div class="gitem reveal"><div class="ph" style="height:280px;background-image:linear-gradient(135deg,#0a1016,#12202c)"></div><div class="cap">Intent · lookbook</div></div>
+      <div class="gitem reveal"><div class="ph" style="height:340px;background-image:linear-gradient(135deg,#241a10,#0f0a06)"></div><div class="cap">GIÁP · key visual</div></div>
+      <div class="gitem reveal"><div class="ph" style="height:300px;background-image:linear-gradient(135deg,#0d2320,#03181a)"></div><div class="cap">STILLNESS · surrender</div></div>
+      <div class="gitem reveal"><div class="ph" style="height:360px;background-image:linear-gradient(135deg,#efe8db,#d0c1a4);opacity:.85"></div><div class="cap">boop. · journey map</div></div>
+      <div class="gitem reveal"><div class="ph" style="height:260px;background-image:linear-gradient(135deg,#171310,#0b0907)"></div><div class="cap">WAKAN · product</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CREATOR / RESUME ================= -->
+<section class="panel" id="creator">
+  <div class="wrap section">
+    <div class="section-head reveal">
+      <span class="eyebrow">04 — The Creator</span>
+      <h2 class="section-title display">Aiden Vu</h2>
+      <p class="section-sub">Part artist, part engineer. A one-person studio treating AI as a camera, a crew, and a paintbrush.</p>
+    </div>
+
+    <div class="creator-top">
+      <div class="portrait reveal">
+        <!-- SWAP: your portrait -->
+        <div class="ph" style="background-image:linear-gradient(160deg,#1a1712,#0b0a08)"></div>
+        <span class="badge mono">AIDEN VU · 2026</span>
+      </div>
+      <div class="bio reveal" style="transition-delay:.08s">
+        <p><b>I build cinematic worlds without a studio behind me.</b> Writing, direction, image and video generation, sound, edit — the whole pipeline runs through one person. I care less about "AI content" and more about <b>marketing-literate storytelling</b>: work that actually moves people and moves product.</p>
+        <p>I'm a CS student who codes my own production tooling, and I'm sharpening a real visual eye alongside it — studying fashion, film language, and design in public. The goal isn't to replace crews; it's to prove one focused operator can ship campaign- and festival-grade work.</p>
+        <p>Currently building <b>WAKAN AI</b> (campaign studio) and developing original shorts <b>STILLNESS</b> and <b>GIÁP</b>.</p>
+        <!-- SWAP: link your resume PDF in href -->
+        <a class="btn resume-btn" href="#" download>Download Résumé (PDF) ↓</a>
+      </div>
+    </div>
+
+    <div class="blocks">
+      <div class="block reveal">
+        <h4 class="mono">Capabilities</h4>
+        <div class="skill"><div class="row"><span>AI Video / Motion</span><span>Advanced</span></div><div class="bar"><i data-w="90"></i></div></div>
+        <div class="skill"><div class="row"><span>AI Image / Campaign Visuals</span><span>Advanced</span></div><div class="bar"><i data-w="88"></i></div></div>
+        <div class="skill"><div class="row"><span>Writing & Direction</span><span>Strong</span></div><div class="bar"><i data-w="82"></i></div></div>
+        <div class="skill"><div class="row"><span>Code / Automation</span><span>Strong</span></div><div class="bar"><i data-w="78"></i></div></div>
+        <div class="skill"><div class="row"><span>Visual Design / Photoshop</span><span>Growing</span></div><div class="bar"><i data-w="62"></i></div></div>
+      </div>
+
+      <div class="block reveal" style="transition-delay:.06s">
+        <h4 class="mono">Toolstack</h4>
+        <div class="taglist">
+          <span class="chip">Higgsfield</span><span class="chip">Kling</span><span class="chip">Veo</span>
+          <span class="chip">Freepik</span><span class="chip">Nano Banana</span><span class="chip">GPT Image</span>
+          <span class="chip">Photoshop</span><span class="chip">Premiere</span><span class="chip">Python</span>
+          <span class="chip">Web / HTML·CSS·JS</span>
+        </div>
+        <h4 class="mono" style="margin-top:28px">Foundations</h4>
+        <div class="taglist">
+          <span class="chip">Computer Science</span><span class="chip">Multivariable Calculus</span>
+          <span class="chip">Physics</span><span class="chip">Art History</span><span class="chip">Academic Writing</span>
+        </div>
+        <h4 class="mono" style="margin-top:28px">Languages</h4>
+        <div class="taglist"><span class="chip">English</span><span class="chip">Vietnamese</span></div>
+      </div>
+    </div>
+
+    <div class="blocks" style="grid-template-columns:1fr">
+      <div class="block reveal">
+        <h4 class="mono">Trajectory</h4>
+        <div class="timeline">
+          <div class="tl"><div class="yr mono">2026 — NOW</div><h5 class="display">WAKAN AI · Founder & Sole Operator</h5><p>Productized AI campaign studio for DTC & streetwear brands. Building the “Intent” in-house brand and building in public.</p></div>
+          <div class="tl"><div class="yr mono">2026</div><h5 class="display">GIÁP · Commissioned Short</h5><p>Hired by an AI video platform to direct a 4-minute cinematic flagship demo. Portfolio + client deliverable in one.</p></div>
+          <div class="tl"><div class="yr mono">2026</div><h5 class="display">STILLNESS / TĨNH LẶNG · Original Film</h5><p>Wrote and designed an original bilingual sci-fi short — full script, shot design, and Vietnamese translation.</p></div>
+          <div class="tl"><div class="yr mono">ONGOING</div><h5 class="display">Computer Science · Undergraduate</h5><p>Studying CS while building custom multi-agent production tooling for the studio.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section class="panel" id="contact">
+  <div class="wrap section">
+    <div class="contact">
+      <div class="reveal">
+        <span class="eyebrow">05 — Contact</span>
+        <h2 class="section-title display">Let's build<br>something unhuman.</h2>
+        <p class="lead">Open to commissions, collaborations, and brand campaigns. Tell me the world you want to make.</p>
+        <div class="socials">
+          <!-- SWAP: your real handles/links -->
+          <a class="social" href="#"><span>Instagram</span><span class="h mono">@unhumanstud →</span></a>
+          <a class="social" href="#"><span>TikTok</span><span class="h mono">@unhumanstud →</span></a>
+          <a class="social" href="#"><span>YouTube</span><span class="h mono">/@unhumanstud →</span></a>
+          <a class="social" href="#"><span>X / Twitter</span><span class="h mono">@unhumanstud →</span></a>
+        </div>
+      </div>
+      <div class="mailcard reveal" style="transition-delay:.08s">
+        <span class="eyebrow">Direct</span>
+        <a class="big" href="mailto:vuquocanh12052007@gmail.com">vuquocanh12052007@gmail.com</a>
+        <p style="color:var(--bone-dim);margin-top:22px;font-size:14.5px">Typical reply within 24–48h. For commissions, include timeline, references, and scope.</p>
+        <a class="btn" style="margin-top:24px" href="mailto:vuquocanh12052007@gmail.com?subject=Project%20inquiry%20—%20Unhuman%20Stud">Start a project →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>© 2026 UNHUMAN STUD · AIDEN VU</span>
+    <span>Solo studio · Built with AI + code</span>
+  </div>
+</footer>
+
+<!-- ================= LIGHTBOX ================= -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-close mono" id="lbClose">✕</button>
+  <div class="lb-inner"><div class="lb-img" id="lbImg"></div></div>
+</div>
+
+<script>
+/* ---------- TAB SWITCHING ---------- */
+const panels=document.querySelectorAll('.panel');
+const tabs=document.querySelectorAll('.tab');
+function go(id){
+  panels.forEach(p=>p.classList.toggle('active',p.id===id));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.go===id));
+  window.scrollTo({top:0,behavior:'instant'});
+  document.getElementById('mobileMenu').classList.remove('open');
+  runReveals();
+}
+document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',e=>{go(el.dataset.go)}));
+
+/* ---------- NAV STATE ---------- */
+const hdr=document.getElementById('hdr');
+addEventListener('scroll',()=>hdr.classList.toggle('scrolled',scrollY>10));
+document.getElementById('burger').addEventListener('click',()=>document.getElementById('mobileMenu').classList.toggle('open'));
+
+/* ---------- SCROLL REVEAL ---------- */
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12});
+function runReveals(){document.querySelectorAll('.panel.active .reveal:not(.in)').forEach(el=>io.observe(el));
+  // animate skill bars
+  document.querySelectorAll('.panel.active .bar i').forEach(i=>{setTimeout(()=>i.style.width=i.dataset.w+'%',200);});
+}
+runReveals();
+
+/* ---------- VIDEO PLAY (embed on click) ---------- */
+function mountVideo(container,url){
+  const f=document.createElement('iframe');
+  f.src=url;f.allow='autoplay; fullscreen; encrypted-media';f.setAttribute('allowfullscreen','');
+  container.innerHTML='';container.appendChild(f);
+}
+document.querySelectorAll('.play').forEach(b=>b.addEventListener('click',()=>mountVideo(document.getElementById('featVideo'),b.dataset.embed)));
+document.querySelectorAll('.short').forEach(s=>s.addEventListener('click',()=>{
+  // replace short with playing iframe
+  const url=s.dataset.embed;s.style.aspectRatio='9/16';mountVideo(s,url);
+  const f=s.querySelector('iframe');if(f){f.style.position='absolute';f.style.inset='0';f.style.width='100%';f.style.height='100%';}
+}));
+
+/* ---------- LIGHTBOX (gallery + work cards) ---------- */
+const lb=document.getElementById('lightbox'),lbImg=document.getElementById('lbImg');
+function openLb(bg,label){lbImg.style.backgroundImage=bg;lbImg.style.minHeight='60vh';lb.classList.add('open');}
+document.querySelectorAll('.gitem').forEach(g=>g.addEventListener('click',()=>{
+  const ph=g.querySelector('.ph');openLb(getComputedStyle(ph).backgroundImage);
+}));
+document.querySelectorAll('.card[data-lb]').forEach(c=>c.addEventListener('click',e=>{
+  if(e.target.closest('[data-go]'))return; // let arrow links navigate
+  const t=c.querySelector('.thumb');openLb(getComputedStyle(t).backgroundImage);
+}));
+document.getElementById('lbClose').addEventListener('click',()=>lb.classList.remove('open'));
+lb.addEventListener('click',e=>{if(e.target===lb)lb.classList.remove('open')});
+addEventListener('keydown',e=>{if(e.key==='Escape')lb.classList.remove('open')});
+</script>
+</body>
+</html>

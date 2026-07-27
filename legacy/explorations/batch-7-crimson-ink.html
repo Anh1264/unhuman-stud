@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Unhuman Stud — Crimson Ink, Organic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#0a0708;color:#f1e8df;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:52px 24px 100px}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#e0654d;border:1px solid rgba(224,101,77,.4);padding:7px 13px;border-radius:100px}
+h1.board{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(32px,5.5vw,54px);letter-spacing:-.01em;margin:18px 0 10px;line-height:1.04}
+h1.board em{font-style:italic;color:#e11d1d}
+.board-sub{max-width:680px;color:#b3a69f;font-size:17px}.board-sub b{color:#f1e8df}
+.tip{margin-top:14px;font-family:'Space Mono';font-size:12px;color:#9c7367;letter-spacing:.04em}
+
+.dir{margin-top:44px;border:1px solid rgba(255,255,255,.1);border-radius:22px;overflow:hidden;background:#14100f}
+.meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.08)}
+.meta .no{font-family:'Fraunces',serif;font-weight:700;width:36px;height:36px;border-radius:50%;background:#f1e8df;color:#14100f;display:grid;place-items:center;font-size:14px;flex-shrink:0}
+.meta .nm{font-family:'Fraunces',serif;font-weight:600;font-size:23px;letter-spacing:-.01em}
+.meta .vibe{color:#9c8d86;font-size:14px;font-weight:500}
+.meta .pal{display:flex;gap:6px;margin-left:auto}
+.meta .pal span{width:26px;height:26px;border-radius:7px;border:1px solid rgba(255,255,255,.15)}
+.meta .font{font-family:'Space Mono',monospace;font-size:11.5px;color:#9c8d86;letter-spacing:.04em;width:100%;margin-top:2px}
+.meta .font b{color:#cfc2bb}
+.frame{margin:22px;border-radius:14px;overflow:hidden;border:1px solid rgba(0,0,0,.5);box-shadow:0 24px 70px rgba(0,0,0,.5)}
+.bar{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#221a1a;border-bottom:1px solid rgba(255,255,255,.06)}
+.bar i{width:11px;height:11px;border-radius:50%;display:block}
+.bar .u{margin-left:14px;font-family:'Space Mono',monospace;font-size:11.5px;color:#8a7a74;background:#0a0708;padding:5px 14px;border-radius:6px;flex:1;max-width:320px}
+.view{height:580px;overflow:hidden;position:relative}
+.note{padding:0 24px 24px;color:#9c8d86;font-size:14px}.note b{color:#cfc2bb;font-weight:600}
+
+.art{position:absolute;inset:0;z-index:1;width:100%;height:100%;pointer-events:none}
+.mnav{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;position:relative;z-index:6}
+.mbrand{display:flex;align-items:center;gap:10px;font-weight:700;color:#f1e8df}
+.mbrand .g{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-family:'Fraunces',serif;font-size:14px;background:#c1121f;color:#fff}
+.mbrand b{font-family:'Fraunces',serif;font-weight:600}.mbrand span{color:#a2938b;font-family:'Inter';font-weight:500}
+.mtabs{display:flex;gap:20px}
+.mtab{font-size:12px;letter-spacing:.06em;font-weight:500;color:#c2b4ab}
+.mtab.on{color:#e0654d}
+.rule{height:1px;margin:0 32px;background:rgba(255,255,255,.13);position:relative;z-index:6}
+.mhero{padding:28px 32px;position:relative;z-index:6}
+.label{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#e0654d}
+.mtitle{font-family:'Fraunces',serif;font-weight:600;line-height:1;margin:16px 0 12px;font-size:58px;color:#f6efe8}
+.mtitle em{font-style:italic;color:#e11d1d}
+.mlead{max-width:52ch;font-size:15px;margin-bottom:22px;color:#bcaea6}
+.mcta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.mbtn{font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:12px 20px;border-radius:2px;font-weight:600;cursor:pointer;background:#f1e8df;color:#14100f}
+.mlink{font-family:'Space Mono';font-size:11px;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid #e0654d;color:#e0654d}
+.mindex{padding:4px 32px 26px;position:relative;z-index:6}
+.irow{display:grid;grid-template-columns:40px 1fr 120px 60px;gap:12px;align-items:center;padding:12px 0;font-size:14px;border-bottom:1px solid rgba(255,255,255,.11)}
+.irow .ix{font-family:'Space Mono';font-size:12px;color:#e0654d}
+.irow .it{font-family:'Fraunces',serif;font-weight:600;font-size:17px;color:#f1e8df}
+.irow .ic{font-family:'Space Mono';font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#9c8d86}
+.irow .iy{font-family:'Space Mono';font-size:11px;text-align:right;color:#9c8d86}
+
+/* per-variation grounds */
+.v34 .view{background:#0a0708}
+.v35 .view{background:#0c0809}
+.v36 .view{background:#090607}
+.v37 .view{background:radial-gradient(140% 120% at 60% 0%,#1a0a0c,#0b0708 55%)}
+.v38 .view{background:#0c0a0b}
+.v38 .mtitle{font-family:'Playfair Display',serif;font-weight:800}
+
+/* drip animation */
+.drip-move{animation:drip 6s ease-in-out infinite alternate;transform-origin:top}
+@keyframes drip{from{transform:scaleY(.9)}to{transform:scaleY(1.06)}}
+.wash-move{animation:wash 16s ease-in-out infinite alternate}
+@keyframes wash{from{transform:translate(-2%,0) scale(1.05)}to{transform:translate(3%,-3%) scale(1.15)}}
+.slow{animation:slow 12s ease-in-out infinite alternate}
+@keyframes slow{from{transform:scale(1) rotate(0deg)}to{transform:scale(1.04) rotate(.6deg)}}
+
+.foot{margin-top:52px;border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:30px 32px;background:#14100f}
+.foot h3{font-family:'Fraunces',serif;font-weight:600;font-size:22px;margin-bottom:8px}
+.foot p{color:#b3a69f;font-size:15px}.foot b{color:#e0654d;font-weight:600}
+
+@media(max-width:720px){.view{height:auto;min-height:520px}.mtitle{font-size:40px!important}.irow{grid-template-columns:32px 1fr 54px}.irow .ic{display:none}}
+</style>
+
+<!-- SVG ink filters (organic, non-circular) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="rough" x="-30%" y="-30%" width="160%" height="160%"><feTurbulence type="fractalNoise" baseFrequency="0.016" numOctaves="3" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="24" xChannelSelector="R" yChannelSelector="G"/></filter>
+  <filter id="rough2" x="-40%" y="-40%" width="180%" height="180%"><feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="4" seed="19" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="34" xChannelSelector="R" yChannelSelector="G"/></filter>
+  <filter id="spatter" x="-60%" y="-60%" width="220%" height="220%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="30" xChannelSelector="R" yChannelSelector="G"/></filter>
+  <filter id="wash"><feTurbulence type="fractalNoise" baseFrequency="0.011 0.016" numOctaves="4" seed="11" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.62  0 0 0 0 0.05  0 0 0 0 0.09  0 0 0 -1.4 1.05" result="ink"/>
+    <feGaussianBlur in="ink" stdDeviation="5"/></filter>
+</defs></svg>
+</head>
+<body>
+<div class="wrap">
+  <span class="eyebrow">Unhuman Stud · Crimson Ink · Organic</span>
+  <h1 class="board">Five kinds of ink — <em>no circles.</em></h1>
+  <p class="board-sub">Full Crimson Ink lane: dark, serif, gallery. The round blobs are gone — each of these uses a <b>different real ink form</b>: splatter, dry brush, drips, a smoky wash, and a single calligraphic slash. Edges are torn with SVG displacement, never geometric.</p>
+  <div class="tip">▶ Open the file — the ink shifts and drips slowly. Screenshots freeze one frame.</div>
+
+  <!-- 34 -->
+  <div class="dir v34"><div class="meta"><span class="no">34</span><span class="nm">Ink Splatter</span><span class="vibe">flung ink · flecks · raw</span><span class="pal"><span style="background:#0a0708"></span><span style="background:#f1e8df"></span><span style="background:#c1121f"></span><span style="background:#7a0d12"></span></span><span class="font"><b>Fraunces</b> serif · torn splatter + scattered flecks (SVG displacement)</span></div>
+    <div class="frame"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div><div class="view">
+      <svg class="art slow" viewBox="0 0 1100 580" preserveAspectRatio="xMidYMid slice">
+        <g filter="url(#spatter)" fill="#b3121f">
+          <path d="M760,150 C700,60 860,40 930,110 C1010,190 980,320 880,340 C790,360 700,300 700,230 C700,190 720,180 760,150 Z" opacity=".88"/>
+          <path d="M640,300 C610,260 690,250 720,290 C745,325 700,380 660,370 C620,360 610,340 640,300 Z" opacity=".7"/>
+          <ellipse cx="600" cy="150" rx="12" ry="9" opacity=".7"/><ellipse cx="980" cy="420" rx="16" ry="11" opacity=".6"/>
+          <ellipse cx="1040" cy="210" rx="9" ry="13" opacity=".7"/><ellipse cx="560" cy="420" rx="8" ry="6" opacity=".55"/>
+          <ellipse cx="880" cy="470" rx="6" ry="9" opacity=".5"/><ellipse cx="700" cy="90" rx="5" ry="7" opacity=".6"/>
+        </g>
+      </svg>
+      <div class="mnav"><div class="mbrand"><span class="g">U</span><b>Unhuman</b> <span>Stud</span></div><div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Creator</span></div></div>
+      <div class="rule"></div>
+      <div class="mhero"><div class="label">A Studio of One — Est. 2026</div><div class="mtitle">Made in one<br>violent <em>gesture.</em></div><div class="mlead">A one-person cinematic studio — flung onto the page, raw and unrepeatable.</div><div class="mcta"><span class="mbtn">View the Work</span><span class="mlink">Read the Creator →</span></div></div>
+      <div class="mindex"><div class="irow"><span class="ix">01</span><span class="it">STILLNESS / TĨNH LẶNG</span><span class="ic">Original Film</span><span class="iy">2026</span></div><div class="irow"><span class="ix">02</span><span class="it">GIÁP</span><span class="ic">Commissioned</span><span class="iy">2026</span></div></div>
+    </div></div>
+    <p class="note"><b>Ink:</b> a torn splatter with flung flecks — irregular, gestural, zero circles. <b>Feel:</b> the rawest and most energetic; reads like a fresh mark on the wall.</p>
+  </div>
+
+  <!-- 35 -->
+  <div class="dir v35"><div class="meta"><span class="no">35</span><span class="nm">Dry Brushstroke</span><span class="vibe">gestural · bristle streaks · bold</span><span class="pal"><span style="background:#0c0809"></span><span style="background:#f1e8df"></span><span style="background:#c1121f"></span></span><span class="font"><b>Fraunces</b> serif · one sweeping dry-brush stroke behind the title</span></div>
+    <div class="frame"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div><div class="view">
+      <svg class="art slow" viewBox="0 0 1100 580" preserveAspectRatio="xMidYMid slice">
+        <g filter="url(#rough)">
+          <rect x="40" y="250" width="1020" height="120" fill="#b3121f" opacity=".9"/>
+          <rect x="40" y="258" width="1020" height="7" fill="#0c0809" opacity=".5"/>
+          <rect x="40" y="285" width="1020" height="5" fill="#0c0809" opacity=".45"/>
+          <rect x="40" y="320" width="1020" height="8" fill="#0c0809" opacity=".5"/>
+          <rect x="40" y="348" width="1020" height="5" fill="#0c0809" opacity=".4"/>
+          <rect x="980" y="250" width="90" height="120" fill="#0c0809" opacity=".5"/>
+        </g>
+      </svg>
+      <div class="mnav"><div class="mbrand"><span class="g">U</span><b>Unhuman</b> <span>Stud</span></div><div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Creator</span></div></div>
+      <div class="rule"></div>
+      <div class="mhero" style="padding-top:70px"><div class="label">A Studio of One — Est. 2026</div><div class="mtitle" style="mix-blend-mode:normal">One <em>stroke.</em><br>One studio.</div><div class="mlead">Cinematic AI worlds laid down in a single confident sweep — writing, direction, sound, edit.</div><div class="mcta"><span class="mbtn">View the Work</span><span class="mlink">Read the Creator →</span></div></div>
+    </div></div>
+    <p class="note"><b>Ink:</b> a wide dry brushstroke with bristle gaps sweeping across the hero. <b>Feel:</b> bold and calligraphic — the title sits right on the stroke. Confident and graphic.</p>
+  </div>
+
+  <!-- 36 -->
+  <div class="dir v36"><div class="meta"><span class="no">36</span><span class="nm">Running Drips</span><span class="vibe">wet · dripping · cinematic tension</span><span class="pal"><span style="background:#090607"></span><span style="background:#f1e8df"></span><span style="background:#a5121f"></span><span style="background:#5c0810"></span></span><span class="font"><b>Fraunces</b> serif · ink running down from the top edge</span></div>
+    <div class="frame"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div><div class="view">
+      <svg class="art" viewBox="0 0 1100 580" preserveAspectRatio="none">
+        <g filter="url(#rough)" fill="#9c101c">
+          <rect x="0" y="0" width="1100" height="34"/>
+          <g class="drip-move">
+            <path d="M120,30 v150 a12,14 0 0 0 24,0 v-150 Z"/>
+            <path d="M300,30 v250 a10,12 0 0 0 20,0 v-250 Z"/>
+            <path d="M520,30 v110 a9,10 0 0 0 18,0 v-110 Z"/>
+            <path d="M700,30 v320 a11,13 0 0 0 22,0 v-320 Z"/>
+            <path d="M900,30 v190 a10,12 0 0 0 20,0 v-190 Z"/>
+            <path d="M1010,30 v90 a8,9 0 0 0 16,0 v-90 Z"/>
+          </g>
+        </g>
+      </svg>
+      <div class="mnav"><div class="mbrand"><span class="g">U</span><b>Unhuman</b> <span>Stud</span></div><div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Creator</span></div></div>
+      <div class="mhero" style="padding-top:130px"><div class="label">A Studio of One — Est. 2026</div><div class="mtitle">Stories that <em>bleed</em><br>down the screen.</div><div class="mlead">Dark, wet, and cinematic — a one-person studio where every frame drips with intent.</div><div class="mcta"><span class="mbtn">View the Work</span><span class="mlink">Read the Creator →</span></div></div>
+      <div class="mindex"><div class="irow"><span class="ix">01</span><span class="it">STILLNESS / TĨNH LẶNG</span><span class="ic">Original Film</span><span class="iy">2026</span></div><div class="irow"><span class="ix">02</span><span class="it">GIÁP</span><span class="ic">Commissioned</span><span class="iy">2026</span></div></div>
+    </div></div>
+    <p class="note"><b>Ink:</b> a band of ink across the top with drips running down, lengthening slowly. <b>Feel:</b> the most tense and cinematic — horror/thriller poster energy, still elegant.</p>
+  </div>
+
+  <!-- 37 -->
+  <div class="dir v37"><div class="meta"><span class="no">37</span><span class="nm">Sumi Wash</span><span class="vibe">smoky · atmospheric · painterly</span><span class="pal"><span style="background:#0b0708"></span><span style="background:#f1e8df"></span><span style="background:#9e1420"></span><span style="background:#1a0a0c"></span></span><span class="font"><b>Fraunces</b> serif · a drifting smoky ink wash (fractal-noise, tinted)</span></div>
+    <div class="frame"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div><div class="view">
+      <svg class="art wash-move" viewBox="0 0 1100 580" preserveAspectRatio="xMidYMid slice"><rect x="-60" y="-60" width="1220" height="700" filter="url(#wash)"/></svg>
+      <div class="mnav"><div class="mbrand"><span class="g">U</span><b>Unhuman</b> <span>Stud</span></div><div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Creator</span></div></div>
+      <div class="rule"></div>
+      <div class="mhero"><div class="label">A Studio of One — Est. 2026</div><div class="mtitle">Worlds that rise<br>like <em>smoke.</em></div><div class="mlead">A one-person studio working in atmosphere — soft, deep, and slow-moving ink.</div><div class="mcta"><span class="mbtn">View the Work</span><span class="mlink">Read the Creator →</span></div></div>
+      <div class="mindex"><div class="irow"><span class="ix">01</span><span class="it">STILLNESS / TĨNH LẶNG</span><span class="ic">Original Film</span><span class="iy">2026</span></div><div class="irow"><span class="ix">02</span><span class="it">GIÁP</span><span class="ic">Commissioned</span><span class="iy">2026</span></div></div>
+    </div></div>
+    <p class="note"><b>Ink:</b> a genuine smoky wash built from fractal noise — cloudy and organic, no defined shape at all. <b>Feel:</b> the most atmospheric and "fine-art"; quiet and expensive.</p>
+  </div>
+
+  <!-- 38 -->
+  <div class="dir v38"><div class="meta"><span class="no">38</span><span class="nm">Calligraphy Slash</span><span class="vibe">minimal · single mark · gallery</span><span class="pal"><span style="background:#0c0a0b"></span><span style="background:#f1e8df"></span><span style="background:#c1121f"></span></span><span class="font"><b>Playfair Display</b> · one bold brush slash under the title, lots of black</span></div>
+    <div class="frame"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div><div class="view">
+      <svg class="art" viewBox="0 0 1100 580" preserveAspectRatio="xMidYMid meet">
+        <g filter="url(#rough2)"><path d="M120,360 C360,300 620,400 980,320" stroke="#c1121f" stroke-width="26" fill="none" stroke-linecap="round"/></g>
+      </svg>
+      <div class="mnav"><div class="mbrand"><span class="g">U</span><b>Unhuman</b> <span>Stud</span></div><div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Creator</span></div></div>
+      <div class="mhero" style="padding-top:96px"><div class="label">A Studio of One — Est. 2026</div><div class="mtitle" style="font-size:64px">UNHUMAN STUD</div><div class="mlead" style="margin-top:26px">One mark. One maker. A cinematic studio distilled to a single confident line.</div><div class="mcta"><span class="mbtn">View the Work</span><span class="mlink">Read the Creator →</span></div></div>
+    </div></div>
+    <p class="note"><b>Ink:</b> a single calligraphic brush slash under the wordmark — everything else is black space. <b>Feel:</b> the most restrained and gallery-like; maximum confidence, minimum ink. My pick for "professional + artistic."</p>
+  </div>
+
+  <div class="foot">
+    <h3>Closer to the mark.</h3>
+    <p>Pick a number (34–38) and I'll build the full multi-tab site around it — the ink form carried tastefully across Home, Work, Films, Gallery, Creator, Contact. Or say a tweak, e.g. <b>"#34 splatter but with #37's smoky background."</b></p>
+  </div>
+</div>
+</body>
+</html>

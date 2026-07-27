@@ -1,0 +1,357 @@
+/**
+ * Database seed.
+ *
+ * Applies migrations to the PGlite data directory, then loads the studio's
+ * content. Image metadata is read from the media manifest produced by
+ * `npm run media`, so widths, heights and blur placeholders are measured
+ * values rather than hand-typed guesses.
+ *
+ * Idempotent: it truncates the content tables before inserting.
+ *
+ * Run: npm run seed
+ */
+import { PGlite } from "@electric-sql/pglite";
+import { drizzle } from "drizzle-orm/pglite";
+import { migrate } from "drizzle-orm/pglite/migrator";
+import { readFile, mkdir } from "node:fs/promises";
+import path from "node:path";
+import { sql } from "drizzle-orm";
+import * as schema from "../src/server/db/schema";
+import type { MediaEntry } from "./prepare-media";
+
+const ROOT = process.cwd();
+const DATA_DIR = process.env.PGLITE_DATA_DIR ?? ".data/pglite";
+const L = schema.DEFAULT_LOCALE;
+
+/* ------------------------------------------------------------------
+   Content
+   ------------------------------------------------------------------ */
+
+type FilmSeed = {
+  slug: string;
+  video: string; // path under /public
+  poster: string; // manifest name
+  kind: "FEATURE" | "SHORT";
+  durationSeconds: number;
+  width: number;
+  height: number;
+  featured: boolean;
+  sortOrder: number;
+  title: string;
+  description: string;
+};
+
+type ProjectSeed = {
+  slug: string;
+  kind: (typeof schema.projectKind.enumValues)[number];
+  year: number;
+  featured: boolean;
+  sortOrder: number;
+  accentColor: string;
+  cover: string;
+  title: string;
+  tagline: string;
+  summary: string;
+  body: string;
+  tags: string[];
+  gallery: string[];
+  films: FilmSeed[];
+};
+
+const PROJECTS: ProjectSeed[] = [
+  {
+    slug: "nu",
+    kind: "ORIGINAL_FILM",
+    year: 2026,
+    featured: true,
+    sortOrder: 1,
+    accentColor: "#7C8CE8",
+    cover: "nu-willump",
+    title: "NU",
+    tagline: "A giant, a snowball, and a city that never looks up.",
+    summary:
+      "NU is fierce, protective, loyal, and known for rolling massive snowballs. The city below has no idea.",
+    body: "NU began as a scale problem. A creature is only as big as the thing you put next to it — so the film puts a city there, and then rolls something at it.\n\nThe design work came first: a full character model sheet fixing NU's silhouette, four turnarounds, an expression range, and a six-colour palette. Locking that early is what lets the creature stay recognisably itself from a wide mountain shot down to a face in close-up.\n\nThe look is painterly matte work — flat indigo fur against packed snow, a hard horizon line, a skyline that stays hazy and indifferent in the distance. Every frame keeps two readings alive at once: the creature as a threat, and the creature as a child who has simply made the largest snowball anyone has ever made.",
+    tags: ["Original Film", "Creature Design", "Painterly"],
+    gallery: ["nu-willump", "nu-still", "nu-monster-face", "nu-snowball", "nu-snow"],
+    films: [
+      {
+        slug: "nu-the-snowball",
+        video: "/videos/nu-social.mp4",
+        poster: "nu-social-poster",
+        kind: "FEATURE",
+        durationSeconds: 17,
+        width: 1920,
+        height: 1080,
+        featured: true,
+        sortOrder: 1,
+        title: "NU — The Snowball",
+        description:
+          "The full escalation: the creature, the ridge, and what it sends down toward the skyline.",
+      },
+      {
+        slug: "nu-first-cut",
+        video: "/videos/nu-original.mp4",
+        poster: "nu-original-poster",
+        kind: "SHORT",
+        durationSeconds: 15,
+        width: 1280,
+        height: 720,
+        featured: false,
+        sortOrder: 2,
+        title: "NU — First Cut",
+        description: "The earlier assembly, before the final grade and sound pass.",
+      },
+    ],
+  },
+  {
+    slug: "old-friend",
+    kind: "ORIGINAL_FILM",
+    year: 2026,
+    featured: true,
+    sortOrder: 2,
+    accentColor: "#E0A46B",
+    cover: "pet-dog-1",
+    title: "OLD FRIEND",
+    tagline: "Golden Age cel animation, rebuilt frame by frame.",
+    summary:
+      "A father, a daughter, and the dog between them — built in the vocabulary of 1940s hand-painted cel animation.",
+    body: "OLD FRIEND is a technique study that turned into a character piece. The brief was narrow and unforgiving: tinted ink outlines instead of black, airbrushed shading, painted watercolour backgrounds, and the soft multiplane depth that studio animation used before cameras went digital.\n\nHolding that vocabulary consistently across a father, a child and an animal — three very different shapes, three different weights — is the whole exercise. The warmth is deliberate. It is a film about a household, shot at the hour when the lamps come on.",
+    tags: ["Original Film", "Cel Animation", "Character Study"],
+    gallery: ["pet-dog-1", "pet-dad", "pet-daughter", "pet-dog-2", "pet-dog-3"],
+    films: [
+      {
+        slug: "old-friend-test",
+        video: "/videos/pet-dog.mp4",
+        poster: "pet-dog-poster",
+        kind: "FEATURE",
+        durationSeconds: 15,
+        width: 864,
+        height: 496,
+        featured: true,
+        sortOrder: 1,
+        title: "OLD FRIEND — Motion Test",
+        description:
+          "Bringing the painted cel look into motion while holding the line quality steady.",
+      },
+    ],
+  },
+  {
+    slug: "the-shopkeeper",
+    kind: "ORIGINAL_FILM",
+    year: 2026,
+    featured: true,
+    sortOrder: 3,
+    accentColor: "#4FA3D1",
+    cover: "shiba-kiosk",
+    title: "THE SHOPKEEPER",
+    tagline: "The shiba runs the shop. No further questions.",
+    summary:
+      "A corner tobacco shop in Japan, a sliding window, and the dog who owns the place.",
+    body: "One joke, told entirely through production design. The shiba is never explained and never needs to be — the film simply commits to the premise and then spends its runtime on the shop.\n\nThat is where the work actually is: the packed shelves, the hand-lettered signage, the blue rubber cash tray, the afternoon light coming off the street. The comedy only lands because the environment is played completely straight.",
+    tags: ["Original Film", "Environment Design", "Anime"],
+    gallery: ["shiba-kiosk"],
+    films: [
+      {
+        slug: "the-shopkeeper-film",
+        video: "/videos/shiba-kiosk.mp4",
+        poster: "shiba-kiosk-poster",
+        kind: "FEATURE",
+        durationSeconds: 17,
+        width: 1920,
+        height: 1080,
+        featured: true,
+        sortOrder: 1,
+        title: "THE SHOPKEEPER",
+        description: "Open for business.",
+      },
+    ],
+  },
+];
+
+const SOCIALS = [
+  { label: "Instagram", handle: "@unhumanstud", url: "#" },
+  { label: "TikTok", handle: "@unhumanstud", url: "#" },
+  { label: "YouTube", handle: "/@unhumanstud", url: "#" },
+  { label: "X / Twitter", handle: "@unhumanstud", url: "#" },
+];
+
+/* ------------------------------------------------------------------
+   Seed
+   ------------------------------------------------------------------ */
+
+async function main() {
+  // PGlite will not create intermediate directories for its data dir.
+  await mkdir(path.dirname(path.resolve(DATA_DIR)), { recursive: true });
+
+  const client = new PGlite(DATA_DIR);
+  const db = drizzle(client, { schema });
+
+  console.log("  applying migrations…");
+  await migrate(db, { migrationsFolder: path.join(ROOT, "drizzle") });
+
+  const manifestRaw = await readFile(
+    path.join(ROOT, "src/content/media-manifest.json"),
+    "utf8",
+  );
+  const manifest: MediaEntry[] = JSON.parse(manifestRaw);
+  const byName = new Map(manifest.map((m) => [m.name, m]));
+
+  console.log("  clearing content tables…");
+  await db.execute(sql`
+    TRUNCATE TABLE
+      project_tags, tag_translations, tags,
+      gallery_items, film_translations, films,
+      project_translations, projects,
+      media_asset_translations, media_assets,
+      site_settings
+    RESTART IDENTITY CASCADE
+  `);
+
+  // ---- media assets ------------------------------------------------
+  const assetIds = new Map<string, string>();
+  for (const entry of manifest) {
+    const [row] = await db
+      .insert(schema.mediaAssets)
+      .values({
+        kind: entry.name.endsWith("-poster") ? "VIDEO_POSTER" : "IMAGE",
+        storageKey: entry.storageKey,
+        url: entry.url,
+        width: entry.width,
+        height: entry.height,
+        bytes: entry.bytes,
+        mimeType: entry.mimeType,
+        blurDataUrl: entry.blurDataUrl,
+      })
+      .returning({ id: schema.mediaAssets.id });
+
+    assetIds.set(entry.name, row.id);
+    await db.insert(schema.mediaAssetTranslations).values({
+      assetId: row.id,
+      locale: L,
+      altText: entry.alt,
+      caption: entry.caption ?? null,
+    });
+  }
+  console.log(`  ${manifest.length} media assets`);
+
+  // ---- tags --------------------------------------------------------
+  const tagIds = new Map<string, string>();
+  const allTags = [...new Set(PROJECTS.flatMap((p) => p.tags))];
+  for (const label of allTags) {
+    const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const [row] = await db
+      .insert(schema.tags)
+      .values({ slug })
+      .returning({ id: schema.tags.id });
+    tagIds.set(label, row.id);
+    await db
+      .insert(schema.tagTranslations)
+      .values({ tagId: row.id, locale: L, label });
+  }
+  console.log(`  ${allTags.length} tags`);
+
+  // ---- projects ----------------------------------------------------
+  const now = new Date();
+  let filmCount = 0;
+  let galleryCount = 0;
+
+  for (const p of PROJECTS) {
+    const coverId = assetIds.get(p.cover);
+    if (!coverId) throw new Error(`Missing cover asset "${p.cover}"`);
+
+    const [project] = await db
+      .insert(schema.projects)
+      .values({
+        slug: p.slug,
+        kind: p.kind,
+        status: "PUBLISHED",
+        year: p.year,
+        featured: p.featured,
+        sortOrder: p.sortOrder,
+        coverAssetId: coverId,
+        accentColor: p.accentColor,
+        publishedAt: now,
+      })
+      .returning({ id: schema.projects.id });
+
+    await db.insert(schema.projectTranslations).values({
+      projectId: project.id,
+      locale: L,
+      title: p.title,
+      tagline: p.tagline,
+      summary: p.summary,
+      body: p.body,
+      seoTitle: `${p.title} — Unhuman Stud`,
+      seoDescription: p.summary,
+    });
+
+    for (const [i, label] of p.tags.entries()) {
+      await db.insert(schema.projectTags).values({
+        projectId: project.id,
+        tagId: tagIds.get(label)!,
+        sortOrder: i,
+      });
+    }
+
+    for (const [i, name] of p.gallery.entries()) {
+      const assetId = assetIds.get(name);
+      if (!assetId) throw new Error(`Missing gallery asset "${name}"`);
+      await db.insert(schema.galleryItems).values({
+        assetId,
+        projectId: project.id,
+        status: "PUBLISHED",
+        sortOrder: p.sortOrder * 100 + i,
+      });
+      galleryCount++;
+    }
+
+    for (const f of p.films) {
+      const [film] = await db
+        .insert(schema.films)
+        .values({
+          slug: f.slug,
+          projectId: project.id,
+          kind: f.kind,
+          orientation: f.width >= f.height ? "LANDSCAPE" : "VERTICAL",
+          provider: "SELF",
+          providerVideoId: f.video,
+          durationSeconds: f.durationSeconds,
+          width: f.width,
+          height: f.height,
+          posterAssetId: assetIds.get(f.poster) ?? null,
+          status: "PUBLISHED",
+          featured: f.featured,
+          sortOrder: f.sortOrder,
+          publishedAt: now,
+        })
+        .returning({ id: schema.films.id });
+
+      await db.insert(schema.filmTranslations).values({
+        filmId: film.id,
+        locale: L,
+        title: f.title,
+        description: f.description,
+      });
+      filmCount++;
+    }
+  }
+  console.log(
+    `  ${PROJECTS.length} projects, ${filmCount} films, ${galleryCount} gallery items`,
+  );
+
+  // ---- site settings -----------------------------------------------
+  await db.insert(schema.siteSettings).values({
+    id: "singleton",
+    contactEmail: "vuquocanh12052007@gmail.com",
+    socials: SOCIALS,
+  });
+
+  console.log("\n  seed complete.");
+  await client.close();
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

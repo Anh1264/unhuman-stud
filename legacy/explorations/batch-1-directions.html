@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Unhuman Stud — Design Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Be+Vietnam+Pro:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#0d0d10;color:#e9e6df;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:52px 24px 100px}
+
+/* ---- board header ---- */
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#8fe4d8;border:1px solid rgba(143,228,216,.35);padding:7px 13px;border-radius:100px}
+h1.board{font-family:'Space Grotesk';font-weight:700;font-size:clamp(34px,6vw,60px);letter-spacing:-.03em;margin:18px 0 10px;line-height:1}
+.board-sub{max-width:660px;color:#a5a099;font-size:17px}
+.board-sub b{color:#e9e6df}
+
+/* ---- direction wrapper ---- */
+.dir{margin-top:44px;border:1px solid rgba(233,230,223,.12);border-radius:22px;overflow:hidden;background:#111116}
+.meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:20px 24px;border-bottom:1px solid rgba(233,230,223,.1)}
+.meta .no{font-family:'Space Grotesk';font-weight:700;width:34px;height:34px;border-radius:50%;background:#e9e6df;color:#0d0d10;display:grid;place-items:center;font-size:15px;flex-shrink:0}
+.meta .nm{font-family:'Space Grotesk';font-weight:700;font-size:23px;letter-spacing:-.01em}
+.meta .vibe{color:#8a857d;font-size:14px;font-weight:500}
+.meta .pal{display:flex;gap:6px;margin-left:auto}
+.meta .pal span{width:26px;height:26px;border-radius:7px;border:1px solid rgba(255,255,255,.15)}
+.meta .font{font-family:'Space Mono',monospace;font-size:11.5px;color:#8a857d;letter-spacing:.04em;width:100%;margin-top:2px}
+.meta .font b{color:#c9c5bd}
+
+/* ---- browser frame ---- */
+.frame{margin:22px;border-radius:14px;overflow:hidden;border:1px solid rgba(0,0,0,.4);box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.bar{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#1c1c22;border-bottom:1px solid rgba(255,255,255,.06)}
+.bar i{width:11px;height:11px;border-radius:50%;display:block}
+.bar .u{margin-left:14px;font-family:'Space Mono',monospace;font-size:11.5px;color:#7d7a73;background:#0d0d10;padding:5px 14px;border-radius:6px;flex:1;max-width:320px}
+.view{height:560px;overflow:hidden;position:relative}
+.note{padding:0 24px 24px;color:#8a857d;font-size:14px}
+.note b{color:#c9c5bd;font-weight:600}
+
+/* generic mock nav/hero pieces reused, scoped by .vX */
+.mnav{display:flex;align-items:center;justify-content:space-between;padding:18px 30px}
+.mbrand{display:flex;align-items:center;gap:10px;font-weight:700}
+.mtabs{display:flex;gap:6px}
+.mtab{font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:7px 12px;border-radius:100px}
+.mhero{padding:34px 30px}
+.meyebrow{font-size:11px;letter-spacing:.24em;text-transform:uppercase}
+.mtitle{font-weight:700;letter-spacing:-.03em;line-height:.9;margin:14px 0}
+.mlead{max-width:52ch;font-size:14px;margin-bottom:20px}
+.mcta{display:flex;gap:10px;flex-wrap:wrap}
+.mbtn{font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:11px 18px;border-radius:100px;font-weight:600}
+.mstats{display:flex;gap:34px;margin-top:26px;padding-top:20px}
+.mstat .n{font-family:inherit;font-size:26px;font-weight:700}
+.mstat .l{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-top:2px}
+.mcards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:0 30px 30px}
+.mcard{border-radius:12px;padding:16px;min-height:120px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden}
+.mchip{font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;border-radius:100px;display:inline-block;margin-bottom:8px;width:fit-content}
+.mcard h4{font-size:15px;font-weight:700}
+.mcard p{font-size:11px;opacity:.7;margin-top:3px}
+
+/* ================= V1 · SPECTRAL NOIR (current) ================= */
+.v1 .view{background:#08080a;font-family:'Inter',sans-serif;color:#e8e3d9}
+.v1 .view::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 50% -10%,rgba(143,228,216,.08),transparent 55%);pointer-events:none}
+.v1 .mbrand{color:#e8e3d9}.v1 .mbrand .g{width:26px;height:26px;border:1px solid rgba(232,227,217,.2);border-radius:7px;display:grid;place-items:center;color:#8fe4d8;font-family:'Space Mono';font-size:13px}
+.v1 .mbrand b{font-family:'Space Grotesk'}.v1 .mbrand span{color:#6c6862}
+.v1 .mtab{font-family:'Space Mono';color:#a5a099;border:1px solid transparent}
+.v1 .mtab.on{background:#e8e3d9;color:#08080a}
+.v1 .meyebrow{font-family:'Space Mono';color:#8fe4d8}
+.v1 .mtitle{font-family:'Space Grotesk';font-size:56px}
+.v1 .mtitle .o{color:transparent;-webkit-text-stroke:1px #6c6862}
+.v1 .mlead{color:#a5a099}
+.v1 .mbtn.p{background:#e8e3d9;color:#08080a}.v1 .mbtn.g{border:1px solid rgba(232,227,217,.2);color:#e8e3d9}
+.v1 .mstats{border-top:1px solid rgba(232,227,217,.1)}.v1 .mstat .n{font-family:'Space Grotesk'}
+.v1 .mcard{background:#111116;border:1px solid rgba(232,227,217,.1)}
+.v1 .mcard .bg{position:absolute;inset:0;opacity:.8}
+.v1 .mchip{background:rgba(8,8,10,.5);border:1px solid rgba(143,228,216,.4);color:#8fe4d8}
+.v1 .mcard h4{font-family:'Space Grotesk'}
+
+/* ================= V2 · EDITORIAL BONE ================= */
+.v2 .view{background:#f5f2ec;font-family:'Be Vietnam Pro',sans-serif;color:#16130f}
+.v2 .mbrand{color:#16130f}.v2 .mbrand .g{width:26px;height:26px;background:#16130f;color:#f5f2ec;border-radius:6px;display:grid;place-items:center;font-family:'Playfair Display';font-size:14px}
+.v2 .mbrand b{font-family:'Playfair Display';font-weight:800}.v2 .mbrand span{color:#8a8378;font-weight:500}
+.v2 .mtab{color:#5c574d;font-weight:600}
+.v2 .mtab.on{background:#16130f;color:#f5f2ec}
+.v2 .meyebrow{color:#c0442c;font-weight:700}
+.v2 .mtitle{font-family:'Playfair Display';font-weight:800;font-size:60px;color:#16130f}
+.v2 .mtitle em{color:#c0442c}
+.v2 .mlead{color:#5c574d}
+.v2 .mbtn.p{background:#16130f;color:#f5f2ec}.v2 .mbtn.g{border:1px solid #cfc8bb;color:#16130f}
+.v2 .mstats{border-top:1px solid #d9d2c5}.v2 .mstat .n{font-family:'Playfair Display';font-weight:800}
+.v2 .mcard{background:#fff;border:1px solid #e2dccf;box-shadow:0 6px 18px rgba(0,0,0,.05)}
+.v2 .mchip{background:#16130f;color:#fff}
+.v2 .mcard h4{font-family:'Playfair Display';font-weight:800}.v2 .mcard p{color:#8a8378;opacity:1}
+
+/* ================= V3 · RISO BRUTALIST ================= */
+.v3 .view{background:#F3EDE2;font-family:'Be Vietnam Pro',sans-serif;color:#141414;
+  background-image:radial-gradient(rgba(0,0,0,.07) 1px,transparent 1px);background-size:5px 5px}
+.v3 .mbrand{color:#141414}.v3 .mbrand .g{width:28px;height:28px;background:#FF2D6B;color:#fff;border:2.5px solid #141414;border-radius:6px;display:grid;place-items:center;font-family:'Bricolage Grotesque';font-weight:800;font-size:13px}
+.v3 .mbrand b{font-family:'Bricolage Grotesque';font-weight:800}.v3 .mbrand span{color:#141414;opacity:.55}
+.v3 .mtab{font-weight:800;border:2px solid #141414;background:#fff}
+.v3 .mtab.on{background:#C6FF3D}
+.v3 .meyebrow{background:#141414;color:#C6FF3D;font-weight:800;padding:6px 11px;border-radius:100px}
+.v3 .mtitle{font-family:'Bricolage Grotesque';font-weight:800;font-size:62px;letter-spacing:-.03em}
+.v3 .mtitle .o{color:#2B4BF2}
+.v3 .mlead{color:#3a352d;font-weight:500}
+.v3 .mbtn{border:2.5px solid #141414;box-shadow:4px 4px 0 #141414;font-weight:800}
+.v3 .mbtn.p{background:#FF2D6B;color:#fff}.v3 .mbtn.g{background:#fff;color:#141414}
+.v3 .mstats{border-top:2.5px solid #141414}.v3 .mstat .n{font-family:'Bricolage Grotesque';font-weight:800}
+.v3 .mcard{background:#fff;border:2.5px solid #141414;box-shadow:5px 5px 0 #141414}
+.v3 .mcard.c1{background:#C6FF3D}.v3 .mcard.c2{background:#7A5CFF;color:#fff}
+.v3 .mchip{background:#141414;color:#fff;font-weight:800}
+.v3 .mcard h4{font-family:'Bricolage Grotesque';font-weight:800}
+
+/* ================= V4 · NEON CYBER NIGHT ================= */
+.v4 .view{background:#0E0B16;font-family:'Space Grotesk',sans-serif;color:#F4F1FF}
+.v4 .view::before{content:"";position:absolute;inset:0;background:radial-gradient(70% 50% at 20% 0%,rgba(255,46,136,.16),transparent 60%),radial-gradient(60% 50% at 90% 20%,rgba(34,224,214,.14),transparent 60%);pointer-events:none}
+.v4 .mbrand{color:#F4F1FF}.v4 .mbrand .g{width:28px;height:28px;border:1px solid #FF2E88;border-radius:7px;display:grid;place-items:center;color:#FF2E88;font-family:'Space Mono';font-size:13px;box-shadow:0 0 14px rgba(255,46,136,.5)}
+.v4 .mbrand b{font-family:'Space Grotesk'}.v4 .mbrand span{color:#6d6688}
+.v4 .mtab{font-family:'Space Mono';color:#b7b0d4;border:1px solid #2a2440}
+.v4 .mtab.on{background:#22E0D6;color:#0E0B16;border-color:#22E0D6}
+.v4 .meyebrow{font-family:'Space Mono';color:#22E0D6}
+.v4 .mtitle{font-size:58px}
+.v4 .mtitle b{color:#FF2E88;text-shadow:0 0 22px rgba(255,46,136,.7)}
+.v4 .mtitle .o{color:transparent;-webkit-text-stroke:1px #7C5CFF}
+.v4 .mlead{color:#b7b0d4}
+.v4 .mbtn.p{background:#FF2E88;color:#fff;box-shadow:0 0 22px rgba(255,46,136,.45)}.v4 .mbtn.g{border:1px solid #322A47;color:#22E0D6}
+.v4 .mstats{border-top:1px solid #2a2440}
+.v4 .mcard{background:#1A1526;border:1px solid #322A47}
+.v4 .mcard.c1{border-color:#FF2E88;box-shadow:inset 0 0 22px rgba(255,46,136,.22)}
+.v4 .mcard.c2{border-color:#22E0D6;box-shadow:inset 0 0 22px rgba(34,224,214,.2)}
+.v4 .mchip{background:#22E0D6;color:#0E0B16;font-weight:700}
+
+.foot{margin-top:52px;border:1px solid rgba(233,230,223,.12);border-radius:22px;padding:30px 32px;background:#111116}
+.foot h3{font-family:'Space Grotesk';font-size:22px;margin-bottom:8px}
+.foot p{color:#a5a099;font-size:15px}
+.foot b{color:#8fe4d8}
+
+@media(max-width:720px){
+  .mcards{grid-template-columns:1fr}
+  .view{height:auto;min-height:480px}
+  .mtitle{font-size:40px!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="eyebrow">Unhuman Stud · Design Directions</span>
+  <h1 class="board">Four directions. Same site, four personalities.</h1>
+  <p class="board-sub">Each is the <b>same Unhuman Stud homepage</b> — same tabs, same content — wearing a different aesthetic. Pick the one that feels like you (or mix, e.g. Riso energy + Editorial restraint) and I'll build it out into the full multi-tab site like your v1.</p>
+
+  <!-- ===== V1 ===== -->
+  <div class="dir v1">
+    <div class="meta">
+      <span class="no">1</span><span class="nm">Spectral Noir</span>
+      <span class="vibe">cinematic · your current v1 · refined</span>
+      <span class="pal"><span style="background:#08080a"></span><span style="background:#e8e3d9"></span><span style="background:#8fe4d8"></span><span style="background:#111116"></span></span>
+      <span class="font"><b>Space Grotesk</b> + Inter + Space Mono labels</span>
+    </div>
+    <div class="frame">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div>
+      <div class="view">
+        <div class="mnav">
+          <div class="mbrand"><span class="g">U</span><b>UNHUMAN</b> <span>STUD</span></div>
+          <div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Gallery</span><span class="mtab">Creator</span></div>
+        </div>
+        <div class="mhero">
+          <div class="meyebrow">Studio · Portfolio · Aiden Vu</div>
+          <div class="mtitle">UNHUMAN <span class="o">STUD</span></div>
+          <div class="mlead">Cinematic worlds built with AI — original films, brand campaigns — every frame directed by one person.</div>
+          <div class="mcta"><span class="mbtn p">Explore the Work →</span><span class="mbtn g">Watch Films</span></div>
+          <div class="mstats"><div class="mstat"><div class="n">5+</div><div class="l">Projects</div></div><div class="mstat"><div class="n">2</div><div class="l">Films</div></div><div class="mstat"><div class="n">6+</div><div class="l">AI Tools</div></div></div>
+        </div>
+        <div class="mcards">
+          <div class="mcard"><div class="bg" style="background:linear-gradient(135deg,#0b1d1a,#04262a)"></div><span class="mchip" style="position:relative">Original Film</span><h4 style="position:relative">STILLNESS</h4><p style="position:relative">Sci-fi short · EN/VN</p></div>
+          <div class="mcard"><div class="bg" style="background:linear-gradient(135deg,#1c130a,#2a1c0c)"></div><span class="mchip" style="position:relative">Commissioned</span><h4 style="position:relative">GIÁP</h4><p style="position:relative">4-min cinematic</p></div>
+          <div class="mcard"><div class="bg" style="background:linear-gradient(135deg,#14100c,#1a1712)"></div><span class="mchip" style="position:relative">Studio</span><h4 style="position:relative">WAKAN AI</h4><p style="position:relative">Campaign visuals</p></div>
+        </div>
+      </div>
+    </div>
+    <p class="note"><b>Best for:</b> a serious, festival/agency-facing portfolio. Understated, timeless, lets the work glow. This is what you already have.</p>
+  </div>
+
+  <!-- ===== V2 ===== -->
+  <div class="dir v2">
+    <div class="meta">
+      <span class="no">2</span><span class="nm">Editorial Bone</span>
+      <span class="vibe">magazine · premium · grown-up</span>
+      <span class="pal"><span style="background:#f5f2ec"></span><span style="background:#16130f"></span><span style="background:#c0442c"></span><span style="background:#e2dccf"></span></span>
+      <span class="font"><b>Playfair Display</b> (serif) + Be Vietnam Pro</span>
+    </div>
+    <div class="frame">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div>
+      <div class="view">
+        <div class="mnav">
+          <div class="mbrand"><span class="g">U</span><b>Unhuman</b> <span>Stud</span></div>
+          <div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Gallery</span><span class="mtab">Creator</span></div>
+        </div>
+        <div class="mhero">
+          <div class="meyebrow">Studio — Aiden Vu</div>
+          <div class="mtitle">Worlds, made by <em>one</em> hand.</div>
+          <div class="mlead">A one-person studio making cinematic AI films and campaign visuals. Writing, direction, sound, edit — all mine.</div>
+          <div class="mcta"><span class="mbtn p">View the Work →</span><span class="mbtn g">Résumé</span></div>
+          <div class="mstats"><div class="mstat"><div class="n">5+</div><div class="l">Projects</div></div><div class="mstat"><div class="n">2</div><div class="l">Films</div></div><div class="mstat"><div class="n">6+</div><div class="l">AI Tools</div></div></div>
+        </div>
+        <div class="mcards">
+          <div class="mcard"><span class="mchip">Original Film</span><h4>STILLNESS</h4><p>Sci-fi short · EN/VN</p></div>
+          <div class="mcard"><span class="mchip">Commissioned</span><h4>GIÁP</h4><p>4-min cinematic</p></div>
+          <div class="mcard"><span class="mchip">Studio</span><h4>WAKAN AI</h4><p>Campaign visuals</p></div>
+        </div>
+      </div>
+    </div>
+    <p class="note"><b>Best for:</b> the résumé side. Reads like a design magazine / Kinfolk — mature, trustworthy, photo-first. Impresses clients and recruiters both. Trade-off: less "hype," more gallery.</p>
+  </div>
+
+  <!-- ===== V3 ===== -->
+  <div class="dir v3">
+    <div class="meta">
+      <span class="no">3</span><span class="nm">Riso Brutalist</span>
+      <span class="vibe">indie · loud · unmistakably you</span>
+      <span class="pal"><span style="background:#F3EDE2"></span><span style="background:#141414"></span><span style="background:#FF2D6B"></span><span style="background:#C6FF3D"></span><span style="background:#2B4BF2"></span><span style="background:#7A5CFF"></span></span>
+      <span class="font"><b>Bricolage Grotesque</b> + Be Vietnam Pro · hard shadows</span>
+    </div>
+    <div class="frame">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div>
+      <div class="view">
+        <div class="mnav">
+          <div class="mbrand"><span class="g">U</span><b>UNHUMAN</b> <span>STUD</span></div>
+          <div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span></div>
+        </div>
+        <div class="mhero">
+          <div class="meyebrow" style="display:inline-block">Studio · Aiden Vu</div>
+          <div class="mtitle" style="margin-top:16px">UNHUMAN <span class="o">STUD</span></div>
+          <div class="mlead">One person. Full pipeline. AI films + brand campaigns with zero committee.</div>
+          <div class="mcta"><span class="mbtn p">EXPLORE →</span><span class="mbtn g">WATCH FILMS</span></div>
+          <div class="mstats"><div class="mstat"><div class="n">5+</div><div class="l">Projects</div></div><div class="mstat"><div class="n">2</div><div class="l">Films</div></div><div class="mstat"><div class="n">6+</div><div class="l">Tools</div></div></div>
+        </div>
+        <div class="mcards">
+          <div class="mcard c1"><span class="mchip">Original Film</span><h4>STILLNESS</h4><p style="opacity:.85">Sci-fi short</p></div>
+          <div class="mcard c2"><span class="mchip">Commissioned</span><h4>GIÁP</h4><p style="opacity:.85">4-min cinematic</p></div>
+          <div class="mcard"><span class="mchip">Studio</span><h4>WAKAN AI</h4><p>Campaign visuals</p></div>
+        </div>
+      </div>
+    </div>
+    <p class="note"><b>Best for:</b> maximum personality and memorability — pulls straight from your Riso Zine mood. Screams "creative who isn't boring." Trade-off: bold taste, less corporate-safe.</p>
+  </div>
+
+  <!-- ===== V4 ===== -->
+  <div class="dir v4">
+    <div class="meta">
+      <span class="no">4</span><span class="nm">Neon Cyber Night</span>
+      <span class="vibe">nightlife · hype · high-energy</span>
+      <span class="pal"><span style="background:#0E0B16"></span><span style="background:#FF2E88"></span><span style="background:#22E0D6"></span><span style="background:#7C5CFF"></span><span style="background:#E8FF3A"></span></span>
+      <span class="font"><b>Space Grotesk</b> + Space Mono · glow FX</span>
+    </div>
+    <div class="frame">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div>
+      <div class="view">
+        <div class="mnav">
+          <div class="mbrand"><span class="g">U</span><b>UNHUMAN</b> <span>STUD</span></div>
+          <div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Gallery</span></div>
+        </div>
+        <div class="mhero">
+          <div class="meyebrow">Studio · Aiden Vu</div>
+          <div class="mtitle">UN<b>HUMAN</b> <span class="o">STUD</span></div>
+          <div class="mlead">Cinematic AI worlds with a pulse — films and campaigns that hit like a night out.</div>
+          <div class="mcta"><span class="mbtn p">Explore the Work →</span><span class="mbtn g">Watch Films</span></div>
+          <div class="mstats"><div class="mstat"><div class="n">5+</div><div class="l">Projects</div></div><div class="mstat"><div class="n">2</div><div class="l">Films</div></div><div class="mstat"><div class="n">6+</div><div class="l">AI Tools</div></div></div>
+        </div>
+        <div class="mcards">
+          <div class="mcard c1"><span class="mchip">Original Film</span><h4>STILLNESS</h4><p>Sci-fi short</p></div>
+          <div class="mcard c2"><span class="mchip">Commissioned</span><h4>GIÁP</h4><p>4-min cinematic</p></div>
+          <div class="mcard"><span class="mchip">Studio</span><h4>WAKAN AI</h4><p>Campaign visuals</p></div>
+        </div>
+      </div>
+    </div>
+    <p class="note"><b>Best for:</b> standing out on social + feeling current. Pulls from your Neon Night mood. Great if the audience skews young and you want energy. Trade-off: flashier, needs restraint so it doesn't fight the work.</p>
+  </div>
+
+  <div class="foot">
+    <h3>Your call</h3>
+    <p>Tell me which number lands — or a mash-up (e.g. <b>"#2 layout, #3 accents"</b>). Once you pick, I'll build the full multi-tab site in that direction: Home, Work, Films, Gallery, Creator/Résumé, Contact — same as your v1, ready to host.</p>
+  </div>
+</div>
+</body>
+</html>

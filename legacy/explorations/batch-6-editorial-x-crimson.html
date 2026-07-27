@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Unhuman Stud — Editorial Bone × Crimson Ink</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#0d0a0b;color:#efe7e2;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:52px 24px 100px}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#e0654d;border:1px solid rgba(224,101,77,.4);padding:7px 13px;border-radius:100px}
+h1.board{font-family:'Playfair Display',serif;font-weight:800;font-size:clamp(32px,5.5vw,56px);letter-spacing:-.01em;margin:18px 0 10px;line-height:1.02}
+h1.board em{font-style:italic;color:#e11d1d}
+.board-sub{max-width:680px;color:#b6a9a2;font-size:17px}.board-sub b{color:#efe7e2}
+.tip{margin-top:14px;font-family:'Space Mono';font-size:12px;color:#a07a6f;letter-spacing:.04em}
+
+.dir{margin-top:44px;border:1px solid rgba(255,255,255,.1);border-radius:22px;overflow:hidden;background:#161012}
+.meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.08)}
+.meta .no{font-family:'Playfair Display',serif;font-weight:800;width:36px;height:36px;border-radius:50%;background:#efe7e2;color:#161012;display:grid;place-items:center;font-size:14px;flex-shrink:0}
+.meta .nm{font-family:'Fraunces',serif;font-weight:600;font-size:23px;letter-spacing:-.01em}
+.meta .vibe{color:#9c8d86;font-size:14px;font-weight:500}
+.meta .pal{display:flex;gap:6px;margin-left:auto}
+.meta .pal span{width:26px;height:26px;border-radius:7px;border:1px solid rgba(255,255,255,.15)}
+.meta .font{font-family:'Space Mono',monospace;font-size:11.5px;color:#9c8d86;letter-spacing:.04em;width:100%;margin-top:2px}
+.meta .font b{color:#cfc2bb}
+.frame{margin:22px;border-radius:14px;overflow:hidden;border:1px solid rgba(0,0,0,.5);box-shadow:0 24px 70px rgba(0,0,0,.5)}
+.bar{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#221a1c;border-bottom:1px solid rgba(255,255,255,.06)}
+.bar i{width:11px;height:11px;border-radius:50%;display:block}
+.bar .u{margin-left:14px;font-family:'Space Mono',monospace;font-size:11.5px;color:#8a7a74;background:#0d0a0b;padding:5px 14px;border-radius:6px;flex:1;max-width:320px}
+.view{height:580px;overflow:hidden;position:relative}
+.note{padding:0 24px 24px;color:#9c8d86;font-size:14px}.note b{color:#cfc2bb;font-weight:600}
+
+/* shared editorial ink bits */
+.ink{position:absolute;border-radius:50%;filter:blur(3px);mix-blend-mode:screen;animation:bleed 8s ease-in-out infinite alternate;pointer-events:none}
+@keyframes bleed{from{transform:scale(.9) translateY(4px);opacity:.85}to{transform:scale(1.08) translateY(-8px);opacity:1}}
+.mnav{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;position:relative;z-index:6}
+.mbrand{display:flex;align-items:center;gap:10px;font-weight:700}
+.mbrand .g{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-family:'Fraunces',serif;font-size:14px}
+.mbrand b{font-family:'Fraunces',serif;font-weight:600}
+.mtabs{display:flex;gap:20px}
+.mtab{font-size:12px;letter-spacing:.06em;font-weight:500}
+.rule{height:1px;margin:0 32px;position:relative;z-index:6}
+.mhero{padding:26px 32px;position:relative;z-index:6}
+.label{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+.mtitle{font-family:'Fraunces',serif;font-weight:600;line-height:1;margin:16px 0 12px}
+.mtitle em{font-style:italic}
+.mlead{max-width:52ch;font-size:15px;margin-bottom:22px}
+.mcta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.mbtn{font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:12px 20px;border-radius:2px;font-weight:600;cursor:pointer;font-family:'Inter'}
+.mlink{font-family:'Space Mono';font-size:11px;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid}
+.mindex{padding:6px 32px 28px;position:relative;z-index:6}
+.irow{display:grid;grid-template-columns:40px 1fr 120px 60px;gap:12px;align-items:center;padding:13px 0;font-size:14px}
+.irow .ix{font-family:'Space Mono';font-size:12px}
+.irow .it{font-family:'Fraunces',serif;font-weight:600;font-size:17px}
+.irow .iy{font-family:'Space Mono';font-size:11px;text-align:right}
+.irow .ic{font-family:'Space Mono';font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+
+/* ===== 29 · INK JOURNAL (light dominant) ===== */
+.v29 .view{background:#F4EEE4;color:#1c1411}
+.v29 .ink.a{width:300px;height:270px;right:6%;top:-8%;background:radial-gradient(circle at 45% 45%,#e11d1d,#8a0d0d 46%,transparent 70%);opacity:.28;mix-blend-mode:multiply}
+.v29 .ink.b{width:200px;height:200px;right:26%;top:36%;background:radial-gradient(circle,#c1121f,transparent 66%);opacity:.16;mix-blend-mode:multiply;animation-delay:1.4s}
+.v29 .mbrand{color:#1c1411}.v29 .mbrand .g{background:#c1121f;color:#fff}.v29 .mbrand span{color:#9a8a82;font-family:'Inter';font-weight:500}
+.v29 .mtab{color:#5c4f48}.v29 .mtab.on{color:#c1121f}
+.v29 .rule{background:#d8cabd}
+.v29 .label{color:#c1121f}
+.v29 .mtitle{font-size:56px;color:#1c1411}.v29 .mtitle em{color:#c1121f}
+.v29 .mlead{color:#5c4f48}
+.v29 .mbtn.p{background:#1c1411;color:#F4EEE4}.v29 .mlink{color:#c1121f;border-color:#c1121f}
+.v29 .irow{border-bottom:1px solid #ddd0c4}.v29 .irow .ix{color:#c1121f}.v29 .irow .ic{color:#9a8a82}.v29 .irow .iy{color:#9a8a82}
+
+/* ===== 30 · GALLERY NOCTURNE (dark dominant) ===== */
+.v30 .view{background:#0b0708;color:#f2ebe3}
+.v30 .ink.a{width:340px;height:300px;right:2%;top:-6%;background:radial-gradient(circle at 45% 45%,#e11d1d,#5c0808 48%,transparent 70%);opacity:.5}
+.v30 .ink.b{width:230px;height:230px;left:60%;top:40%;background:radial-gradient(circle,#ff3a2a,#4a0606 56%,transparent 72%);opacity:.34;animation-delay:1.6s}
+.v30 .ink.c{width:150px;height:150px;left:38%;top:44%;background:radial-gradient(circle,#c1121f,transparent 66%);opacity:.3;animation-delay:.8s}
+.v30 .mbrand{color:#f2ebe3}.v30 .mbrand .g{background:#c1121f;color:#fff}.v30 .mbrand span{color:#a2938b;font-family:'Inter';font-weight:500}
+.v30 .mtab{color:#c2b4ab}.v30 .mtab.on{color:#e0654d}
+.v30 .rule{background:rgba(255,255,255,.14)}
+.v30 .label{color:#e0654d}
+.v30 .mtitle{font-size:56px;color:#f6efe8}.v30 .mtitle em{color:#e11d1d}
+.v30 .mlead{color:#bcaea6}
+.v30 .mbtn.p{background:#f2ebe3;color:#0b0708}.v30 .mlink{color:#e0654d;border-color:#e0654d}
+.v30 .irow{border-bottom:1px solid rgba(255,255,255,.12)}.v30 .irow .it{color:#f2ebe3}.v30 .irow .ix{color:#e0654d}.v30 .irow .ic{color:#9c8d86}.v30 .irow .iy{color:#9c8d86}
+
+/* ===== 31 · SPLIT FOLIO (bone left / ink right) ===== */
+.v31 .view{display:grid;grid-template-columns:1.05fr .95fr;background:#F4EEE4;color:#1c1411}
+.v31 .left{position:relative;z-index:6;padding:0}
+.v31 .right{position:relative;background:#0b0708;overflow:hidden}
+.v31 .right .ink.a{width:330px;height:300px;left:20%;top:6%;background:radial-gradient(circle at 45% 45%,#e11d1d,#5c0808 48%,transparent 70%);opacity:.55}
+.v31 .right .ink.b{width:200px;height:200px;left:40%;top:48%;background:radial-gradient(circle,#ff3a2a,transparent 68%);opacity:.34;animation-delay:1.2s}
+.v31 .rlabel{position:absolute;bottom:24px;left:26px;z-index:3;font-family:'Space Mono';font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#e6d9d0}
+.v31 .rtitle{position:absolute;top:50%;left:26px;right:26px;transform:translateY(-50%);z-index:3;font-family:'Fraunces';font-weight:600;font-size:40px;color:#f6efe8;line-height:1.02}
+.v31 .rtitle em{color:#e11d1d;font-style:italic}
+.v31 .mnav{border-bottom:1px solid #d8cabd;padding:20px 26px}
+.v31 .mbrand{color:#1c1411}.v31 .mbrand .g{background:#c1121f;color:#fff}.v31 .mbrand span{color:#9a8a82;font-family:'Inter';font-weight:500}
+.v31 .mtab{color:#5c4f48}.v31 .mtab.on{color:#c1121f}
+.v31 .mhero{padding:30px 26px}
+.v31 .label{color:#c1121f}
+.v31 .mtitle{font-size:38px}.v31 .mtitle em{color:#c1121f}
+.v31 .mlead{color:#5c4f48;font-size:14px}
+.v31 .mbtn.p{background:#1c1411;color:#F4EEE4}.v31 .mlink{color:#c1121f;border-color:#c1121f}
+.v31 .fnote{padding:0 26px;font-family:'Space Mono';font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#9a8a82}
+
+/* ===== 32 · VERMILLION PRESS (warm ivory + red brush + gold) ===== */
+.v32 .view{background:#F6EFE0;color:#211a12}
+.v32 .brush{position:absolute;z-index:1;right:-4%;top:8%;width:52%;height:70%;
+  background:radial-gradient(60% 80% at 50% 40%,rgba(193,18,31,.9),rgba(138,10,10,.5) 55%,transparent 75%);
+  filter:blur(6px);transform:rotate(-12deg);mix-blend-mode:multiply;opacity:.5;animation:bleed 9s ease-in-out infinite alternate}
+.v32 .gold{position:absolute;z-index:2;left:32px;top:150px;width:70px;height:3px;background:linear-gradient(90deg,#e3b23c,#b8891f)}
+.v32 .mbrand{color:#211a12}.v32 .mbrand .g{background:linear-gradient(135deg,#e3b23c,#b8891f);color:#3a2c10}.v32 .mbrand span{color:#8a7c66;font-family:'Inter';font-weight:500}
+.v32 .mtab{color:#5f5340}.v32 .mtab.on{color:#c1121f}
+.v32 .rule{background:#ddd0b8}
+.v32 .label{color:#b8891f}
+.v32 .mtitle{font-family:'Playfair Display',serif;font-weight:800;font-size:58px;color:#211a12}.v32 .mtitle em{color:#c1121f;font-style:italic}
+.v32 .mlead{color:#5f5340}
+.v32 .mbtn.p{background:#c1121f;color:#F6EFE0}.v32 .mlink{color:#b8891f;border-color:#b8891f}
+.v32 .irow{border-bottom:1px solid #e0d4bc}.v32 .irow .ix{color:#c1121f}.v32 .irow .ic{color:#8a7c66}.v32 .irow .iy{color:#8a7c66}
+
+/* ===== 33 · OXBLOOD EDITORIAL (mid-dark wine) ===== */
+.v33 .view{background:radial-gradient(130% 100% at 50% -10%,#3a1216,#24090c 45%,#160406);color:#f3e4dd}
+.v33 .ink.a{width:320px;height:280px;right:6%;top:-10%;background:radial-gradient(circle at 45% 45%,#ff4030,#7a0d0d 50%,transparent 72%);opacity:.4}
+.v33 .ink.b{width:210px;height:210px;left:8%;bottom:-12%;background:radial-gradient(circle,#e11d1d,transparent 66%);opacity:.28;animation-delay:1.2s}
+.v33 .mbrand{color:#f3e4dd}.v33 .mbrand .g{background:#e3b23c;color:#3a1216}.v33 .mbrand span{color:#c69a8f;font-family:'Inter';font-weight:500}
+.v33 .mtab{color:#d8b7ad}.v33 .mtab.on{color:#f0b64a}
+.v33 .rule{background:rgba(255,220,210,.18)}
+.v33 .label{color:#f0b64a}
+.v33 .mtitle{font-size:56px;color:#f7ebe4}.v33 .mtitle em{color:#ff6a52}
+.v33 .mlead{color:#d3b8b0}
+.v33 .mbtn.p{background:#f3e4dd;color:#24090c}.v33 .mlink{color:#f0b64a;border-color:#f0b64a}
+.v33 .irow{border-bottom:1px solid rgba(255,220,210,.15)}.v33 .irow .it{color:#f7ebe4}.v33 .irow .ix{color:#f0b64a}.v33 .irow .ic{color:#c69a8f}.v33 .irow .iy{color:#c69a8f}
+
+.foot{margin-top:52px;border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:30px 32px;background:#161012}
+.foot h3{font-family:'Playfair Display',serif;font-weight:800;font-size:22px;margin-bottom:8px}
+.foot p{color:#b6a9a2;font-size:15px}.foot b{color:#e0654d;font-weight:600}
+
+@media(max-width:720px){
+  .view{height:auto;min-height:520px}
+  .v31 .view{grid-template-columns:1fr}
+  .v31 .right{min-height:220px}
+  .mtitle{font-size:40px!important}
+  .irow{grid-template-columns:32px 1fr 54px}.irow .ic{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="eyebrow">Unhuman Stud · Editorial Bone × Crimson Ink</span>
+  <h1 class="board">Five ways to fuse <em>the magazine</em> and <em>the ink</em>.</h1>
+  <p class="board-sub">Same DNA in all five — refined serif headlines, editorial structure, a single crimson accent, and living ink. What changes is the <b>balance</b>: how light or dark, and how the two ideas share the page.</p>
+  <div class="tip">▶ Open the file — the ink blooms breathe. Screenshots freeze one frame.</div>
+
+  <!-- 29 -->
+  <div class="dir v29"><div class="meta"><span class="no">29</span><span class="nm">Ink Journal</span><span class="vibe">light-dominant · editorial with ink accents</span><span class="pal"><span style="background:#F4EEE4"></span><span style="background:#1c1411"></span><span style="background:#c1121f"></span></span><span class="font"><b>Fraunces</b> serif · bone paper, crimson ink bleeding into the margins</span></div>
+    <div class="frame"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div><div class="view">
+      <div class="ink a"></div><div class="ink b"></div>
+      <div class="mnav"><div class="mbrand"><span class="g">U</span><b>Unhuman</b> <span>Stud</span></div><div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Creator</span></div></div>
+      <div class="rule"></div>
+      <div class="mhero"><div class="label">A Studio of One — Est. 2026</div><div class="mtitle">Stories, set in type<br>and stained in <em>red.</em></div><div class="mlead">A one-person cinematic studio. Composed like a magazine, felt like a painting.</div><div class="mcta"><span class="mbtn p">View the Work</span><span class="mlink">Read the Creator →</span></div></div>
+      <div class="mindex">
+        <div class="irow"><span class="ix">01</span><span class="it">STILLNESS / TĨNH LẶNG</span><span class="ic">Original Film</span><span class="iy">2026</span></div>
+        <div class="irow"><span class="ix">02</span><span class="it">GIÁP</span><span class="ic">Commissioned</span><span class="iy">2026</span></div>
+        <div class="irow"><span class="ix">03</span><span class="it">WAKAN AI</span><span class="ic">Studio</span><span class="iy">Ongoing</span></div>
+      </div>
+    </div></div>
+    <p class="note"><b>Balance:</b> mostly Editorial Bone — clean, bright, hireable — with Crimson Ink used as a restrained artistic accent bleeding at the edges. The safest, most "portfolio-ready" of the five.</p>
+  </div>
+
+  <!-- 30 -->
+  <div class="dir v30"><div class="meta"><span class="no">30</span><span class="nm">Gallery Nocturne</span><span class="vibe">dark-dominant · ink canvas, editorial order</span><span class="pal"><span style="background:#0b0708"></span><span style="background:#f2ebe3"></span><span style="background:#e11d1d"></span><span style="background:#e0654d"></span></span><span class="font"><b>Fraunces</b> serif · black canvas, red ink blooms, magazine grid</span></div>
+    <div class="frame"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div><div class="view">
+      <div class="ink a"></div><div class="ink b"></div><div class="ink c"></div>
+      <div class="mnav"><div class="mbrand"><span class="g">U</span><b>Unhuman</b> <span>Stud</span></div><div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Creator</span></div></div>
+      <div class="rule"></div>
+      <div class="mhero"><div class="label">A Studio of One — Est. 2026</div><div class="mtitle">Stories that <em>bleed</em><br>onto the screen.</div><div class="mlead">Cinematic AI films composed like a gallery hang — dark, deliberate, unmistakably made by hand.</div><div class="mcta"><span class="mbtn p">View the Work</span><span class="mlink">Read the Creator →</span></div></div>
+      <div class="mindex">
+        <div class="irow"><span class="ix">01</span><span class="it">STILLNESS / TĨNH LẶNG</span><span class="ic">Original Film</span><span class="iy">2026</span></div>
+        <div class="irow"><span class="ix">02</span><span class="it">GIÁP</span><span class="ic">Commissioned</span><span class="iy">2026</span></div>
+        <div class="irow"><span class="ix">03</span><span class="it">WAKAN AI</span><span class="ic">Studio</span><span class="iy">Ongoing</span></div>
+      </div>
+    </div></div>
+    <p class="note"><b>Balance:</b> mostly Crimson Ink — moody, cinematic, gallery-dark — but organized with Editorial Bone's serif discipline and index. The most dramatic while still feeling grown-up.</p>
+  </div>
+
+  <!-- 31 -->
+  <div class="dir v31"><div class="meta"><span class="no">31</span><span class="nm">Split Folio</span><span class="vibe">both, literally · bone text / ink art</span><span class="pal"><span style="background:#F4EEE4"></span><span style="background:#0b0708"></span><span style="background:#c1121f"></span></span><span class="font"><b>Fraunces</b> serif · split screen — editorial left, ink panel right</span></div>
+    <div class="frame"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div><div class="view">
+      <div class="left">
+        <div class="mnav"><div class="mbrand"><span class="g">U</span><b>Unhuman</b> <span>Stud</span></div><div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span></div></div>
+        <div class="mhero"><div class="label">A Studio of One</div><div class="mtitle">Set in type.<br>Stained in <em>ink.</em></div><div class="mlead">A one-person cinematic studio — the writing on the left, the world on the right.</div><div class="mcta"><span class="mbtn p">View the Work</span><span class="mlink">Creator →</span></div></div>
+        <div class="fnote">01 Stillness · 02 Giáp · 03 Wakan AI · 04 boop.</div>
+      </div>
+      <div class="right"><div class="ink a"></div><div class="ink b"></div><div class="rtitle">Every frame,<br>composed — <em>not</em> generated.</div><div class="rlabel">Twisted worlds · Elderath · 2026</div></div>
+    </div></div>
+    <p class="note"><b>Balance:</b> a true 50/50 — Editorial Bone runs the text column, Crimson Ink owns the art panel. Best if you want the résumé readability and the mood without compromising either.</p>
+  </div>
+
+  <!-- 32 -->
+  <div class="dir v32"><div class="meta"><span class="no">32</span><span class="nm">Vermillion Press</span><span class="vibe">warm ivory · red brush + gold rule</span><span class="pal"><span style="background:#F6EFE0"></span><span style="background:#c1121f"></span><span style="background:#e3b23c"></span><span style="background:#211a12"></span></span><span class="font"><b>Playfair Display</b> · ivory paper, red ink wash, gold accents</span></div>
+    <div class="frame"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div><div class="view">
+      <div class="brush"></div>
+      <div class="mnav"><div class="mbrand"><span class="g">U</span><b>Unhuman</b> <span>Stud</span></div><div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Creator</span></div></div>
+      <div class="rule"></div>
+      <div class="mhero"><div class="gold"></div><div class="label" style="margin-left:0">The Press — Volume I</div><div class="mtitle">Worlds worth<br>printing in <em>red.</em></div><div class="mlead">A one-person studio with the warmth of paper and the weight of gold — cinematic, crafted, considered.</div><div class="mcta"><span class="mbtn p">View the Work</span><span class="mlink">Read the Creator →</span></div></div>
+      <div class="mindex">
+        <div class="irow"><span class="ix">01</span><span class="it">STILLNESS / TĨNH LẶNG</span><span class="ic">Original Film</span><span class="iy">2026</span></div>
+        <div class="irow"><span class="ix">02</span><span class="it">GIÁP</span><span class="ic">Commissioned</span><span class="iy">2026</span></div>
+      </div>
+    </div></div>
+    <p class="note"><b>Balance:</b> Editorial Bone's warmth pushed toward a fine-press book — ivory, Playfair, a red ink wash and a gold rule (Crimson Ink's gold pop). The most luxurious / "heritage" of the five.</p>
+  </div>
+
+  <!-- 33 -->
+  <div class="dir v33"><div class="meta"><span class="no">33</span><span class="nm">Oxblood Editorial</span><span class="vibe">mid-dark wine · rich middle-ground</span><span class="pal"><span style="background:#24090c"></span><span style="background:#f3e4dd"></span><span style="background:#ff6a52"></span><span style="background:#f0b64a"></span></span><span class="font"><b>Fraunces</b> serif · deep oxblood ground, cream type, gold accent</span></div>
+    <div class="frame"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div><div class="view">
+      <div class="ink a"></div><div class="ink b"></div>
+      <div class="mnav"><div class="mbrand"><span class="g">U</span><b>Unhuman</b> <span>Stud</span></div><div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Creator</span></div></div>
+      <div class="rule"></div>
+      <div class="mhero"><div class="label">A Studio of One — Est. 2026</div><div class="mtitle">Cinema, poured<br>like dark <em>wine.</em></div><div class="mlead">Neither black nor bone — a rich oxblood world with cream serif and a single thread of gold.</div><div class="mcta"><span class="mbtn p">View the Work</span><span class="mlink">Read the Creator →</span></div></div>
+      <div class="mindex">
+        <div class="irow"><span class="ix">01</span><span class="it">STILLNESS / TĨNH LẶNG</span><span class="ic">Original Film</span><span class="iy">2026</span></div>
+        <div class="irow"><span class="ix">02</span><span class="it">GIÁP</span><span class="ic">Commissioned</span><span class="iy">2026</span></div>
+        <div class="irow"><span class="ix">03</span><span class="it">WAKAN AI</span><span class="ic">Studio</span><span class="iy">Ongoing</span></div>
+      </div>
+    </div></div>
+    <p class="note"><b>Balance:</b> the sophisticated middle — an oxblood/wine ground that's warmer than pure ink-black and richer than bone, with gold instead of pure red. Feels expensive and unusual; my personal favorite of the five.</p>
+  </div>
+
+  <div class="foot">
+    <h3>Getting close.</h3>
+    <p>Pick a number (29–33) and I'll build it into the full multi-tab site — Home, Work, Films, Gallery, Creator/Résumé, Contact — serif system, crimson accent, and the ink breathing across every page. Or tell me a tweak (e.g. <b>"#30 but warmer, with #32's gold"</b>) and I'll dial it in.</p>
+  </div>
+</div>
+</body>
+</html>

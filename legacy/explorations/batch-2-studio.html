@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Unhuman Stud — Studio Directions II</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Archivo:wght@500;700;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#0d0d10;color:#e9e6df;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:52px 24px 100px}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#8fe4d8;border:1px solid rgba(143,228,216,.35);padding:7px 13px;border-radius:100px}
+h1.board{font-family:'Space Grotesk';font-weight:700;font-size:clamp(32px,5.5vw,56px);letter-spacing:-.03em;margin:18px 0 10px;line-height:1}
+.board-sub{max-width:680px;color:#a5a099;font-size:17px}
+.board-sub b{color:#e9e6df}
+
+.dir{margin-top:44px;border:1px solid rgba(233,230,223,.12);border-radius:22px;overflow:hidden;background:#111116}
+.meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:20px 24px;border-bottom:1px solid rgba(233,230,223,.1)}
+.meta .no{font-family:'Space Grotesk';font-weight:700;width:34px;height:34px;border-radius:50%;background:#e9e6df;color:#0d0d10;display:grid;place-items:center;font-size:15px;flex-shrink:0}
+.meta .nm{font-family:'Space Grotesk';font-weight:700;font-size:23px;letter-spacing:-.01em}
+.meta .vibe{color:#8a857d;font-size:14px;font-weight:500}
+.meta .pal{display:flex;gap:6px;margin-left:auto}
+.meta .pal span{width:26px;height:26px;border-radius:7px;border:1px solid rgba(255,255,255,.15)}
+.meta .font{font-family:'Space Mono',monospace;font-size:11.5px;color:#8a857d;letter-spacing:.04em;width:100%;margin-top:2px}
+.meta .font b{color:#c9c5bd}
+.frame{margin:22px;border-radius:14px;overflow:hidden;border:1px solid rgba(0,0,0,.4);box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.bar{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#1c1c22;border-bottom:1px solid rgba(255,255,255,.06)}
+.bar i{width:11px;height:11px;border-radius:50%;display:block}
+.bar .u{margin-left:14px;font-family:'Space Mono',monospace;font-size:11.5px;color:#7d7a73;background:#0d0d10;padding:5px 14px;border-radius:6px;flex:1;max-width:320px}
+.view{height:580px;overflow:hidden;position:relative}
+.note{padding:0 24px 24px;color:#8a857d;font-size:14px}
+.note b{color:#c9c5bd;font-weight:600}
+
+/* generic mock bits */
+.mnav{display:flex;align-items:center;justify-content:space-between;padding:18px 30px}
+.mbrand{display:flex;align-items:center;gap:10px;font-weight:700}
+.mtabs{display:flex;gap:6px}
+.mtab{font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:7px 12px;border-radius:100px}
+.mhero{padding:30px 30px}
+.meyebrow{font-size:11px;letter-spacing:.24em;text-transform:uppercase}
+.mtitle{font-weight:700;letter-spacing:-.03em;line-height:.92;margin:14px 0}
+.mlead{max-width:52ch;font-size:14px;margin-bottom:20px}
+.mcta{display:flex;gap:10px;flex-wrap:wrap}
+.mbtn{font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:11px 18px;border-radius:100px;font-weight:600}
+.mstats{display:flex;gap:34px;margin-top:24px;padding-top:18px}
+.mstat .n{font-size:26px;font-weight:700}
+.mstat .l{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-top:2px}
+.mcards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:0 30px 30px}
+.mcard{border-radius:12px;padding:16px;min-height:118px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden}
+.mchip{font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;border-radius:100px;display:inline-block;margin-bottom:8px;width:fit-content}
+.mcard h4{font-size:15px;font-weight:700}
+.mcard p{font-size:11px;opacity:.7;margin-top:3px}
+
+/* ============ V5 · PAINTERLY ATELIER ============ */
+.v5 .view{background:#F1E7D4;font-family:'Inter',sans-serif;color:#2B2016}
+.v5 .view::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(45% 40% at 15% 15%,rgba(111,168,199,.28),transparent 60%),radial-gradient(45% 45% at 85% 25%,rgba(196,107,74,.22),transparent 60%),radial-gradient(50% 50% at 60% 95%,rgba(126,160,96,.25),transparent 60%)}
+.v5 .mnav,.v5 .mhero,.v5 .mcards{position:relative;z-index:2}
+.v5 .mbrand{color:#2B2016}
+.v5 .mbrand .g{width:28px;height:28px;background:#C46B4A;color:#F1E7D4;border-radius:9px;display:grid;place-items:center;font-family:'Fraunces';font-weight:600;font-size:15px}
+.v5 .mbrand b{font-family:'Fraunces';font-weight:600}.v5 .mbrand span{color:#8a7a63;font-weight:500}
+.v5 .mtab{color:#6b5c47;font-weight:600}
+.v5 .mtab.on{background:#2B2016;color:#F1E7D4}
+.v5 .meyebrow{color:#6FA8C7;font-weight:700;font-style:italic;font-family:'Fraunces';text-transform:none;letter-spacing:0;font-size:15px}
+.v5 .mtitle{font-family:'Fraunces';font-weight:600;font-size:52px;line-height:1.02}
+.v5 .mtitle em{color:#C46B4A;font-style:italic}
+.v5 .mlead{color:#5e5140}
+.v5 .mbtn.p{background:#2B2016;color:#F1E7D4}.v5 .mbtn.g{border:1px solid #c3b498;color:#2B2016}
+.v5 .mstats{border-top:1px solid #d3c4a8}.v5 .mstat .n{font-family:'Fraunces';font-weight:600}
+.v5 .mcard{border-radius:18px;box-shadow:0 10px 26px rgba(74,54,30,.14)}
+.v5 .mcard .bg{position:absolute;inset:0;opacity:.95}
+.v5 .mchip{background:rgba(255,255,255,.85);color:#2B2016;position:relative}
+.v5 .mcard h4{font-family:'Fraunces';font-weight:600;color:#fff;position:relative;text-shadow:0 1px 8px rgba(0,0,0,.4)}
+.v5 .mcard p{color:#fff;position:relative;text-shadow:0 1px 6px rgba(0,0,0,.4)}
+
+/* ============ V6 · WIDESCREEN CINEMA ============ */
+.v6 .view{background:#000;font-family:'Archivo',sans-serif;color:#fff}
+.v6 .cnav{display:flex;align-items:center;justify-content:space-between;padding:14px 26px;position:absolute;top:0;left:0;right:0;z-index:5}
+.v6 .cbrand{font-family:'Archivo';font-weight:900;letter-spacing:.02em;font-size:16px}
+.v6 .cbrand span{color:#E4B25A}
+.v6 .ctabs{display:flex;gap:20px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#cfcfcf}
+.v6 .ctabs .on{color:#E4B25A}
+.v6 .still{position:absolute;inset:0;background:linear-gradient(120deg,#2a1c10,#0b0b0d 55%,#101820);z-index:1}
+.v6 .still::after{content:"";position:absolute;inset:0;background:radial-gradient(70% 90% at 50% 60%,transparent,rgba(0,0,0,.7))}
+.v6 .bars{position:absolute;left:0;right:0;height:64px;background:#000;z-index:3}
+.v6 .bars.t{top:0}.v6 .bars.b{bottom:88px}
+.v6 .ctitle{position:absolute;z-index:4;left:0;right:0;top:47%;transform:translateY(-50%);text-align:center}
+.v6 .ctitle .k{font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:#E4B25A;margin-bottom:14px}
+.v6 .ctitle h2{font-family:'Archivo';font-weight:900;font-size:64px;letter-spacing:.02em;line-height:.95}
+.v6 .ctitle p{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#d9d9d9;margin-top:14px}
+.v6 .tc{position:absolute;z-index:4;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;color:#9a9a9a}
+.v6 .tc.a{top:78px;left:26px}.v6 .tc.b{top:78px;right:26px;color:#E4B25A}
+.v6 .strip{position:absolute;bottom:0;left:0;right:0;height:88px;background:#050505;border-top:1px solid #1c1c1c;z-index:4;display:flex;gap:2px;padding:10px 12px}
+.v6 .strip .s{flex:1;border-radius:3px;position:relative;overflow:hidden}
+.v6 .strip .s span{position:absolute;bottom:6px;left:8px;font-family:'Space Mono';font-size:9px;letter-spacing:.08em;color:#fff;text-shadow:0 1px 4px #000}
+
+/* ============ V7 · KINETIC MOTION ============ */
+.v7 .view{background:#F4F3EE;font-family:'Sora',sans-serif;color:#111}
+.v7 .mnav{padding:18px 30px}
+.v7 .mbrand{color:#111;font-family:'Sora';font-weight:800}
+.v7 .mbrand .g{width:28px;height:28px;background:#1F4BFF;color:#fff;border-radius:8px;display:grid;place-items:center;font-weight:800;font-size:14px}
+.v7 .mbrand span{color:#8f8d86;font-weight:600}
+.v7 .mtab{font-family:'Sora';font-weight:700;color:#111}
+.v7 .mtab.on{background:#1F4BFF;color:#fff}
+.v7 .khero{padding:22px 30px 8px;position:relative}
+.v7 .kreel{display:inline-flex;align-items:center;gap:9px;background:#111;color:#fff;font-weight:700;font-size:12px;letter-spacing:.04em;padding:9px 16px;border-radius:100px;margin-bottom:14px}
+.v7 .kreel .d{width:8px;height:8px;border-radius:50%;background:#FF5A3C}
+.v7 .ktitle{font-family:'Sora';font-weight:800;font-size:78px;line-height:.86;letter-spacing:-.04em;color:#111}
+.v7 .ktitle .b{color:#1F4BFF}
+.v7 .ktitle .o{-webkit-text-stroke:2px #111;color:transparent}
+.v7 .ksub{display:flex;justify-content:space-between;align-items:flex-end;margin-top:16px;flex-wrap:wrap;gap:12px}
+.v7 .ksub p{max-width:40ch;font-size:14px;color:#3d3b36;font-weight:500}
+.v7 .kbtn{background:#FF5A3C;color:#fff;font-family:'Sora';font-weight:700;font-size:13px;padding:14px 22px;border-radius:100px}
+.v7 .kcards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:18px 30px 30px}
+.v7 .kcard{border-radius:16px;padding:14px;min-height:110px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;font-family:'Sora'}
+.v7 .kcard .kn{font-weight:800;font-size:30px;opacity:.5}
+.v7 .kcard h4{font-weight:800;font-size:16px}
+.v7 .kcard.a{background:#1F4BFF}.v7 .kcard.b{background:#111}.v7 .kcard.c{background:#FF5A3C}
+
+/* ============ V8 · SWISS INDEX (dark technical) ============ */
+.v8 .view{background:#101216;font-family:'Inter',sans-serif;color:#E7E9EC}
+.v8 .snav{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid #23262d}
+.v8 .sbrand{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;letter-spacing:.02em}
+.v8 .sbrand span{color:#E63329}
+.v8 .stabs{display:flex;gap:22px;font-family:'Space Mono';font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8b909a}
+.v8 .stabs .on{color:#E7E9EC}
+.v8 .shero{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:26px 28px;border-bottom:1px solid #23262d}
+.v8 .scol .lab{font-family:'Space Mono';font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#6a6f79;margin-bottom:10px}
+.v8 .shero h2{font-family:'Inter';font-weight:600;font-size:40px;letter-spacing:-.02em;line-height:1.02}
+.v8 .shero h2 em{color:#E63329;font-style:normal}
+.v8 .shero p{color:#9aa0aa;font-size:13.5px;margin-top:14px;max-width:40ch}
+.v8 .smeta{font-family:'Space Mono';font-size:11px;color:#8b909a;line-height:2}
+.v8 .smeta b{color:#E7E9EC;font-weight:400}
+.v8 .sindex{padding:6px 28px 26px}
+.v8 .srow{display:grid;grid-template-columns:52px 1fr 130px 70px;gap:10px;align-items:center;padding:13px 0;border-bottom:1px solid #23262d;font-size:13px}
+.v8 .srow:hover{color:#fff}
+.v8 .srow .idx{font-family:'Space Mono';color:#6a6f79}
+.v8 .srow .ti{font-weight:600;font-size:15px}
+.v8 .srow .ty{font-family:'Space Mono';font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#9aa0aa}
+.v8 .srow .yr{font-family:'Space Mono';font-size:11px;color:#6a6f79;text-align:right}
+.v8 .srow .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#E63329;margin-right:8px}
+
+.foot{margin-top:52px;border:1px solid rgba(233,230,223,.12);border-radius:22px;padding:30px 32px;background:#111116}
+.foot h3{font-family:'Space Grotesk';font-size:22px;margin-bottom:8px}
+.foot p{color:#a5a099;font-size:15px}.foot b{color:#8fe4d8}
+
+@media(max-width:720px){
+  .mcards,.v7 .kcards{grid-template-columns:1fr}
+  .v8 .shero{grid-template-columns:1fr}
+  .view{height:auto;min-height:520px}
+  .mtitle,.v7 .ktitle,.v6 .ctitle h2{font-size:40px!important}
+  .v8 .srow{grid-template-columns:36px 1fr 60px}
+  .v8 .srow .ty{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="eyebrow">Unhuman Stud · Studio Directions II</span>
+  <h1 class="board">Four more — all reading as a real animation studio.</h1>
+  <p class="board-sub">A deliberately wide spread so nothing feels like a repeat: <b>hand-crafted</b>, <b>film-scope</b>, <b>kinetic motion-agency</b>, and <b>systematic/technical</b>. Same Unhuman Stud content, four different studio identities. Tell me which pulls you and I'll build it into the full site.</p>
+
+  <!-- V5 -->
+  <div class="dir v5">
+    <div class="meta">
+      <span class="no">5</span><span class="nm">Painterly Atelier</span>
+      <span class="vibe">hand-crafted · warm · Ghibli-house</span>
+      <span class="pal"><span style="background:#F1E7D4"></span><span style="background:#2B2016"></span><span style="background:#C46B4A"></span><span style="background:#6FA8C7"></span><span style="background:#7EA060"></span></span>
+      <span class="font"><b>Fraunces</b> (soft serif) + Inter · watercolor washes</span>
+    </div>
+    <div class="frame">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div>
+      <div class="view">
+        <div class="mnav">
+          <div class="mbrand"><span class="g">U</span><b>Unhuman</b> <span>Stud</span></div>
+          <div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Gallery</span><span class="mtab">Creator</span></div>
+        </div>
+        <div class="mhero">
+          <div class="meyebrow">an animation studio of one</div>
+          <div class="mtitle">Worlds painted<br>one frame at <em>a time.</em></div>
+          <div class="mlead">Craft-first cinematic animation — hand-guided AI, original stories, warm and human.</div>
+          <div class="mcta"><span class="mbtn p">See the Work →</span><span class="mbtn g">Watch Films</span></div>
+          <div class="mstats"><div class="mstat"><div class="n">5+</div><div class="l">Projects</div></div><div class="mstat"><div class="n">2</div><div class="l">Films</div></div><div class="mstat"><div class="n">6+</div><div class="l">Tools</div></div></div>
+        </div>
+        <div class="mcards">
+          <div class="mcard"><div class="bg" style="background:linear-gradient(135deg,#6FA8C7,#3f6d8a)"></div><span class="mchip">Original Film</span><h4>STILLNESS</h4><p>Sci-fi short</p></div>
+          <div class="mcard"><div class="bg" style="background:linear-gradient(135deg,#C46B4A,#8a4227)"></div><span class="mchip">Commissioned</span><h4>GIÁP</h4><p>4-min cinematic</p></div>
+          <div class="mcard"><div class="bg" style="background:linear-gradient(135deg,#7EA060,#4d6a37)"></div><span class="mchip">Studio</span><h4>WAKAN AI</h4><p>Campaign visuals</p></div>
+        </div>
+      </div>
+    </div>
+    <p class="note"><b>Best for:</b> a studio that sells <b>craft and heart</b> — Ghibli / Cartoon Saloon energy. Warmest, most human of the set; disarms the "AI = cold" reaction. Trade-off: less hard-edged/techy.</p>
+  </div>
+
+  <!-- V6 -->
+  <div class="dir v6">
+    <div class="meta">
+      <span class="no">6</span><span class="nm">Widescreen Cinema</span>
+      <span class="vibe">film-scope · image-first · A24 / VFX house</span>
+      <span class="pal"><span style="background:#000"></span><span style="background:#fff"></span><span style="background:#E4B25A"></span><span style="background:#2a1c10"></span></span>
+      <span class="font"><b>Archivo</b> (heavy) + Space Mono timecodes · 2.39:1 letterbox</span>
+    </div>
+    <div class="frame">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div>
+      <div class="view">
+        <div class="still"></div>
+        <div class="bars t"></div><div class="bars b"></div>
+        <div class="cnav">
+          <div class="cbrand">UNHUMAN<span>·</span>STUD</div>
+          <div class="ctabs"><span class="on">Home</span><span>Work</span><span>Films</span><span>Gallery</span><span>Creator</span></div>
+        </div>
+        <div class="tc a mono">REC ● 24fps</div>
+        <div class="tc b mono">SCOPE 2.39:1</div>
+        <div class="ctitle">
+          <div class="k">A one-person cinematic studio</div>
+          <h2>UNHUMAN STUD</h2>
+          <p>Films · Campaigns · Worlds — directed by Aiden Vu</p>
+        </div>
+        <div class="strip">
+          <div class="s" style="background:linear-gradient(135deg,#0b1d1a,#04262a)"><span>STILLNESS</span></div>
+          <div class="s" style="background:linear-gradient(135deg,#1c130a,#2a1c0c)"><span>GIÁP</span></div>
+          <div class="s" style="background:linear-gradient(135deg,#14100c,#1a1712)"><span>WAKAN</span></div>
+          <div class="s" style="background:linear-gradient(135deg,#0a1016,#12202c)"><span>INTENT</span></div>
+          <div class="s" style="background:linear-gradient(135deg,#241a10,#0f0a06)"><span>boop.</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="note"><b>Best for:</b> pure <b>cinema credibility</b> — letterbox, timecodes, full-bleed stills. Feels like a film/VFX house (A24, DNEG). Your films carry the page. Trade-off: needs strong hero footage/stills to sing.</p>
+  </div>
+
+  <!-- V7 -->
+  <div class="dir v7">
+    <div class="meta">
+      <span class="no">7</span><span class="nm">Kinetic Motion</span>
+      <span class="vibe">motion-agency · bold type · showreel-first</span>
+      <span class="pal"><span style="background:#F4F3EE"></span><span style="background:#111"></span><span style="background:#1F4BFF"></span><span style="background:#FF5A3C"></span></span>
+      <span class="font"><b>Sora</b> (geometric) · oversized kinetic type</span>
+    </div>
+    <div class="frame">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div>
+      <div class="view">
+        <div class="mnav">
+          <div class="mbrand"><span class="g">U</span>UNHUMAN <span>STUD</span></div>
+          <div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Reel</span></div>
+        </div>
+        <div class="khero">
+          <span class="kreel"><span class="d"></span>SHOWREEL 2026 ▶</span>
+          <div class="ktitle">MAKING<br><span class="b">UNHUMAN</span> <span class="o">WORLDS</span></div>
+          <div class="ksub">
+            <p>A solo motion & film studio — cinematic AI animation, brand films, and campaigns with real momentum.</p>
+            <span class="kbtn">Play the reel →</span>
+          </div>
+        </div>
+        <div class="kcards">
+          <div class="kcard a"><div class="kn">01</div><h4>STILLNESS — sci-fi short</h4></div>
+          <div class="kcard b"><div class="kn">02</div><h4>GIÁP — cinematic</h4></div>
+          <div class="kcard c"><div class="kn">03</div><h4>WAKAN — campaign</h4></div>
+        </div>
+      </div>
+    </div>
+    <p class="note"><b>Best for:</b> <b>energy and recall</b> — Buck / Oddfellows motion-studio feel. Big type, showreel front-and-center, confident. Trade-off: loud; leans agency more than auteur (but that can read very hireable).</p>
+  </div>
+
+  <!-- V8 -->
+  <div class="dir v8">
+    <div class="meta">
+      <span class="no">8</span><span class="nm">Swiss Index</span>
+      <span class="vibe">systematic · precise · high-credibility</span>
+      <span class="pal"><span style="background:#101216"></span><span style="background:#E7E9EC"></span><span style="background:#E63329"></span><span style="background:#23262d"></span></span>
+      <span class="font"><b>Inter</b> + Space Mono · strict grid, hairlines, numbered index</span>
+    </div>
+    <div class="frame">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div>
+      <div class="view">
+        <div class="snav">
+          <div class="sbrand">UNHUMAN<span>/</span>STUD</div>
+          <div class="stabs"><span class="on">Index</span><span>Work</span><span>Films</span><span>Creator</span><span>Contact</span></div>
+        </div>
+        <div class="shero">
+          <div class="scol">
+            <div class="lab">Studio — Est. 2026</div>
+            <h2>A one-person cinematic <em>animation</em> studio.</h2>
+            <p>Directed, animated, scored and shipped by Aiden Vu. AI as a full production pipeline.</p>
+          </div>
+          <div class="scol">
+            <div class="lab">Profile</div>
+            <div class="smeta">
+              DISCIPLINE — <b>Film · Animation · Campaign</b><br>
+              TOOLS — <b>Higgsfield · Kling · Veo · Freepik</b><br>
+              BASE — <b>Remote · EN / VN</b><br>
+              STATUS — <b>Open to commissions</b>
+            </div>
+          </div>
+        </div>
+        <div class="sindex">
+          <div class="srow"><span class="idx">01</span><span class="ti"><span class="dot"></span>STILLNESS / TĨNH LẶNG</span><span class="ty">Original Film</span><span class="yr">2026</span></div>
+          <div class="srow"><span class="idx">02</span><span class="ti"><span class="dot"></span>GIÁP</span><span class="ty">Commissioned</span><span class="yr">2026</span></div>
+          <div class="srow"><span class="idx">03</span><span class="ti"><span class="dot"></span>WAKAN AI — Campaign Studio</span><span class="ty">Studio</span><span class="yr">Ongoing</span></div>
+          <div class="srow"><span class="idx">04</span><span class="ti"><span class="dot"></span>boop.</span><span class="ty">Client Work</span><span class="yr">2026</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="note"><b>Best for:</b> the <b>résumé side, taken seriously</b> — reads like a design-forward technical studio / post house. Maximum credibility with recruiters and art directors. Trade-off: coolest-headed, least "cinematic spectacle."</p>
+  </div>
+
+  <div class="foot">
+    <h3>Pick a lane</h3>
+    <p>Give me a number (5–8), or combine with the first batch — e.g. <b>"#6 cinema hero + #8 index for Work"</b>. I'll build the winner into the full multi-tab site: Home, Work, Films, Gallery, Creator/Résumé, Contact.</p>
+  </div>
+</div>
+</body>
+</html>

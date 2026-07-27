@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Unhuman Stud — Color & Art Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#0b0b0f;color:#eceaf2;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:52px 24px 100px}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+  background:linear-gradient(90deg,#1FBE8A,#7A3CFF,#FF9A5A);-webkit-background-clip:text;background-clip:text;color:transparent;border:1px solid rgba(255,255,255,.18);padding:7px 13px;border-radius:100px}
+h1.board{font-family:'Space Grotesk';font-weight:700;font-size:clamp(32px,5.5vw,56px);letter-spacing:-.03em;margin:18px 0 10px;line-height:1}
+.board-sub{max-width:680px;color:#a9a5b5;font-size:17px}
+.board-sub b{color:#eceaf2}
+.tip{margin-top:14px;font-family:'Space Mono';font-size:12px;color:#8f8aa0;letter-spacing:.04em}
+
+.dir{margin-top:44px;border:1px solid rgba(255,255,255,.1);border-radius:22px;overflow:hidden;background:#131319}
+.meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.08)}
+.meta .no{font-family:'Space Grotesk';font-weight:700;width:34px;height:34px;border-radius:50%;background:#eceaf2;color:#0b0b0f;display:grid;place-items:center;font-size:15px;flex-shrink:0}
+.meta .nm{font-family:'Space Grotesk';font-weight:700;font-size:23px;letter-spacing:-.01em}
+.meta .vibe{color:#8f8aa0;font-size:14px;font-weight:500}
+.meta .pal{display:flex;gap:6px;margin-left:auto}
+.meta .pal span{width:26px;height:26px;border-radius:7px;border:1px solid rgba(255,255,255,.15)}
+.meta .font{font-family:'Space Mono',monospace;font-size:11.5px;color:#8f8aa0;letter-spacing:.04em;width:100%;margin-top:2px}
+.meta .font b{color:#cbc7d6}
+.frame{margin:22px;border-radius:14px;overflow:hidden;border:1px solid rgba(0,0,0,.5);box-shadow:0 24px 70px rgba(0,0,0,.55)}
+.bar{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#1d1d24;border-bottom:1px solid rgba(255,255,255,.06)}
+.bar i{width:11px;height:11px;border-radius:50%;display:block}
+.bar .u{margin-left:14px;font-family:'Space Mono',monospace;font-size:11.5px;color:#847f92;background:#0b0b0f;padding:5px 14px;border-radius:6px;flex:1;max-width:320px}
+.view{height:580px;overflow:hidden;position:relative}
+.note{padding:0 24px 24px;color:#8f8aa0;font-size:14px}
+.note b{color:#cbc7d6;font-weight:600}
+
+.mnav{display:flex;align-items:center;justify-content:space-between;padding:18px 30px;position:relative;z-index:6}
+.mbrand{display:flex;align-items:center;gap:10px;font-weight:700}
+.mtabs{display:flex;gap:6px}
+.mtab{font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:7px 12px;border-radius:100px}
+.mhero{padding:26px 30px;position:relative;z-index:6}
+.meyebrow{font-size:11px;letter-spacing:.24em;text-transform:uppercase}
+.mtitle{font-weight:700;letter-spacing:-.03em;line-height:.9;margin:14px 0}
+.mlead{max-width:50ch;font-size:14px;margin-bottom:20px}
+.mcta{display:flex;gap:10px;flex-wrap:wrap}
+.mbtn{font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:11px 18px;border-radius:100px;font-weight:600;cursor:pointer}
+.mstats{display:flex;gap:32px;margin-top:22px;padding-top:16px}
+.mstat .n{font-size:24px;font-weight:700}
+.mstat .l{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-top:2px}
+.mcards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:0 30px 30px;position:relative;z-index:6}
+.mcard{border-radius:12px;padding:16px;min-height:112px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden}
+.mchip{font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;border-radius:100px;display:inline-block;margin-bottom:8px;width:fit-content}
+.mcard h4{font-size:15px;font-weight:700;position:relative}
+.mcard p{font-size:11px;opacity:.75;margin-top:3px;position:relative}
+
+/* ============ V14 · EMERALD & GOLD ============ */
+.v14 .view{background:radial-gradient(130% 100% at 50% 4%,#0e4034 0%,#072a22 34%,#03130f 74%);font-family:'Fraunces',serif;color:#f4efe0}
+.v14 .mote{position:absolute;width:5px;height:5px;border-radius:50%;background:#f0d688;box-shadow:0 0 8px 2px rgba(232,199,102,.8);animation:drift 9s ease-in-out infinite;z-index:2;opacity:.85}
+@keyframes drift{0%{transform:translateY(20px) translateX(0);opacity:0}20%{opacity:.9}80%{opacity:.7}100%{transform:translateY(-60px) translateX(24px);opacity:0}}
+.v14 .mbrand{color:#f4efe0;font-family:'Fraunces'}.v14 .mbrand .g{width:27px;height:27px;border-radius:7px;display:grid;place-items:center;font-family:'Fraunces';font-size:14px;color:#0b2a20;background:linear-gradient(135deg,#f6e6a8,#c9a227)}
+.v14 .mbrand span{color:#9db8a6;font-family:'Inter';font-weight:500}
+.v14 .mtab{font-family:'Inter';color:#b9d3c4;font-weight:500}
+.v14 .mtab.on{background:linear-gradient(135deg,#f6e6a8,#c9a227);color:#0b2a20}
+.v14 .meyebrow{font-family:'Fraunces';font-style:italic;color:#57c79c;text-transform:none;letter-spacing:0;font-size:16px}
+.v14 .mtitle{font-family:'Fraunces';font-weight:600;font-size:56px;background:linear-gradient(100deg,#fff6d6,#e8c766 30%,#b8891f 50%,#f3e2a0 72%,#e8c766);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:goldsheen 7s linear infinite}
+@keyframes goldsheen{to{background-position:200% 0}}
+.v14 .mlead{font-family:'Inter';color:#bcd0c4}
+.v14 .mbtn{font-family:'Inter'}.v14 .mbtn.p{background:linear-gradient(135deg,#f6e6a8,#c9a227);color:#0b2a20}.v14 .mbtn.g{border:1px solid rgba(87,199,156,.45);color:#8fe0c2}
+.v14 .mstats{border-top:1px solid rgba(232,199,102,.28)}
+.v14 .mcard{background:rgba(7,32,26,.66);border:1px solid rgba(232,199,102,.35);box-shadow:inset 0 0 24px rgba(31,190,138,.1)}
+.v14 .mchip{background:rgba(232,199,102,.9);color:#0b2a20;font-family:'Inter'}
+.v14 .mcard h4{font-family:'Fraunces';font-weight:600}
+
+/* ============ V15 · IRIDESCENT HOLOGRAPHIC ============ */
+.v15 .view{background:#08080f;font-family:'Space Grotesk',sans-serif;color:#f2f2fa}
+.v15 .holo{position:absolute;width:150%;height:150%;left:-25%;top:-30%;z-index:1;filter:blur(50px);opacity:.7;
+  background:conic-gradient(from 0deg,#22e0d6,#7A3CFF,#FF4FD8,#4f8bff,#22e0d6,#b6ff6a,#FF4FD8,#22e0d6);animation:holospin 16s linear infinite}
+@keyframes holospin{to{transform:rotate(360deg)}}
+.v15 .veil{position:absolute;inset:0;z-index:2;background:radial-gradient(75% 65% at 50% 42%,rgba(8,8,15,.15),rgba(8,8,15,.82) 80%)}
+.v15 .mbrand{color:#f2f2fa}.v15 .mbrand .g{width:27px;height:27px;border-radius:7px;display:grid;place-items:center;font-family:'Space Mono';font-size:13px;color:#08080f;background:linear-gradient(135deg,#22e0d6,#FF4FD8)}
+.v15 .mbrand span{color:#a6a2c4}
+.v15 .mtab{font-family:'Space Mono';color:#cfccec;border:1px solid rgba(255,255,255,.16)}
+.v15 .mtab.on{background:linear-gradient(135deg,#22e0d6,#7A3CFF);color:#fff}
+.v15 .meyebrow{font-family:'Space Mono';color:#22e0d6}
+.v15 .mtitle{font-size:58px;background:linear-gradient(90deg,#22e0d6,#7A3CFF,#FF4FD8,#4f8bff,#22e0d6);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:holotext 6s linear infinite;filter:drop-shadow(0 2px 16px rgba(122,60,255,.4))}
+@keyframes holotext{to{background-position:300% 0}}
+.v15 .mlead{color:#bfbcd8}
+.v15 .mbtn.p{background:linear-gradient(135deg,#22e0d6,#7A3CFF);color:#fff}.v15 .mbtn.g{border:1px solid rgba(255,255,255,.22);color:#f2f2fa}
+.v15 .mstats{border-top:1px solid rgba(255,255,255,.16)}
+.v15 .mcard{background:rgba(20,18,34,.5);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(7px)}
+.v15 .mchip{background:linear-gradient(135deg,#22e0d6,#FF4FD8);color:#08080f}
+
+/* ============ V16 · ULTRAVIOLET & ACID ============ */
+.v16 .view{background:#0b0618;font-family:'Space Grotesk',sans-serif;color:#f3eefc}
+.v16 .aur{position:absolute;border-radius:50%;filter:blur(60px);z-index:1;animation:float 10s ease-in-out infinite alternate}
+.v16 .aur.a{width:340px;height:340px;left:-6%;top:-10%;background:#7A3CFF;opacity:.55}
+.v16 .aur.b{width:300px;height:300px;right:-4%;top:8%;background:#FF3EA5;opacity:.45;animation-delay:1.6s}
+.v16 .aur.c{width:260px;height:260px;left:40%;bottom:-14%;background:#2ED3E8;opacity:.4;animation-delay:.8s}
+@keyframes float{from{transform:translate(0,0) scale(1)}to{transform:translate(24px,-18px) scale(1.12)}}
+.v16 .mbrand{color:#f3eefc}.v16 .mbrand .g{width:27px;height:27px;border:1px solid #C6FF3D;border-radius:7px;display:grid;place-items:center;color:#C6FF3D;font-family:'Space Mono';font-size:13px;box-shadow:0 0 14px rgba(198,255,61,.5)}
+.v16 .mbrand span{color:#b6a9d6}
+.v16 .mtab{font-family:'Space Mono';color:#d6c9f0;border:1px solid rgba(255,255,255,.14)}
+.v16 .mtab.on{background:#C6FF3D;color:#0b0618}
+.v16 .meyebrow{font-family:'Space Mono';color:#C6FF3D}
+.v16 .mtitle{font-size:58px;color:#fff;text-shadow:0 0 28px rgba(122,60,255,.8),0 0 10px rgba(255,62,165,.5)}
+.v16 .mtitle .u{color:#C6FF3D;text-shadow:0 0 22px rgba(198,255,61,.7)}
+.v16 .mlead{color:#c9bce4}
+.v16 .mbtn.p{background:#C6FF3D;color:#0b0618;box-shadow:0 0 22px rgba(198,255,61,.4)}.v16 .mbtn.g{border:1px solid rgba(122,60,255,.6);color:#c9a9ff}
+.v16 .mstats{border-top:1px solid rgba(122,60,255,.35)}
+.v16 .mcard{background:rgba(24,12,44,.55);border:1px solid rgba(122,60,255,.5);backdrop-filter:blur(4px)}
+.v16 .mchip{background:#C6FF3D;color:#0b0618}
+
+/* ============ V17 · BONE & COBALT (light) ============ */
+.v17 .view{background:#F1ECE0;font-family:'Space Grotesk',sans-serif;color:#101a52}
+.v17 .shape{position:absolute;z-index:1;animation:spin2 20s linear infinite}
+.v17 .shape.a{width:220px;height:220px;right:6%;top:8%;border:2px solid rgba(16,35,158,.28);border-radius:50%}
+.v17 .shape.b{width:130px;height:130px;right:20%;top:44%;background:rgba(255,78,43,.16);border-radius:50%;animation-direction:reverse;animation-duration:26s}
+.v17 .shape.c{width:170px;height:170px;left:-3%;bottom:-6%;border:2px solid rgba(255,78,43,.3);transform:rotate(15deg);animation-duration:30s}
+@keyframes spin2{to{transform:rotate(360deg)}}
+.v17 .mbrand{color:#101a52}.v17 .mbrand .g{width:27px;height:27px;background:#10239E;color:#fff;border-radius:7px;display:grid;place-items:center;font-family:'Space Grotesk';font-weight:700;font-size:14px}
+.v17 .mbrand span{color:#7d84a6}
+.v17 .mtab{color:#4a5288;font-weight:600}
+.v17 .mtab.on{background:#10239E;color:#fff}
+.v17 .meyebrow{color:#FF4E2B;font-weight:700}
+.v17 .mtitle{font-size:58px;color:#10239E}
+.v17 .mtitle .u{color:#FF4E2B}
+.v17 .mlead{color:#4a5288}
+.v17 .mbtn.p{background:#10239E;color:#fff}.v17 .mbtn.g{border:1px solid #b7b0a0;color:#101a52}
+.v17 .mstats{border-top:1px solid #d3ccbc}
+.v17 .mcard{background:#fff;border:1px solid #e2dccc;box-shadow:0 6px 18px rgba(16,35,158,.08)}
+.v17 .mchip{background:#FF4E2B;color:#fff}
+.v17 .mcard h4{color:#10239E}.v17 .mcard p{color:#7d84a6;opacity:1}
+
+/* ============ V18 · SUNSET VAPOR ============ */
+.v18 .view{font-family:'Space Grotesk',sans-serif;color:#fff6ef;
+  background:linear-gradient(115deg,#241a4d,#5e2a70 28%,#c23c78 52%,#ee6a55 74%,#f6b26b 100%);background-size:280% 280%;animation:vapor 12s ease infinite}
+@keyframes vapor{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.v18 .grain{position:absolute;inset:0;z-index:2;opacity:.06;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.v18 .orb{position:absolute;left:72%;top:26%;width:150px;height:150px;border-radius:50%;z-index:1;background:radial-gradient(circle at 50% 45%,#fff2c8,#ffd08a 50%,transparent 72%);opacity:.8;filter:blur(2px)}
+.v18 .mbrand{color:#fff6ef}.v18 .mbrand .g{width:27px;height:27px;border:1px solid rgba(255,255,255,.6);border-radius:7px;display:grid;place-items:center;font-family:'Space Mono';font-size:13px;color:#fff;background:rgba(255,255,255,.12)}
+.v18 .mbrand span{color:#ffd9c9}
+.v18 .mtab{font-family:'Space Mono';color:#ffe3d6;border:1px solid rgba(255,255,255,.28)}
+.v18 .mtab.on{background:#fff6ef;color:#5e2a70}
+.v18 .meyebrow{font-family:'Space Mono';color:#ffe0b0}
+.v18 .mtitle{font-size:58px;color:#fff;text-shadow:0 4px 26px rgba(60,10,60,.4)}
+.v18 .mlead{color:#ffe3d6}
+.v18 .mbtn.p{background:#fff6ef;color:#5e2a70}.v18 .mbtn.g{border:1px solid rgba(255,255,255,.5);color:#fff6ef}
+.v18 .mstats{border-top:1px solid rgba(255,255,255,.3)}
+.v18 .mcard{background:rgba(40,16,52,.32);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(6px)}
+.v18 .mchip{background:#fff6ef;color:#5e2a70}
+
+.foot{margin-top:52px;border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:30px 32px;background:#131319}
+.foot h3{font-family:'Space Grotesk';font-size:22px;margin-bottom:8px}
+.foot p{color:#a9a5b5;font-size:15px}
+.foot b{background:linear-gradient(90deg,#1FBE8A,#7A3CFF,#FF9A5A);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
+
+@media(max-width:720px){
+  .mcards{grid-template-columns:1fr}
+  .view{height:auto;min-height:520px}
+  .mtitle{font-size:40px!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="eyebrow">Unhuman Stud · Color & Art Directions</span>
+  <h1 class="board">Five new palettes. Same artistic energy.</h1>
+  <p class="board-sub">Off the black-and-red now — each of these is a <b>different color world</b> with its own live animated effect. One's even light, for contrast. Same Unhuman Stud content throughout.</p>
+  <div class="tip">▶ Open the file to see the motion — screenshots freeze one frame.</div>
+
+  <!-- V14 -->
+  <div class="dir v14">
+    <div class="meta">
+      <span class="no">14</span><span class="nm">Emerald & Gold</span>
+      <span class="vibe">opulent · baroque · regal</span>
+      <span class="pal"><span style="background:#03130f"></span><span style="background:#1FBE8A"></span><span style="background:#e8c766"></span><span style="background:#0e4034"></span></span>
+      <span class="font"><b>Fraunces</b> serif · gold-sheen title + floating gold motes</span>
+    </div>
+    <div class="frame">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div>
+      <div class="view">
+        <span class="mote" style="left:16%;animation-delay:0s"></span><span class="mote" style="left:34%;animation-delay:2.5s"></span><span class="mote" style="left:52%;animation-delay:4.2s"></span><span class="mote" style="left:66%;animation-delay:1.4s"></span><span class="mote" style="left:82%;animation-delay:3.6s"></span><span class="mote" style="left:24%;top:50%;animation-delay:5s"></span><span class="mote" style="left:74%;top:45%;animation-delay:6s"></span>
+        <div class="mnav"><div class="mbrand"><span class="g">U</span><b>Unhuman</b> <span>Stud</span></div><div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Gallery</span></div></div>
+        <div class="mhero">
+          <div class="meyebrow">a studio of one</div>
+          <div class="mtitle">UNHUMAN STUD</div>
+          <div class="mlead">Cinematic worlds with the weight of gold — crafted, opulent, unmistakably made by hand.</div>
+          <div class="mcta"><span class="mbtn p">Enter the Studio →</span><span class="mbtn g">Watch Films</span></div>
+          <div class="mstats"><div class="mstat"><div class="n">5+</div><div class="l">Projects</div></div><div class="mstat"><div class="n">2</div><div class="l">Films</div></div><div class="mstat"><div class="n">6+</div><div class="l">Tools</div></div></div>
+        </div>
+        <div class="mcards">
+          <div class="mcard"><span class="mchip">Original Film</span><h4>STILLNESS</h4><p>Sci-fi short</p></div>
+          <div class="mcard"><span class="mchip">Commissioned</span><h4>GIÁP</h4><p>4-min cinematic</p></div>
+          <div class="mcard"><span class="mchip">Studio</span><h4>WAKAN AI</h4><p>Campaign visuals</p></div>
+        </div>
+      </div>
+    </div>
+    <p class="note"><b>Effect:</b> gold flecks drift upward; the title carries a moving gold sheen. <b>Best for:</b> a premium, prestige feel — awards-season, "heritage house" energy. Emerald keeps it alive, not stuffy.</p>
+  </div>
+
+  <!-- V15 -->
+  <div class="dir v15">
+    <div class="meta">
+      <span class="no">15</span><span class="nm">Iridescent Holographic</span>
+      <span class="vibe">oil-slick · dreamy · future-gloss</span>
+      <span class="pal"><span style="background:#08080f"></span><span style="background:#22e0d6"></span><span style="background:#7A3CFF"></span><span style="background:#FF4FD8"></span><span style="background:#4f8bff"></span></span>
+      <span class="font"><b>Space Grotesk</b> · rotating holo gradient + shifting-hue title</span>
+    </div>
+    <div class="frame">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div>
+      <div class="view">
+        <div class="holo"></div><div class="veil"></div>
+        <div class="mnav"><div class="mbrand"><span class="g">U</span><b>UNHUMAN</b> <span>STUD</span></div><div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Gallery</span></div></div>
+        <div class="mhero">
+          <div class="meyebrow">Studio · Aiden Vu</div>
+          <div class="mtitle">UNHUMAN STUD</div>
+          <div class="mlead">A one-person studio working in light itself — iridescent, shifting, never the same twice.</div>
+          <div class="mcta"><span class="mbtn p">Explore the Work →</span><span class="mbtn g">Watch Films</span></div>
+          <div class="mstats"><div class="mstat"><div class="n">5+</div><div class="l">Projects</div></div><div class="mstat"><div class="n">2</div><div class="l">Films</div></div><div class="mstat"><div class="n">6+</div><div class="l">Tools</div></div></div>
+        </div>
+        <div class="mcards">
+          <div class="mcard"><span class="mchip">Original Film</span><h4>STILLNESS</h4><p>Sci-fi short</p></div>
+          <div class="mcard"><span class="mchip">Commissioned</span><h4>GIÁP</h4><p>4-min cinematic</p></div>
+          <div class="mcard"><span class="mchip">Studio</span><h4>WAKAN AI</h4><p>Campaign visuals</p></div>
+        </div>
+      </div>
+    </div>
+    <p class="note"><b>Effect:</b> a holographic gradient slowly rotates behind a hue-shifting title. <b>Best for:</b> modern, trendy, "future-facing" — very shareable, reads as cutting-edge AI craft.</p>
+  </div>
+
+  <!-- V16 -->
+  <div class="dir v16">
+    <div class="meta">
+      <span class="no">16</span><span class="nm">Ultraviolet & Acid</span>
+      <span class="vibe">electric · rave · high-voltage</span>
+      <span class="pal"><span style="background:#0b0618"></span><span style="background:#7A3CFF"></span><span style="background:#FF3EA5"></span><span style="background:#C6FF3D"></span><span style="background:#2ED3E8"></span></span>
+      <span class="font"><b>Space Grotesk</b> + Space Mono · drifting aurora + acid-lime pop</span>
+    </div>
+    <div class="frame">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div>
+      <div class="view">
+        <div class="aur a"></div><div class="aur b"></div><div class="aur c"></div>
+        <div class="mnav"><div class="mbrand"><span class="g">U</span><b>UNHUMAN</b> <span>STUD</span></div><div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Gallery</span></div></div>
+        <div class="mhero">
+          <div class="meyebrow">Studio · Aiden Vu</div>
+          <div class="mtitle">UNHUMAN <span class="u">STUD</span></div>
+          <div class="mlead">High-voltage cinematic worlds — where ultraviolet meets acid and the whole thing hums.</div>
+          <div class="mcta"><span class="mbtn p">Explore the Work →</span><span class="mbtn g">Watch Films</span></div>
+          <div class="mstats"><div class="mstat"><div class="n">5+</div><div class="l">Projects</div></div><div class="mstat"><div class="n">2</div><div class="l">Films</div></div><div class="mstat"><div class="n">6+</div><div class="l">Tools</div></div></div>
+        </div>
+        <div class="mcards">
+          <div class="mcard"><span class="mchip">Original Film</span><h4>STILLNESS</h4><p>Sci-fi short</p></div>
+          <div class="mcard"><span class="mchip">Commissioned</span><h4>GIÁP</h4><p>4-min cinematic</p></div>
+          <div class="mcard"><span class="mchip">Studio</span><h4>WAKAN AI</h4><p>Campaign visuals</p></div>
+        </div>
+      </div>
+    </div>
+    <p class="note"><b>Effect:</b> violet/magenta/cyan auroras drift and breathe; acid-lime pops on top. <b>Best for:</b> young, loud, nightlife energy — impossible to ignore in a feed.</p>
+  </div>
+
+  <!-- V17 -->
+  <div class="dir v17">
+    <div class="meta">
+      <span class="no">17</span><span class="nm">Bone & Cobalt</span>
+      <span class="vibe">editorial-art · clean · confident (light)</span>
+      <span class="pal"><span style="background:#F1ECE0"></span><span style="background:#10239E"></span><span style="background:#FF4E2B"></span><span style="background:#101a52"></span></span>
+      <span class="font"><b>Space Grotesk</b> · drifting geometric shapes · cobalt + vermilion</span>
+    </div>
+    <div class="frame">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div>
+      <div class="view">
+        <div class="shape a"></div><div class="shape b"></div><div class="shape c"></div>
+        <div class="mnav"><div class="mbrand"><span class="g">U</span><b>UNHUMAN</b> <span>STUD</span></div><div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Gallery</span></div></div>
+        <div class="mhero">
+          <div class="meyebrow">Studio · Aiden Vu</div>
+          <div class="mtitle">UNHUMAN <span class="u">STUD</span></div>
+          <div class="mlead">A one-person cinematic studio — bold color, clean structure, confident on white.</div>
+          <div class="mcta"><span class="mbtn p">View the Work →</span><span class="mbtn g">Résumé</span></div>
+          <div class="mstats"><div class="mstat"><div class="n">5+</div><div class="l">Projects</div></div><div class="mstat"><div class="n">2</div><div class="l">Films</div></div><div class="mstat"><div class="n">6+</div><div class="l">Tools</div></div></div>
+        </div>
+        <div class="mcards">
+          <div class="mcard"><span class="mchip">Original Film</span><h4>STILLNESS</h4><p>Sci-fi short</p></div>
+          <div class="mcard"><span class="mchip">Commissioned</span><h4>GIÁP</h4><p>4-min cinematic</p></div>
+          <div class="mcard"><span class="mchip">Studio</span><h4>WAKAN AI</h4><p>Campaign visuals</p></div>
+        </div>
+      </div>
+    </div>
+    <p class="note"><b>Effect:</b> cobalt rings and a vermilion disc rotate slowly in the background. <b>Best for:</b> the one that still feels artistic but reads clean and hireable — great for the résumé side without going boring.</p>
+  </div>
+
+  <!-- V18 -->
+  <div class="dir v18">
+    <div class="meta">
+      <span class="no">18</span><span class="nm">Sunset Vapor</span>
+      <span class="vibe">warm · dreamy · cinematic dusk</span>
+      <span class="pal"><span style="background:#241a4d"></span><span style="background:#c23c78"></span><span style="background:#ee6a55"></span><span style="background:#f6b26b"></span></span>
+      <span class="font"><b>Space Grotesk</b> · flowing multi-hue gradient + grain + sun</span>
+    </div>
+    <div class="frame">
+      <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="u">unhumanstud.com</span></div>
+      <div class="view">
+        <div class="orb"></div><div class="grain"></div>
+        <div class="mnav"><div class="mbrand"><span class="g">U</span><b>UNHUMAN</b> <span>STUD</span></div><div class="mtabs"><span class="mtab on">Home</span><span class="mtab">Work</span><span class="mtab">Films</span><span class="mtab">Gallery</span></div></div>
+        <div class="mhero">
+          <div class="meyebrow">Studio · Aiden Vu</div>
+          <div class="mtitle">UNHUMAN STUD</div>
+          <div class="mlead">Cinematic worlds bathed in dusk — warm, cinematic, and always golden hour.</div>
+          <div class="mcta"><span class="mbtn p">Explore the Work →</span><span class="mbtn g">Watch Films</span></div>
+          <div class="mstats"><div class="mstat"><div class="n">5+</div><div class="l">Projects</div></div><div class="mstat"><div class="n">2</div><div class="l">Films</div></div><div class="mstat"><div class="n">6+</div><div class="l">Tools</div></div></div>
+        </div>
+        <div class="mcards">
+          <div class="mcard"><span class="mchip">Original Film</span><h4>STILLNESS</h4><p>Sci-fi short</p></div>
+          <div class="mcard"><span class="mchip">Commissioned</span><h4>GIÁP</h4><p>4-min cinematic</p></div>
+          <div class="mcard"><span class="mchip">Studio</span><h4>WAKAN AI</h4><p>Campaign visuals</p></div>
+        </div>
+      </div>
+    </div>
+    <p class="note"><b>Effect:</b> the whole sunset gradient slowly flows while a soft sun glows and film grain sits on top. <b>Best for:</b> warm, emotional, beautiful — the most inviting of the set. Great if your work leans human and cinematic.</p>
+  </div>
+
+  <div class="foot">
+    <h3>Which palette pulls you?</h3>
+    <p>Pick a number (14–18), or mix with any earlier batch — e.g. <b>"#15 holo gradient, but the Blood Ember layout."</b> I'll build the winner into the full multi-tab site with the effect running for real.</p>
+  </div>
+</div>
+</body>
+</html>
