@@ -24,9 +24,6 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close the mobile menu whenever the route changes.
-  useEffect(() => setOpen(false), [pathname]);
-
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
 
@@ -95,6 +92,9 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
+              // Closed on tap rather than in an effect watching the pathname:
+              // setting state from an effect triggers a cascading re-render.
+              onClick={() => setOpen(false)}
               className="border-b border-line py-4 text-base text-bone-dim"
             >
               {item.label}

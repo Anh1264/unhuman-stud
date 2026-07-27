@@ -64,6 +64,16 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${fraunces.variable} ${inter.variable} ${spaceMono.variable} h-full`}
     >
+      <head>
+        {/*
+          Reveal-on-scroll starts at opacity 0 and is un-hidden by an
+          IntersectionObserver. Without JavaScript that observer never runs and
+          the page would render blank, so force everything visible instead.
+        */}
+        <noscript>
+          <style>{`.reveal{opacity:1 !important;transform:none !important}`}</style>
+        </noscript>
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

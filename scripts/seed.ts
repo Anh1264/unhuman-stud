@@ -14,6 +14,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
 import { readFile, mkdir } from "node:fs/promises";
+import { createConnection } from "node:net";
 import path from "node:path";
 import { sql } from "drizzle-orm";
 import * as schema from "../src/server/db/schema";
@@ -180,7 +181,39 @@ const SOCIALS = [
    Seed
    ------------------------------------------------------------------ */
 
+/**
+ * PGlite permits a single writer. If the dev server is running it already holds
+ * an open handle to the data directory, and seeding alongside it does not merely
+ * go unnoticed — it can corrupt the database and break the next build. Detect
+ * that case and refuse, rather than leaving a corrupt data directory behind.
+ */
+function portInUse(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const socket = createConnection({ port, host: "127.0.0.1" })
+      .on("connect", () => {
+        socket.destroy();
+        resolve(true);
+      })
+      .on("error", () => resolve(false));
+    setTimeout(() => {
+      socket.destroy();
+      resolve(false);
+    }, 400);
+  });
+}
+
 async function main() {
+  const devPort = Number(process.env.PORT ?? 3000);
+  if (await portInUse(devPort)) {
+    console.error(
+      `\n  Refusing to seed: something is serving on port ${devPort}.\n` +
+        `  The dev server holds an exclusive handle on the database, and\n` +
+        `  writing to it concurrently can corrupt the data directory.\n\n` +
+        `  Stop the dev server, run this again, then restart it.\n`,
+    );
+    process.exit(1);
+  }
+
   // PGlite will not create intermediate directories for its data dir.
   await mkdir(path.dirname(path.resolve(DATA_DIR)), { recursive: true });
 
@@ -195,7 +228,6 @@ async function main() {
     "utf8",
   );
   const manifest: MediaEntry[] = JSON.parse(manifestRaw);
-  const byName = new Map(manifest.map((m) => [m.name, m]));
 
   console.log("  clearing content tables…");
   await db.execute(sql`
