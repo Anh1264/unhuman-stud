@@ -49,8 +49,15 @@ type ProjectSeed = {
   featured: boolean;
   sortOrder: number;
   accentColor: string;
-  cover: string;
+  /**
+   * Manifest name of the cover image, or `null` when the artwork for a project
+   * has not been delivered yet. A null cover is a deliberate, visible gap —
+   * never a stand-in image borrowed from another project.
+   */
+  cover: string | null;
   title: string;
+  /** Secondary title, e.g. the Vietnamese title shown beside the English one. */
+  titleAlt?: string;
   tagline: string;
   summary: string;
   body: string;
@@ -167,6 +174,91 @@ const PROJECTS: ProjectSeed[] = [
         description: "Open for business.",
       },
     ],
+  },
+
+  /* ------------------------------------------------------------------
+     The four projects below are written and designed, but none of their
+     frames, cuts or key art have been handed over yet. Their copy is real;
+     their media is not invented.
+
+     SWAP — each of these needs, from Aiden:
+       • a cover image (drop the master in `assets-source/`, add it to
+         `SOURCES` in `scripts/prepare-media.ts`, run `npm run media`, then
+         set `cover` to the manifest name below)
+       • gallery frames (same pipeline, then list the manifest names)
+       • the film itself (encode to `public/videos/`, add a `films` entry)
+     Until then `cover` stays null, `gallery` and `films` stay empty, and the
+     cards render without artwork rather than with a placeholder standing in
+     for work that does not exist.
+     ------------------------------------------------------------------ */
+  {
+    slug: "stillness",
+    kind: "ORIGINAL_FILM",
+    year: 2026,
+    featured: true,
+    sortOrder: 4,
+    accentColor: "#c1121f",
+    cover: null, // SWAP — key visual pending
+    title: "STILLNESS / Tĩnh Lặng",
+    titleAlt: "Tĩnh Lặng",
+    tagline: "An assassin arrives to kill. An old man refuses to be afraid.",
+    summary:
+      "An assassin is disarmed not by a weapon but by an elder's stillness — wordless, bioluminescent, built around a three-object surrender.",
+    body: "A near-silent science-fiction short set in a bioluminescent cave. An assassin arrives to kill and is undone by an old man who simply refuses to be afraid.\n\nThe turn is carried by a three-object surrender rather than by dialogue: what is set down, in what order, and what is still standing afterwards. Nothing is explained aloud, so every beat has to survive on staging, light and the pace at which a hand moves.\n\nThe piece was written and designed end to end — full script, shot design, and a Vietnamese translation — so it reads in both English and Vietnamese without either version feeling like the subtitle of the other.",
+    tags: ["Original Film", "Sci-Fi", "EN / VN"],
+    gallery: [], // SWAP — cave interior and surrender frames pending
+    films: [], // SWAP — the cut itself is not delivered yet
+  },
+  {
+    slug: "giap",
+    kind: "COMMISSIONED",
+    year: 2026,
+    featured: true,
+    sortOrder: 5,
+    accentColor: "#e3b23c",
+    cover: null, // SWAP — key visual pending
+    title: "GIÁP",
+    tagline: "Four chapters on General Võ Nguyên Giáp.",
+    summary:
+      "A four-minute cinematic short on General Võ Nguyên Giáp, commissioned by an AI video platform as a flagship demo.",
+    body: "GIÁP was commissioned by an AI video platform as a flagship demo: a four-minute cinematic short built to show what the tooling could carry at full length rather than in a ten-second sizzle.\n\nThe film runs in four chapters, with shot design worked out across the whole span and an original voice-over written for it. Structure was the hard part — four minutes is long enough that a sequence of striking images stops being enough and the piece has to actually move.\n\nIt is a client deliverable and a portfolio piece at the same time, which set the standard: nothing in it could be defended as \"good for a demo.\"",
+    tags: ["Commissioned", "Cinematic", "Four-Minute Short"],
+    gallery: [], // SWAP — chapter key visuals pending
+    films: [], // SWAP — the cut and its teaser are not delivered yet
+  },
+  {
+    slug: "wakan-ai",
+    kind: "STUDIO_BRAND",
+    year: 2026,
+    featured: false,
+    sortOrder: 6,
+    accentColor: "#e0654d",
+    cover: null, // SWAP — campaign key visual pending
+    title: "WAKAN AI",
+    tagline: "Campaign studio — a full shoot, run by one operator.",
+    summary:
+      "A solo studio producing campaign-quality fashion and product visuals at a fraction of a traditional shoot, including the in-house brand concept “Intent.”",
+    body: "WAKAN AI is the studio's commercial arm: campaign-quality fashion and product visuals produced at a fraction of the cost of a traditional shoot, for direct-to-consumer and streetwear brands.\n\nThe difficulty is not making one good frame — it is coherence. A campaign only holds together if the model reads as the same person from frame to frame, if the lighting belongs to one afternoon, and if the whole set behaves like a single editorial rather than a folder of images. Holding that across an entire campaign is the work.\n\n“Intent” is the in-house brand concept — the studio's own label, used to develop a full campaign end to end with no client brief to hide behind: lookbook, product frames, and the editorial voice around them. It is where the process gets tested before it is sold, and it is built in public.",
+    tags: ["Studio Brand", "AI Fashion", "Campaign", "Ongoing"],
+    gallery: [], // SWAP — editorial, product and Intent lookbook frames pending
+    films: [],
+  },
+  {
+    slug: "boop",
+    kind: "CLIENT_WORK",
+    year: 2026,
+    featured: false,
+    sortOrder: 7,
+    accentColor: "#e11d1d",
+    cover: null, // SWAP — key visual pending
+    title: "boop.",
+    tagline: "Cream interiors, arched windows, a six-checkpoint journey.",
+    summary:
+      "A warm, soft-futurist visual world for an app client — cream interiors, arched windows onto fantasy landscapes, and a six-checkpoint journey map.",
+    body: "boop. is a visual world built for an app client, in a register the brief called soft-futurist: warm rather than clinical, cream interiors instead of chrome, curves instead of edges.\n\nThe recurring device is an arched window — an interior that stays calm and domestic, opening onto a fantasy landscape that does the dreaming for it. The contrast is what makes the world feel inhabitable rather than merely rendered.\n\nOn top of that sits a six-checkpoint journey map: the product's progression drawn as places a user travels through, so the interface reads as a route rather than a menu.",
+    tags: ["Client Work", "Soft-Futurist"],
+    gallery: [], // SWAP — interior and journey-map frames pending
+    films: [],
   },
 ];
 
@@ -289,8 +381,13 @@ async function main() {
   let galleryCount = 0;
 
   for (const p of PROJECTS) {
-    const coverId = assetIds.get(p.cover);
-    if (!coverId) throw new Error(`Missing cover asset "${p.cover}"`);
+    // A null cover is intentional (artwork not delivered yet). A named cover
+    // that is absent from the manifest is a mistake, and should stop the seed.
+    let coverId: string | null = null;
+    if (p.cover) {
+      coverId = assetIds.get(p.cover) ?? null;
+      if (!coverId) throw new Error(`Missing cover asset "${p.cover}"`);
+    }
 
     const [project] = await db
       .insert(schema.projects)
@@ -311,6 +408,7 @@ async function main() {
       projectId: project.id,
       locale: L,
       title: p.title,
+      titleAlt: p.titleAlt ?? null,
       tagline: p.tagline,
       summary: p.summary,
       body: p.body,
