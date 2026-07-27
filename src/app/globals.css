@@ -111,7 +111,7 @@ h4 {
 
 /* ---------- focus ---------- */
 
-:where(a, button, [tabindex]):focus-visible {
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 3px;
   border-radius: 4px;

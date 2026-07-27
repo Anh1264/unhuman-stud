@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ContactForm } from "@/components/site/ContactForm";
 import { Reveal } from "@/components/site/Reveal";
 import { getSiteSettings } from "@/server/services/content.service";
 
@@ -64,6 +65,10 @@ export default async function ContactPage() {
           </div>
         </Reveal>
       </div>
+
+      <Reveal delay={120} className="mt-16">
+        <ContactForm />
+      </Reveal>
     </section>
   );
 }

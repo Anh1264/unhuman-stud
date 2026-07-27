@@ -82,6 +82,7 @@ development but not a serverless host. To go live:
 ## Not built yet
 
 - Admin CMS (Google sign-in, edit content without touching code)
-- Working contact form — the `inquiries` table exists but nothing writes to it
+- Email notifications for contact-form submissions (inquiries are stored in the
+  `inquiries` table, but nothing reads them yet — no admin inbox)
 - Real social links and a résumé download
 - Tests
