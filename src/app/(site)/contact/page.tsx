@@ -15,11 +15,11 @@ export default async function ContactPage() {
   const { contactEmail, socials } = await getSiteSettings();
 
   return (
-    <section className="mx-auto max-w-[1180px] px-6 py-16 sm:px-8">
+    <section className="mx-auto max-w-[1140px] px-6 py-16 sm:px-8">
       <div className="grid items-start gap-12 md:grid-cols-2">
         <Reveal>
           <span className="klabel">05 — Contact</span>
-          <h1 className="mt-3 text-[clamp(32px,5vw,54px)] leading-[1.02]">
+          <h1 className="mt-3 text-[clamp(32px,5vw,52px)] leading-[1.02]">
             Let&rsquo;s make
             <br />
             something <em className="italic text-crimson-br">unhuman.</em>

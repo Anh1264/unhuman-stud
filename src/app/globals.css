@@ -74,7 +74,7 @@ h4 {
 .klabel {
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--color-bone-faint);
 }

@@ -37,7 +37,7 @@ export function SiteHeader() {
     >
       <nav
         aria-label="Primary"
-        className="mx-auto flex h-[74px] max-w-[1180px] items-center justify-between px-6 sm:px-8"
+        className="mx-auto flex h-[74px] max-w-[1140px] items-center justify-between px-6 sm:px-8"
       >
         <Link href="/" className="flex items-center gap-3" aria-label="Unhuman Stud — home">
           <span className="serif grid h-[30px] w-[30px] place-items-center rounded-full bg-crimson text-[15px] font-semibold text-white">
@@ -76,7 +76,7 @@ export function SiteHeader() {
         <Link
           href="/contact"
           aria-current={isActive("/contact") ? "page" : undefined}
-          className="hidden rounded-full border border-line-2 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.08em] transition-colors hover:border-ember hover:text-ember md:inline-block"
+          className="hidden rounded-full border border-line-2 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.1em] transition-colors hover:border-ember hover:text-ember md:inline-block"
         >
           Contact
         </Link>

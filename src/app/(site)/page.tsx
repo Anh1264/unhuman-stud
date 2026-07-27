@@ -30,7 +30,7 @@ export default async function HomePage() {
   return (
     <>
       {/* ---------------- HERO ---------------- */}
-      <section className="mx-auto max-w-[1180px] px-6 pb-16 pt-16 sm:px-8 lg:pt-24">
+      <section className="mx-auto max-w-[1140px] px-6 pb-16 pt-16 sm:px-8 lg:pt-24">
         <Reveal>
           <span className="eyebrow text-[17px]">A studio of one — Est. 2026</span>
         </Reveal>
@@ -111,7 +111,7 @@ export default async function HomePage() {
       </section>
 
       {/* ---------------- SELECTED WORK ---------------- */}
-      <section className="mx-auto max-w-[1180px] px-6 py-20 sm:px-8">
+      <section className="mx-auto max-w-[1140px] px-6 py-20 sm:px-8">
         <Reveal className="mb-12 max-w-[640px]">
           <span className="klabel">01 — Selected work</span>
           <h2 className="mt-3 text-[clamp(32px,5vw,52px)]">

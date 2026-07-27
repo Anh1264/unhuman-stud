@@ -12,6 +12,9 @@ const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin", "vietnamese"],
   axes: ["opsz"],
+  // The brand leans on real italic emphasis; without this the browser would
+  // slant the upright face instead of using the drawn italic.
+  style: ["normal", "italic"],
   display: "swap",
 });
 

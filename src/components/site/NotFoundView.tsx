@@ -13,7 +13,7 @@ import Link from "next/link";
  */
 export function NotFoundView() {
   return (
-    <section className="mx-auto max-w-[1180px] px-6 py-24 sm:px-8">
+    <section className="mx-auto max-w-[1140px] px-6 py-24 sm:px-8">
       <div className="max-w-[640px]">
         <span className="klabel">404 — Off frame</span>
 
