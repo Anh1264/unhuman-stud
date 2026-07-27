@@ -35,7 +35,9 @@ const FOUNDATIONS = ["Computer Science", "Film Language", "Art History", "Market
 
 export default function AboutPage() {
   return (
-    <section className="mx-auto max-w-[1180px] px-6 py-16 sm:px-8">
+    // `print-resume` is a print-only hook (see @media print in globals.css): it
+    // turns this page into a one-page A4 résumé and has no screen styles.
+    <section className="print-resume mx-auto max-w-[1180px] px-6 py-16 sm:px-8">
       <Reveal className="mb-12 max-w-[640px]">
         <span className="klabel">04 — The creator</span>
         <h1 className="mt-3 text-[clamp(32px,5vw,52px)]">

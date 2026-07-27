@@ -183,3 +183,199 @@ main:focus-visible {
   background: var(--color-crimson);
   color: #fff;
 }
+
+/* ============================================================
+   PRINT — ink on paper
+   The screen design is a dark gallery wall; paper is the opposite.
+   Everything below is scoped to @media print and must never change
+   the on-screen rendering. The Creator page carries a `print-resume`
+   hook so it prints as a single-page A4 résumé.
+   ============================================================ */
+
+@media print {
+  @page {
+    size: A4;
+    margin: 13mm 14mm;
+  }
+
+  /* Dark backgrounds waste ink and grey out text on most printers. */
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
+    background-image: none !important;
+    color: #14100f !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #14100f !important;
+    /* `overflow-x: hidden` clips content the printer would otherwise paginate. */
+    overflow: visible !important;
+    scroll-behavior: auto;
+  }
+
+  /* Site chrome and interactive controls have no meaning on paper. */
+  body > header,
+  body > footer,
+  .skip-link,
+  video,
+  button,
+  form,
+  input,
+  textarea,
+  select,
+  [role="dialog"],
+  [role="tablist"] {
+    display: none !important;
+  }
+
+  /* The fixed header is gone, so its spacer must go too. */
+  main {
+    padding-top: 0 !important;
+    flex: none !important;
+  }
+
+  /* Scroll reveals never fire in a print context — force the end state. */
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  img {
+    max-width: 100% !important;
+    break-inside: avoid;
+  }
+
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+    border-color: #cfc7bf !important;
+  }
+
+  /* Off-site links lose their destination on paper unless it is spelled out.
+     Internal links resolve to nothing printable, so they stay bare text. */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: #5b524c !important;
+    word-break: break-all;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid-page;
+    page-break-after: avoid;
+  }
+
+  p,
+  li,
+  figure,
+  blockquote {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* ---------- Creator page as a one-page résumé ---------- */
+
+  .print-resume {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Screen spacing is generous; paper is 269mm tall. */
+  .print-resume > * {
+    max-width: none !important;
+    margin: 0 0 5mm 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    break-inside: avoid;
+  }
+  .print-resume > *:last-child {
+    margin-bottom: 0 !important;
+    padding-top: 4mm !important;
+    border-top: 1px solid #cfc7bf !important;
+  }
+
+  .print-resume h1 {
+    font-size: 30px !important;
+    line-height: 1.05 !important;
+    margin: 3px 0 5px !important;
+  }
+  .print-resume h1 em {
+    color: #14100f !important;
+  }
+  .print-resume h2 {
+    font-size: 11px !important;
+    margin: 0 0 3mm !important;
+    color: #5b524c !important;
+  }
+  .print-resume h2 ~ h2 {
+    margin-top: 5mm !important;
+  }
+  .print-resume p {
+    font-size: 11px !important;
+    line-height: 1.5 !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+  .print-resume p + p {
+    margin-top: 2.5mm !important;
+  }
+  .print-resume .klabel {
+    font-size: 8px !important;
+    color: #6b625c !important;
+  }
+
+  /* The print viewport is narrower than the `md` breakpoint, so the two
+     cards would otherwise stack and push the résumé onto a second page. */
+  .print-resume .grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6mm !important;
+  }
+  .print-resume .grid > *,
+  .print-resume .grid > * > div {
+    height: auto !important;
+    margin: 0 !important;
+  }
+  .print-resume .grid > * > div {
+    padding: 4mm !important;
+    border: 1px solid #cfc7bf !important;
+    border-radius: 4px !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Chips keep their pill outline; the tint becomes a hairline. */
+  .print-resume span[class*="rounded-full"] {
+    border-color: #cfc7bf !important;
+    font-size: 8px !important;
+    padding: 1px 6px !important;
+  }
+
+  /* Capability bars are decorative (aria-hidden) but read well in grey. */
+  .print-resume [aria-hidden="true"] {
+    height: 3px !important;
+    background: #e2dcd5 !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .print-resume [aria-hidden="true"] > * {
+    height: 3px !important;
+    background: #14100f !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
