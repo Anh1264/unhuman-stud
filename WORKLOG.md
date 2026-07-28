@@ -12,3 +12,4 @@
 - [4174805] Seed content trim: removed stillness/giap/wakan-ai and the NU social-post cut; renamed OLD FRIEND to "A new pet" (slug a-new-pet, film a-new-pet-test) with the daughter-and-dad-and-dog premise
 - [7505221] Retitled project and film to "A NEW PET" (dropped the "— Motion Test" suffix) and reworded the body so it reads as the film, not a technique study
 - [8103ec2] Removed the boop project (and its SWAP note) from scripts/seed.ts; three projects remain, sortOrder 1..3
+- [32f6ec3] Ceasefire media: six finals to lossless WebP (pixel-identical), 4K crf-31 playback encode + untouched master (gitignored) as download, video poster frame, images.unoptimized so nothing is re-compressed
