@@ -9,8 +9,34 @@ import type { Metadata } from "next";
  * keeps that from turning into six copies of the same object.
  */
 
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+/**
+ * Where the site actually lives. Change this one line if the studio moves to a
+ * custom domain — no environment variable, no dashboard, no redeploy settings.
+ * Include the scheme and no trailing slash: `https://example.com`.
+ */
+const PRODUCTION_SITE_URL = "https://unhuman-stud.vercel.app";
+
+/**
+ * Absolute origin used for canonical links, og:url, `sitemap.xml` and
+ * `robots.txt`. It has to be absolute — crawlers and social-card scrapers
+ * resolve nothing relative.
+ *
+ * Resolution order:
+ *   1. `NEXT_PUBLIC_SITE_URL`, if set — the escape hatch for preview builds or
+ *      a new domain you want to test before editing the constant above.
+ *   2. `http://localhost:3000` while running `npm run dev`, so local pages
+ *      never advertise the production URL.
+ *   3. `PRODUCTION_SITE_URL` for every real build.
+ *
+ * Both `process.env` reads are inlined by the compiler at build time, so this
+ * is a constant in the shipped output rather than a runtime lookup.
+ */
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : PRODUCTION_SITE_URL)
+).replace(/\/+$/, "");
 
 export const SITE_NAME = "Unhuman Stud";
 

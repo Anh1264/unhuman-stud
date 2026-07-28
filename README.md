@@ -2,6 +2,8 @@
 
 Portfolio site for **Unhuman Stud** — the one-person AI film studio of Aiden Vu.
 
+**Live at <https://unhuman-stud.vercel.app>**
+
 Next.js 16 · TypeScript · Drizzle ORM · Postgres (PGlite) · Tailwind v4
 
 ---
@@ -69,6 +71,16 @@ the UI.
 
 ## Deploying — static export
 
+The site is live at **<https://unhuman-stud.vercel.app>**, hosted on Vercel and
+wired to the GitHub repository. **Publishing a change is one step:**
+
+```bash
+git push origin main     # Vercel rebuilds and goes live in a minute or two
+```
+
+There is nothing to click and no upload — every push to `main` triggers a fresh
+build. Watch it at <https://vercel.com> → the `unhuman-stud` project.
+
 The site ships as a **static export**: `next build` renders every route to plain
 HTML in `out/`, reading the content out of the local PGlite database *at build
 time*. Nothing needs a database or a Node server in production, which is what
@@ -87,11 +99,27 @@ response headers that used to live in `next.config.ts` now live in
 On Vercel, use the `vercel-build` script (`package.json`) — it seeds the
 database before building, because `.data/` is deliberately not in git.
 
-**After the first deploy**, set `NEXT_PUBLIC_SITE_URL` to the real URL
-(Project → Settings → Environment Variables) and redeploy. Until then,
-`src/lib/site-metadata.ts` falls back to `http://localhost:3000`, which is
-harmless locally but wrong in `sitemap.xml`, `robots.txt` and the Open Graph
-tags.
+### If you get a custom domain
+
+The site's address is a single line near the top of `src/lib/site-metadata.ts`:
+
+```ts
+const PRODUCTION_SITE_URL = "https://unhuman-stud.vercel.app";
+```
+
+That value is what canonical links, the Open Graph / Twitter share cards,
+`sitemap.xml` and `robots.txt` all point at. To move to your own domain, add it
+in Vercel (Project → Settings → Domains), then edit that one line — scheme
+included, **no trailing slash** — and push:
+
+```ts
+const PRODUCTION_SITE_URL = "https://unhumanstud.com";
+```
+
+`npm run dev` keeps using `http://localhost:3000` on its own, so local pages
+never advertise the live address. If you ever need to override the URL for a
+single build without editing code, set `NEXT_PUBLIC_SITE_URL` in Vercel
+(Project → Settings → Environment Variables) — it wins over both.
 
 `.vercelignore` keeps `.data/`, `assets-source/`, `node_modules/` and the 402 MB
 4K master (`public/videos/nu-ceasefire.mp4`) out of every upload. The 84 MB
