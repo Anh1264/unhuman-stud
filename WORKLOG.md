@@ -10,3 +10,4 @@
 - [b64936e] Reconciled globals.css + components against design-system.md: klabel .2em, real Fraunces italic, 1140px container, .btn tracking .1em, section-title clamp
 - [909c9a8] Widened the site container from 1140px to 1760px via a single --container-site theme token (max-w-site), capped two full-width paragraphs at 56ch, synced design-system.md
 - [4174805] Seed content trim: removed stillness/giap/wakan-ai and the NU social-post cut; renamed OLD FRIEND to "A new pet" (slug a-new-pet, film a-new-pet-test) with the daughter-and-dad-and-dog premise
+- [7505221] Retitled project and film to "A NEW PET" (dropped the "— Motion Test" suffix) and reworded the body so it reads as the film, not a technique study
