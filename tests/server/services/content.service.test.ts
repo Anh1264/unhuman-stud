@@ -54,6 +54,23 @@ function projectRow(overrides: Record<string, unknown> = {}) {
       { tag: { translations: [{ label: "Short film" }] } },
       { tag: { translations: [{ label: "AI" }] } },
     ],
+    characters: [],
+    worldFields: [],
+    ...overrides,
+  };
+}
+
+function characterRow(overrides: Record<string, unknown> = {}) {
+  return {
+    slug: "ember",
+    image: assetRow({ url: "/images/ember-sheet.webp" }),
+    translations: [
+      {
+        name: "EMBER",
+        epithet: "The one who waits",
+        traits: ["Patient", "Burning"],
+      },
+    ],
     ...overrides,
   };
 }
@@ -192,6 +209,146 @@ describe("getProject", () => {
     expect(project?.films[0].description).toBeNull();
     expect(project?.films[0].poster).toBeNull();
     expect(project?.films[0].projectTitle).toBeNull();
+  });
+});
+
+describe("getProject characters", () => {
+  it("maps a fully written character", async () => {
+    repo.findProjectBySlug.mockResolvedValue(
+      projectRow({ films: [], galleryItems: [], characters: [characterRow()] }),
+    );
+
+    const project = await service.getProject("ember-line");
+
+    expect(project?.characters).toEqual([
+      {
+        slug: "ember",
+        name: "EMBER",
+        epithet: "The one who waits",
+        traits: ["Patient", "Burning"],
+        image: {
+          url: "/images/ember-sheet.webp",
+          width: 1600,
+          height: 900,
+          blurDataUrl: "data:image/webp;base64,abc",
+          alt: "A cover frame",
+          caption: "Frame 12",
+        },
+      },
+    ]);
+  });
+
+  it("treats an unwritten epithet and unwritten traits as empty, not broken", async () => {
+    repo.findProjectBySlug.mockResolvedValue(
+      projectRow({
+        films: [],
+        galleryItems: [],
+        characters: [
+          characterRow({
+            image: null,
+            translations: [{ name: "TIB", epithet: null, traits: null }],
+          }),
+        ],
+      }),
+    );
+
+    const [character] = (await service.getProject("ember-line"))!.characters;
+
+    expect(character).toEqual({
+      slug: "ember",
+      name: "TIB",
+      epithet: null,
+      traits: [],
+      image: null,
+    });
+  });
+
+  it("drops blank trait words and a character with no name in this locale", async () => {
+    repo.findProjectBySlug.mockResolvedValue(
+      projectRow({
+        films: [],
+        galleryItems: [],
+        characters: [
+          characterRow({
+            translations: [{ name: "NU", epithet: "  ", traits: ["  ", "Blue"] }],
+          }),
+          characterRow({ slug: "ghost", translations: [] }),
+        ],
+      }),
+    );
+
+    const project = await service.getProject("ember-line");
+
+    expect(project?.characters).toHaveLength(1);
+    expect(project?.characters[0].traits).toEqual(["Blue"]);
+    expect(project?.characters[0].epithet).toBeNull();
+  });
+
+  it("preserves the order the repository returned", async () => {
+    repo.findProjectBySlug.mockResolvedValue(
+      projectRow({
+        films: [],
+        galleryItems: [],
+        characters: [
+          characterRow({ slug: "nu", translations: [{ name: "NU" }] }),
+          characterRow({ slug: "tib", translations: [{ name: "TIB" }] }),
+        ],
+      }),
+    );
+
+    const project = await service.getProject("ember-line");
+
+    expect(project?.characters.map((c) => c.slug)).toEqual(["nu", "tib"]);
+  });
+});
+
+describe("getProject world fields", () => {
+  it("maps ordered label/value pairs", async () => {
+    repo.findProjectBySlug.mockResolvedValue(
+      projectRow({
+        films: [],
+        galleryItems: [],
+        worldFields: [
+          { translations: [{ label: "SETTING", value: "A city in snow" }] },
+          { translations: [{ label: "TONE", value: "Quiet, then loud" }] },
+        ],
+      }),
+    );
+
+    const project = await service.getProject("ember-line");
+
+    expect(project?.worldFields).toEqual([
+      { label: "SETTING", value: "A city in snow" },
+      { label: "TONE", value: "Quiet, then loud" },
+    ]);
+  });
+
+  it("keeps a labelled field with no value, and drops one with no label", async () => {
+    repo.findProjectBySlug.mockResolvedValue(
+      projectRow({
+        films: [],
+        galleryItems: [],
+        worldFields: [
+          { translations: [{ label: "SETTING", value: null }] },
+          { translations: [] },
+        ],
+      }),
+    );
+
+    const project = await service.getProject("ember-line");
+
+    expect(project?.worldFields).toEqual([{ label: "SETTING", value: null }]);
+  });
+
+  it("is an empty list when the owner has written none", async () => {
+    repo.findProjectBySlug.mockResolvedValue(
+      projectRow({ films: [], galleryItems: [] }),
+    );
+
+    const project = await service.getProject("ember-line");
+
+    expect(project?.characters).toEqual([]);
+    expect(project?.worldFields).toEqual([]);
   });
 });
 

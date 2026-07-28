@@ -50,6 +50,25 @@ type FilmSeed = {
  */
 type GallerySeed = { section: schema.GallerySection; items: string[] };
 
+/**
+ * A character of the film. Only `name` is required: the epithet and the trait
+ * words are the owner's to write, and an unwritten one is left out rather than
+ * filled with a guess. `image` is a manifest name, usually the design sheet.
+ */
+type CharacterSeed = {
+  slug: string;
+  name: string;
+  epithet?: string;
+  traits?: string[];
+  image: string | null;
+};
+
+/**
+ * In-world metadata — bespoke label/value pairs such as SETTING or TONE. Empty
+ * until the owner writes them; the pages render only the fields that exist.
+ */
+type WorldFieldSeed = { label: string; value: string };
+
 type ProjectSeed = {
   slug: string;
   kind: (typeof schema.projectKind.enumValues)[number];
@@ -71,6 +90,8 @@ type ProjectSeed = {
   body: string;
   tags: string[];
   gallery: GallerySeed[];
+  characters: CharacterSeed[];
+  worldFields: WorldFieldSeed[];
   films: FilmSeed[];
 };
 
@@ -101,6 +122,14 @@ const PROJECTS: ProjectSeed[] = [
       { section: "FRAME", items: ["nu-first-frame", "nu-snow", "nu-snowball"] },
       { section: "DESIGN", items: ["nu-character-sheet", "tib-character-sheet"] },
     ],
+    // Names and sheets only. The epithets and the trait words are the owner's
+    // to write; nothing here is invented on his behalf.
+    characters: [
+      { slug: "nu", name: "NU", image: "nu-character-sheet" },
+      { slug: "tib", name: "TIB", image: "tib-character-sheet" },
+    ],
+    // Awaiting the owner's in-world copy. An empty list is a valid state.
+    worldFields: [],
     films: [
       {
         slug: "nu-ceasefire",
@@ -185,6 +214,8 @@ async function main() {
     TRUNCATE TABLE
       project_tags, tag_translations, tags,
       gallery_items, film_translations, films,
+      character_translations, characters,
+      project_world_field_translations, project_world_fields,
       project_translations, projects,
       media_asset_translations, media_assets,
       site_settings
@@ -238,6 +269,8 @@ async function main() {
   const now = new Date();
   let filmCount = 0;
   let galleryCount = 0;
+  let characterCount = 0;
+  let worldFieldCount = 0;
 
   for (const p of PROJECTS) {
     // A null cover is intentional (artwork not delivered yet). A named cover
@@ -298,6 +331,50 @@ async function main() {
       }
     }
 
+    for (const [i, c] of p.characters.entries()) {
+      // A named sheet that is not in the manifest is a mistake, the same way a
+      // missing cover is; a null image is a deliberate gap.
+      let imageId: string | null = null;
+      if (c.image) {
+        imageId = assetIds.get(c.image) ?? null;
+        if (!imageId) throw new Error(`Missing character asset "${c.image}"`);
+      }
+
+      const [character] = await db
+        .insert(schema.characters)
+        .values({
+          projectId: project.id,
+          slug: c.slug,
+          imageAssetId: imageId,
+          sortOrder: i,
+        })
+        .returning({ id: schema.characters.id });
+
+      await db.insert(schema.characterTranslations).values({
+        characterId: character.id,
+        locale: L,
+        name: c.name,
+        epithet: c.epithet ?? null,
+        traits: c.traits?.length ? c.traits : null,
+      });
+      characterCount++;
+    }
+
+    for (const [i, w] of p.worldFields.entries()) {
+      const [field] = await db
+        .insert(schema.projectWorldFields)
+        .values({ projectId: project.id, sortOrder: i })
+        .returning({ id: schema.projectWorldFields.id });
+
+      await db.insert(schema.projectWorldFieldTranslations).values({
+        fieldId: field.id,
+        locale: L,
+        label: w.label,
+        value: w.value,
+      });
+      worldFieldCount++;
+    }
+
     for (const f of p.films) {
       const [film] = await db
         .insert(schema.films)
@@ -331,6 +408,7 @@ async function main() {
   console.log(
     `  ${PROJECTS.length} projects, ${filmCount} films, ${galleryCount} gallery items`,
   );
+  console.log(`  ${characterCount} characters, ${worldFieldCount} world fields`);
 
   // ---- site settings -----------------------------------------------
   await db.insert(schema.siteSettings).values({

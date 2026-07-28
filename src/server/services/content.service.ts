@@ -54,10 +54,36 @@ export type ProjectSummary = {
  */
 export type GalleryImage = Media & { section: GallerySection };
 
+/**
+ * A character of the project's film. Everything except the name is optional —
+ * a character the owner has not written copy for yet is a name and a sheet, and
+ * the UI renders only the parts that have a value.
+ */
+export type Character = {
+  slug: string;
+  name: string;
+  /** Short role line, e.g. "The one who …". */
+  epithet: string | null;
+  /** Ordered one-to-three-word trait words; empty when none are written. */
+  traits: string[];
+  image: Media | null;
+};
+
+/**
+ * One piece of in-world metadata: a bespoke label ("SETTING", "TONE") and a
+ * short value. Ordered as the owner ordered them.
+ */
+export type WorldField = {
+  label: string;
+  value: string | null;
+};
+
 export type ProjectDetail = ProjectSummary & {
   body: string | null;
   films: Film[];
   gallery: GalleryImage[];
+  characters: Character[];
+  worldFields: WorldField[];
 };
 
 export type GalleryEntry = GalleryImage & {
@@ -88,6 +114,45 @@ function toMedia(asset: AssetRow): Media | null {
     alt: t?.altText ?? "",
     caption: t?.caption ?? null,
   };
+}
+
+type CharacterRow = {
+  slug: string;
+  image: AssetRow;
+  translations: {
+    name: string;
+    epithet: string | null;
+    traits: string[] | null;
+  }[];
+};
+
+function toCharacter(row: CharacterRow): Character | null {
+  const t = row.translations[0];
+  // A character with no name in this locale has nothing to render.
+  const name = t?.name?.trim();
+  if (!name) return null;
+
+  return {
+    slug: row.slug,
+    name,
+    epithet: t?.epithet?.trim() || null,
+    traits: (t?.traits ?? [])
+      .filter((trait): trait is string => typeof trait === "string")
+      .map((trait) => trait.trim())
+      .filter(Boolean),
+    image: toMedia(row.image),
+  };
+}
+
+type WorldFieldRow = {
+  translations: { label: string; value: string | null }[];
+};
+
+function toWorldField(row: WorldFieldRow): WorldField | null {
+  const t = row.translations[0];
+  const label = t?.label?.trim();
+  if (!label) return null;
+  return { label, value: t?.value?.trim() || null };
 }
 
 /* ---------------------------------------------------------------- reads */
@@ -151,6 +216,12 @@ export async function getProject(slug: string): Promise<ProjectDetail | null> {
         return media && { ...media, section: gallerySection(g.sortOrder) };
       })
       .filter((m): m is GalleryImage => Boolean(m)),
+    characters: row.characters
+      .map(toCharacter)
+      .filter((c): c is Character => c !== null),
+    worldFields: row.worldFields
+      .map(toWorldField)
+      .filter((f): f is WorldField => f !== null),
   };
 }
 

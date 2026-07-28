@@ -281,6 +281,104 @@ export const galleryItems = pgTable(
 );
 
 /* ============================================================
+   CHARACTERS
+   ============================================================ */
+
+/**
+ * A character in a project's film. First-class rather than a caption on a
+ * gallery image: the design sheet is one *view* of a character, and the name,
+ * the epithet and the trait words are the character itself.
+ *
+ * Everything the owner has not written yet is nullable, so a character that is
+ * only a name and a sheet is a valid row rather than a half-filled one.
+ */
+export const characters = pgTable(
+  "characters",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    /** Stable key within the project — "nu", "tib". */
+    slug: text("slug").notNull(),
+    /** The character sheet or portrait, when there is one. */
+    imageAssetId: uuid("image_asset_id").references(() => mediaAssets.id, {
+      onDelete: "set null",
+    }),
+    sortOrder: integer("sort_order").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("characters_project_slug_idx").on(t.projectId, t.slug),
+    index("characters_sort_idx").on(t.projectId, t.sortOrder),
+  ],
+);
+
+export const characterTranslations = pgTable(
+  "character_translations",
+  {
+    characterId: uuid("character_id")
+      .notNull()
+      .references(() => characters.id, { onDelete: "cascade" }),
+    locale: text("locale").notNull().default(DEFAULT_LOCALE),
+    /** Display name — "NU", "TIB". */
+    name: text("name").notNull(),
+    /** Short role line, e.g. "The one who …". Null until it is written. */
+    epithet: text("epithet"),
+    /**
+     * Ordered list of one-to-three-word trait words. An ordered array of bare
+     * strings is exactly the shape the UI renders, and the words carry no other
+     * attributes, so they live with the rest of the character's copy rather
+     * than in a table of their own.
+     */
+    traits: jsonb("traits").$type<string[]>(),
+  },
+  (t) => [primaryKey({ columns: [t.characterId, t.locale] })],
+);
+
+/* ============================================================
+   WORLD FIELDS
+   ============================================================ */
+
+/**
+ * In-world metadata for a project — "SETTING", "TONE", and whatever else the
+ * film wants to state about itself. The labels are bespoke per project, so this
+ * is an ordered list of label/value pairs rather than a fixed set of columns:
+ * adding a field to one project must not add a null column to every other.
+ */
+export const projectWorldFields = pgTable(
+  "project_world_fields",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    sortOrder: integer("sort_order").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [index("project_world_fields_sort_idx").on(t.projectId, t.sortOrder)],
+);
+
+export const projectWorldFieldTranslations = pgTable(
+  "project_world_field_translations",
+  {
+    fieldId: uuid("field_id")
+      .notNull()
+      .references(() => projectWorldFields.id, { onDelete: "cascade" }),
+    locale: text("locale").notNull().default(DEFAULT_LOCALE),
+    /** The small caps label — "SETTING", "TONE". */
+    label: text("label").notNull(),
+    /** Short string. Nullable so a labelled-but-unwritten field is still valid. */
+    value: text("value"),
+  },
+  (t) => [primaryKey({ columns: [t.fieldId, t.locale] })],
+);
+
+/* ============================================================
    TAGS
    ============================================================ */
 
@@ -388,7 +486,52 @@ export const projectsRelations = relations(projects, ({ one, many }) => ({
   films: many(films),
   galleryItems: many(galleryItems),
   projectTags: many(projectTags),
+  characters: many(characters),
+  worldFields: many(projectWorldFields),
 }));
+
+export const charactersRelations = relations(characters, ({ one, many }) => ({
+  translations: many(characterTranslations),
+  project: one(projects, {
+    fields: [characters.projectId],
+    references: [projects.id],
+  }),
+  image: one(mediaAssets, {
+    fields: [characters.imageAssetId],
+    references: [mediaAssets.id],
+  }),
+}));
+
+export const characterTranslationsRelations = relations(
+  characterTranslations,
+  ({ one }) => ({
+    character: one(characters, {
+      fields: [characterTranslations.characterId],
+      references: [characters.id],
+    }),
+  }),
+);
+
+export const projectWorldFieldsRelations = relations(
+  projectWorldFields,
+  ({ one, many }) => ({
+    translations: many(projectWorldFieldTranslations),
+    project: one(projects, {
+      fields: [projectWorldFields.projectId],
+      references: [projects.id],
+    }),
+  }),
+);
+
+export const projectWorldFieldTranslationsRelations = relations(
+  projectWorldFieldTranslations,
+  ({ one }) => ({
+    field: one(projectWorldFields, {
+      fields: [projectWorldFieldTranslations.fieldId],
+      references: [projectWorldFields.id],
+    }),
+  }),
+);
 
 export const projectTranslationsRelations = relations(
   projectTranslations,

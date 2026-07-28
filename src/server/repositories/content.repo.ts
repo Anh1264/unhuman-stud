@@ -4,11 +4,15 @@ import { and, asc, count, eq } from "drizzle-orm";
 import { db } from "../db/client";
 import {
   DEFAULT_LOCALE,
+  characters,
+  characterTranslations,
   films,
   filmTranslations,
   galleryItems,
   projects,
   projectTranslations,
+  projectWorldFields,
+  projectWorldFieldTranslations,
   siteSettings,
 } from "../db/schema";
 
@@ -58,6 +62,21 @@ export async function findProjectBySlug(slug: string) {
         where: eq(galleryItems.status, "PUBLISHED"),
         orderBy: [asc(galleryItems.sortOrder)],
         with: { asset: { with: { translations: true } } },
+      },
+      characters: {
+        orderBy: [asc(characters.sortOrder)],
+        with: {
+          translations: { where: eq(characterTranslations.locale, locale) },
+          image: { with: { translations: true } },
+        },
+      },
+      worldFields: {
+        orderBy: [asc(projectWorldFields.sortOrder)],
+        with: {
+          translations: {
+            where: eq(projectWorldFieldTranslations.locale, locale),
+          },
+        },
       },
     },
   });

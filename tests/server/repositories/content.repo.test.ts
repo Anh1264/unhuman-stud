@@ -29,7 +29,13 @@ vi.mock("@/server/db/client", () => ({
 }));
 
 const repo = await import("@/server/repositories/content.repo");
-const { films, galleryItems, projects } = await import("@/server/db/schema");
+const {
+  characterTranslations,
+  films,
+  galleryItems,
+  projects,
+  projectWorldFieldTranslations,
+} = await import("@/server/db/schema");
 const { eq } = await import("drizzle-orm");
 
 beforeEach(() => {
@@ -73,15 +79,45 @@ describe("findProjectBySlug", () => {
 
     const [args] = findFirstProject.mock.calls[0];
     expect(Object.keys(args.with).sort()).toEqual([
+      "characters",
       "cover",
       "films",
       "galleryItems",
       "projectTags",
       "translations",
+      "worldFields",
     ]);
     expect(args.with.films.where).toEqual(eq(films.status, "PUBLISHED"));
     expect(args.with.galleryItems.where).toEqual(
       eq(galleryItems.status, "PUBLISHED"),
+    );
+  });
+
+  it("loads characters in sort order with their locale copy and sheet", async () => {
+    findFirstProject.mockResolvedValue({ slug: "ember-line" });
+
+    await repo.findProjectBySlug("ember-line");
+
+    const { characters } = findFirstProject.mock.calls[0][0].with;
+    expect(characters.orderBy).toHaveLength(1);
+    expect(Object.keys(characters.with).sort()).toEqual([
+      "image",
+      "translations",
+    ]);
+    expect(characters.with.translations.where).toEqual(
+      eq(characterTranslations.locale, "en"),
+    );
+  });
+
+  it("loads world fields in sort order with their locale label and value", async () => {
+    findFirstProject.mockResolvedValue({ slug: "ember-line" });
+
+    await repo.findProjectBySlug("ember-line");
+
+    const { worldFields } = findFirstProject.mock.calls[0][0].with;
+    expect(worldFields.orderBy).toHaveLength(1);
+    expect(worldFields.with.translations.where).toEqual(
+      eq(projectWorldFieldTranslations.locale, "en"),
     );
   });
 
