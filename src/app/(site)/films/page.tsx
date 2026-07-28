@@ -3,34 +3,45 @@ import Link from "next/link";
 import { GalleryGrid } from "@/components/site/GalleryGrid";
 import { VideoPlayer } from "@/components/site/VideoPlayer";
 import { Reveal } from "@/components/site/Reveal";
-import { getFilms, getGallery } from "@/server/services/content.service";
+import {
+  getFilms,
+  getGallery,
+  type Film,
+  type GalleryEntry,
+} from "@/server/services/content.service";
 import { pageMetadata } from "@/lib/site-metadata";
 import { formatDuration } from "@/lib/utils";
 
 export const metadata: Metadata = pageMetadata({
   title: "Films",
   description:
-    "NU & TIB: CEASEFIRE, the first long-form film from Unhuman Stud — written, directed, generated and cut by Aiden Vu.",
+    "Every film from Unhuman Stud — NU & TIB: CEASEFIRE and THE UNBOTHERED CYCLOPS — written, directed, generated and cut by Aiden Vu.",
   path: "/films",
 });
 
-export default async function FilmsPage() {
-  const [films, gallery] = await Promise.all([getFilms(), getGallery()]);
-  const [hero, ...rest] = films;
-
-  // Stills from the same project as the hero, so the page has the film and the
-  // frames it came from rather than one player and a lot of empty page.
-  const stills = gallery.filter(
-    (item) => item.section === "FRAME" && item.projectSlug === hero?.projectSlug,
-  );
-
-  const runtime = formatDuration(hero?.durationSeconds);
-  const facts = [
+/** Runtime and master resolution, skipping whatever the film has not recorded. */
+function factsFor(film: Film) {
+  const runtime = formatDuration(film.durationSeconds);
+  return [
     runtime ? { label: "Runtime", value: runtime } : null,
-    hero?.width && hero?.height
-      ? { label: "Master", value: `${hero.width} × ${hero.height}` }
+    film.width && film.height
+      ? { label: "Master", value: `${film.width} × ${film.height}` }
       : null,
   ].filter((f): f is { label: string; value: string } => f !== null);
+}
+
+export default async function FilmsPage() {
+  const [films, gallery] = await Promise.all([getFilms(), getGallery()]);
+
+  // Frames grouped by project once, so each film can show the stills it came
+  // from without re-scanning the whole gallery per film.
+  const framesByProject = new Map<string, GalleryEntry[]>();
+  for (const item of gallery) {
+    if (item.section !== "FRAME" || !item.projectSlug) continue;
+    const existing = framesByProject.get(item.projectSlug);
+    if (existing) existing.push(item);
+    else framesByProject.set(item.projectSlug, [item]);
+  }
 
   return (
     <section className="mx-auto max-w-site px-6 py-16 sm:px-8">
@@ -45,83 +56,95 @@ export default async function FilmsPage() {
         </p>
       </Reveal>
 
-      {hero && (
-        <Reveal>
-          <VideoPlayer film={hero} priority />
+      {films.map((film, i) => {
+        const facts = factsFor(film);
+        const frames = film.projectSlug
+          ? (framesByProject.get(film.projectSlug) ?? [])
+          : [];
+        // The project name is only worth printing when it is not simply the
+        // film's own title repeated back.
+        const projectName =
+          film.projectTitle && film.projectTitle !== film.title
+            ? film.projectTitle
+            : null;
+        const headingId = `film-${film.slug}`;
 
-          <div className="mt-6 grid gap-8 border-t border-line pt-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-14">
-            <div>
-              <h2 className="serif text-[clamp(24px,3.4vw,34px)]">
-                {hero.title}
-              </h2>
-              {hero.description && (
-                <p className="mt-2.5 max-w-[56ch] text-[15px] text-bone-dim">
-                  {hero.description}
-                </p>
-              )}
-              {hero.projectSlug && (
-                <Link
-                  href={`/work/${hero.projectSlug}`}
-                  className="mono mt-5 inline-block border-b border-ember pb-0.5 text-[12px] uppercase tracking-[0.06em] text-ember hover:border-gold hover:text-gold"
-                >
-                  Open the project →
-                </Link>
-              )}
-            </div>
+        return (
+          <article
+            key={film.slug}
+            aria-labelledby={headingId}
+            className={i > 0 ? "mt-16 border-t border-line pt-16" : undefined}
+          >
+            <Reveal>
+              {/* Only the first poster is preloaded; the rest wait their turn
+                  rather than competing for bandwidth above the fold. */}
+              <VideoPlayer film={film} priority={i === 0} />
 
-            {facts.length > 0 && (
-              <dl className="flex flex-wrap gap-x-12 gap-y-5">
-                {facts.map((fact) => (
-                  <div key={fact.label}>
-                    <dt className="mono text-[11px] uppercase tracking-[0.2em] text-bone-faint">
-                      {fact.label}
-                    </dt>
-                    <dd className="serif mt-1.5 text-[20px]">{fact.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            )}
-          </div>
-        </Reveal>
-      )}
+              <div className="mt-6 grid gap-8 border-t border-line pt-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-14">
+                <div>
+                  <h2
+                    id={headingId}
+                    className="serif text-[clamp(24px,3.4vw,34px)]"
+                  >
+                    {film.title}
+                  </h2>
+                  {projectName && (
+                    <p className="mono mt-2 text-[11px] uppercase tracking-[0.14em] text-bone-faint">
+                      {projectName}
+                    </p>
+                  )}
+                  {film.description && (
+                    <p className="mt-2.5 max-w-[56ch] text-[15px] text-bone-dim">
+                      {film.description}
+                    </p>
+                  )}
+                  {film.projectSlug && (
+                    <Link
+                      href={`/work/${film.projectSlug}`}
+                      className="mono mt-5 inline-block border-b border-ember pb-0.5 text-[12px] uppercase tracking-[0.06em] text-ember hover:border-gold hover:text-gold"
+                    >
+                      Open the project →
+                    </Link>
+                  )}
+                </div>
 
-      {stills.length > 0 && (
-        <Reveal className="mt-16">
-          <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="klabel">Frames from the film</h2>
-            <Link
-              href="/gallery"
-              className="mono border-b border-ember pb-0.5 text-[12px] uppercase tracking-[0.06em] text-ember hover:border-gold hover:text-gold"
-            >
-              Full gallery →
-            </Link>
-          </div>
-          <GalleryGrid items={stills} columnsClass="sm:columns-2 lg:columns-3" />
-        </Reveal>
-      )}
-
-      {rest.length > 0 && (
-        <>
-          <div className="mt-16 mb-6 flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="serif text-[22px]">More films</h2>
-            <span className="klabel">tap to play</span>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {rest.map((film, i) => (
-              <Reveal key={film.slug} delay={i * 60}>
-                <VideoPlayer film={film} />
-                <h3 className="serif mt-3 text-[18px]">{film.title}</h3>
-                {film.projectTitle && (
-                  <p className="mono mt-1 text-[11px] uppercase tracking-[0.14em] text-bone-faint">
-                    {film.projectTitle}
-                  </p>
+                {facts.length > 0 && (
+                  <dl className="flex flex-wrap gap-x-12 gap-y-5">
+                    {facts.map((fact) => (
+                      <div key={fact.label}>
+                        <dt className="mono text-[11px] uppercase tracking-[0.2em] text-bone-faint">
+                          {fact.label}
+                        </dt>
+                        <dd className="serif mt-1.5 text-[20px]">
+                          {fact.value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
                 )}
+              </div>
+            </Reveal>
+
+            {frames.length > 0 && (
+              <Reveal className="mt-12">
+                <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
+                  <h3 className="klabel">Frames from the film</h3>
+                  <Link
+                    href="/gallery"
+                    className="mono border-b border-ember pb-0.5 text-[12px] uppercase tracking-[0.06em] text-ember hover:border-gold hover:text-gold"
+                  >
+                    Full gallery →
+                  </Link>
+                </div>
+                <GalleryGrid
+                  items={frames}
+                  columnsClass="sm:columns-2 lg:columns-3"
+                />
               </Reveal>
-            ))}
-          </div>
-        </>
-      )}
+            )}
+          </article>
+        );
+      })}
     </section>
   );
 }
