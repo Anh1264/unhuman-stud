@@ -84,20 +84,6 @@ const PROJECTS: ProjectSeed[] = [
     gallery: ["nu-willump", "nu-still", "nu-monster-face", "nu-snowball", "nu-snow"],
     films: [
       {
-        slug: "nu-the-snowball",
-        video: "/videos/nu-social.mp4",
-        poster: "nu-social-poster",
-        kind: "FEATURE",
-        durationSeconds: 17,
-        width: 1920,
-        height: 1080,
-        featured: true,
-        sortOrder: 1,
-        title: "NU — The Snowball",
-        description:
-          "The full escalation: the creature, the ridge, and what it sends down toward the skyline.",
-      },
-      {
         slug: "nu-first-cut",
         video: "/videos/nu-original.mp4",
         poster: "nu-original-poster",
@@ -105,31 +91,31 @@ const PROJECTS: ProjectSeed[] = [
         durationSeconds: 15,
         width: 1280,
         height: 720,
-        featured: false,
-        sortOrder: 2,
+        featured: true,
+        sortOrder: 1,
         title: "NU — First Cut",
         description: "The earlier assembly, before the final grade and sound pass.",
       },
     ],
   },
   {
-    slug: "old-friend",
+    slug: "a-new-pet",
     kind: "ORIGINAL_FILM",
     year: 2026,
     featured: true,
     sortOrder: 2,
     accentColor: "#E0A46B",
     cover: "pet-dog-1",
-    title: "OLD FRIEND",
+    title: "A new pet",
     tagline: "Golden Age cel animation, rebuilt frame by frame.",
     summary:
-      "A father, a daughter, and the dog between them — built in the vocabulary of 1940s hand-painted cel animation.",
-    body: "OLD FRIEND is a technique study that turned into a character piece. The brief was narrow and unforgiving: tinted ink outlines instead of black, airbrushed shading, painted watercolour backgrounds, and the soft multiplane depth that studio animation used before cameras went digital.\n\nHolding that vocabulary consistently across a father, a child and an animal — three very different shapes, three different weights — is the whole exercise. The warmth is deliberate. It is a film about a household, shot at the hour when the lamps come on.",
+      "A daughter makes her case for a dog. Her father is not saying yes yet — built in the vocabulary of 1940s hand-painted cel animation.",
+    body: "A new pet is a technique study that turned into a character piece. The brief was narrow and unforgiving: tinted ink outlines instead of black, airbrushed shading, painted watercolour backgrounds, and the soft multiplane depth that studio animation used before cameras went digital.\n\nThe story is one negotiation. A girl wants a dog; her father, sunk into the sofa after work, has heard the argument before. She brings him candidates — the tall-eared stray at dusk, the spaniel in the grass, the terrier already behaving as though it lives there — and the film watches him run out of reasons.\n\nHolding that vocabulary consistently across a father, a child and an animal — three very different shapes, three different weights — is the whole exercise. The warmth is deliberate. It is a film about a household, shot at the hour when the lamps come on.",
     tags: ["Original Film", "Cel Animation", "Character Study"],
     gallery: ["pet-dog-1", "pet-dad", "pet-daughter", "pet-dog-2", "pet-dog-3"],
     films: [
       {
-        slug: "old-friend-test",
+        slug: "a-new-pet-test",
         video: "/videos/pet-dog.mp4",
         poster: "pet-dog-poster",
         kind: "FEATURE",
@@ -138,7 +124,7 @@ const PROJECTS: ProjectSeed[] = [
         height: 496,
         featured: true,
         sortOrder: 1,
-        title: "OLD FRIEND — Motion Test",
+        title: "A new pet — Motion Test",
         description:
           "Bringing the painted cel look into motion while holding the line quality steady.",
       },
@@ -177,78 +163,26 @@ const PROJECTS: ProjectSeed[] = [
   },
 
   /* ------------------------------------------------------------------
-     The four projects below are written and designed, but none of their
-     frames, cuts or key art have been handed over yet. Their copy is real;
-     their media is not invented.
+     The project below is written and designed, but none of its frames,
+     cuts or key art have been handed over yet. Its copy is real; its
+     media is not invented.
 
-     SWAP — each of these needs, from Aiden:
+     SWAP — it needs, from Aiden:
        • a cover image (drop the master in `assets-source/`, add it to
          `SOURCES` in `scripts/prepare-media.ts`, run `npm run media`, then
          set `cover` to the manifest name below)
        • gallery frames (same pipeline, then list the manifest names)
        • the film itself (encode to `public/videos/`, add a `films` entry)
      Until then `cover` stays null, `gallery` and `films` stay empty, and the
-     cards render without artwork rather than with a placeholder standing in
+     card renders without artwork rather than with a placeholder standing in
      for work that does not exist.
      ------------------------------------------------------------------ */
-  {
-    slug: "stillness",
-    kind: "ORIGINAL_FILM",
-    year: 2026,
-    featured: true,
-    sortOrder: 4,
-    accentColor: "#c1121f",
-    cover: null, // SWAP — key visual pending
-    title: "STILLNESS / Tĩnh Lặng",
-    titleAlt: "Tĩnh Lặng",
-    tagline: "An assassin arrives to kill. An old man refuses to be afraid.",
-    summary:
-      "An assassin is disarmed not by a weapon but by an elder's stillness — wordless, bioluminescent, built around a three-object surrender.",
-    body: "A near-silent science-fiction short set in a bioluminescent cave. An assassin arrives to kill and is undone by an old man who simply refuses to be afraid.\n\nThe turn is carried by a three-object surrender rather than by dialogue: what is set down, in what order, and what is still standing afterwards. Nothing is explained aloud, so every beat has to survive on staging, light and the pace at which a hand moves.\n\nThe piece was written and designed end to end — full script, shot design, and a Vietnamese translation — so it reads in both English and Vietnamese without either version feeling like the subtitle of the other.",
-    tags: ["Original Film", "Sci-Fi", "EN / VN"],
-    gallery: [], // SWAP — cave interior and surrender frames pending
-    films: [], // SWAP — the cut itself is not delivered yet
-  },
-  {
-    slug: "giap",
-    kind: "COMMISSIONED",
-    year: 2026,
-    featured: true,
-    sortOrder: 5,
-    accentColor: "#e3b23c",
-    cover: null, // SWAP — key visual pending
-    title: "GIÁP",
-    tagline: "Four chapters on General Võ Nguyên Giáp.",
-    summary:
-      "A four-minute cinematic short on General Võ Nguyên Giáp, commissioned by an AI video platform as a flagship demo.",
-    body: "GIÁP was commissioned by an AI video platform as a flagship demo: a four-minute cinematic short built to show what the tooling could carry at full length rather than in a ten-second sizzle.\n\nThe film runs in four chapters, with shot design worked out across the whole span and an original voice-over written for it. Structure was the hard part — four minutes is long enough that a sequence of striking images stops being enough and the piece has to actually move.\n\nIt is a client deliverable and a portfolio piece at the same time, which set the standard: nothing in it could be defended as \"good for a demo.\"",
-    tags: ["Commissioned", "Cinematic", "Four-Minute Short"],
-    gallery: [], // SWAP — chapter key visuals pending
-    films: [], // SWAP — the cut and its teaser are not delivered yet
-  },
-  {
-    slug: "wakan-ai",
-    kind: "STUDIO_BRAND",
-    year: 2026,
-    featured: false,
-    sortOrder: 6,
-    accentColor: "#e0654d",
-    cover: null, // SWAP — campaign key visual pending
-    title: "WAKAN AI",
-    tagline: "Campaign studio — a full shoot, run by one operator.",
-    summary:
-      "A solo studio producing campaign-quality fashion and product visuals at a fraction of a traditional shoot, including the in-house brand concept “Intent.”",
-    body: "WAKAN AI is the studio's commercial arm: campaign-quality fashion and product visuals produced at a fraction of the cost of a traditional shoot, for direct-to-consumer and streetwear brands.\n\nThe difficulty is not making one good frame — it is coherence. A campaign only holds together if the model reads as the same person from frame to frame, if the lighting belongs to one afternoon, and if the whole set behaves like a single editorial rather than a folder of images. Holding that across an entire campaign is the work.\n\n“Intent” is the in-house brand concept — the studio's own label, used to develop a full campaign end to end with no client brief to hide behind: lookbook, product frames, and the editorial voice around them. It is where the process gets tested before it is sold, and it is built in public.",
-    tags: ["Studio Brand", "AI Fashion", "Campaign", "Ongoing"],
-    gallery: [], // SWAP — editorial, product and Intent lookbook frames pending
-    films: [],
-  },
   {
     slug: "boop",
     kind: "CLIENT_WORK",
     year: 2026,
     featured: false,
-    sortOrder: 7,
+    sortOrder: 4,
     accentColor: "#e11d1d",
     cover: null, // SWAP — key visual pending
     title: "boop.",
