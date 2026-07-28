@@ -21,10 +21,13 @@ export function VideoPlayer({
   film,
   className,
   priority = false,
+  posterSizes = "(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1100px",
 }: {
   film: Film;
   className?: string;
   priority?: boolean;
+  /** Override when the player is wider than the usual centred column. */
+  posterSizes?: string;
 }) {
   const [active, setActive] = useState(false);
   const duration = formatDuration(film.durationSeconds);
@@ -76,7 +79,7 @@ export function VideoPlayer({
               alt={film.poster.alt}
               fill
               priority={priority}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1100px"
+              sizes={posterSizes}
               placeholder={film.poster.blurDataUrl ? "blur" : "empty"}
               blurDataURL={film.poster.blurDataUrl ?? undefined}
               className="object-cover transition-transform duration-700 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.03]"

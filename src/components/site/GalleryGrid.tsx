@@ -14,17 +14,23 @@ import { cn } from "@/lib/utils";
  * `captions` decides where the label sits. Frames are pictures and hide it
  * until hover; design sheets are documents, and a document keeps its label
  * visible — which is also the only way a touch device ever sees it.
+ *
+ * `sizes` defaults to the three-column masonry the grid is usually laid out
+ * in. A caller that gives the images more room (a one- or two-up layout) has
+ * to say so, or the browser picks a source too small and renders it soft.
  */
 export function GalleryGrid({
   items,
   className,
   columnsClass = "sm:columns-2 lg:columns-3",
   captions = "hover",
+  sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw",
 }: {
   items: (Media & { projectTitle?: string | null })[];
   className?: string;
   columnsClass?: string;
   captions?: "hover" | "below";
+  sizes?: string;
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const triggersRef = useRef<(HTMLButtonElement | null)[]>([]);
@@ -93,7 +99,7 @@ export function GalleryGrid({
                 alt={item.alt}
                 width={item.width}
                 height={item.height}
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                sizes={sizes}
                 placeholder={item.blurDataUrl ? "blur" : "empty"}
                 blurDataURL={item.blurDataUrl ?? undefined}
                 className="w-full transition-transform duration-700 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.04]"
