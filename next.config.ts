@@ -1,6 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // The site ships as a fully static export: `next build` prerenders every
+  // route into `out/`, reading content from the local PGlite database at build
+  // time. Nothing needs a database (or a Node server) in production.
+  //
+  // The trade-off, per the static-export guide, is that server-only features
+  // are unavailable — Server Actions, rewrites/redirects, and the `headers()`
+  // config below among them. Those response headers are therefore declared in
+  // `vercel.json` instead, which the static host applies at the edge.
+  output: "export",
+
   images: {
     // The NU / Ceasefire stills ship as *lossless* WebP, pixel-identical to the
     // masters. Routing them through the optimiser would re-encode them lossily
@@ -17,30 +27,6 @@ const nextConfig: NextConfig = {
 
   // PGlite ships a WASM build of Postgres that must not be bundled.
   serverExternalPackages: ["@electric-sql/pglite"],
-
-  async headers() {
-    return [
-      {
-        source: "/:path*",
-        headers: [
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "X-Frame-Options", value: "SAMEORIGIN" },
-          {
-            key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
-          },
-        ],
-      },
-      {
-        // Hashed media is immutable; let the CDN and browser keep it.
-        source: "/videos/:path*",
-        headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-        ],
-      },
-    ];
-  },
 };
 
 export default nextConfig;

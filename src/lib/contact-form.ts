@@ -2,6 +2,11 @@
  * Shared, framework-neutral shape of the contact form. Both the client
  * component and the Server Action import this, so neither has to reach across
  * the client/server boundary for a type or a default value.
+ *
+ * Currently unused: the site ships as a static export, which cannot run Server
+ * Actions, so the contact page collects a brief by email instead. This file and
+ * the inquiries service/repository below it are kept intact so the form can be
+ * restored — see "Re-enabling the contact form" in README.md.
  */
 
 export const INQUIRY_FIELDS = [

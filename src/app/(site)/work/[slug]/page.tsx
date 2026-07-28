@@ -19,6 +19,12 @@ export async function generateStaticParams() {
   return slugs.map(({ slug }) => ({ slug }));
 }
 
+/**
+ * Static export can only ship the slugs known at build time; anything else has
+ * to fall through to the 404 page rather than being rendered on demand.
+ */
+export const dynamicParams = false;
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Next 16: params is a Promise and must be awaited.
   const { slug } = await params;

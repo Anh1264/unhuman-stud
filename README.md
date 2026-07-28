@@ -67,20 +67,68 @@ Data flows **route → service → repository → database**. Pages never query 
 database directly, which is what lets the storage layer change without touching
 the UI.
 
-## Deploying
+## Deploying — static export
 
-The database is currently embedded (PGlite, `.data/`), which suits local
-development but not a serverless host. To go live:
+The site ships as a **static export**: `next build` renders every route to plain
+HTML in `out/`, reading the content out of the local PGlite database *at build
+time*. Nothing needs a database or a Node server in production, which is what
+makes free hosting possible.
 
-1. Create a Postgres database (Neon has a free tier).
-2. Point `src/server/db/client.ts` at it — the schema is already standard
-   Postgres, so no migration rewriting is needed.
-3. Set `NEXT_PUBLIC_SITE_URL` to the real domain so metadata, Open Graph tags
-   and `sitemap.xml` use absolute URLs.
-4. Deploy to Vercel and run migrations in CI.
+```bash
+npm run seed     # content into the database
+npm run build    # → out/  (index.html, work/nu.html, sitemap.xml, …)
+```
+
+Two settings make this work, both in `next.config.ts`: `output: "export"` and
+`images.unoptimized`. Static export cannot run server-only features, so the
+response headers that used to live in `next.config.ts` now live in
+`vercel.json`, and dynamic routes are pinned with `dynamicParams = false`.
+
+On Vercel, use the `vercel-build` script (`package.json`) — it seeds the
+database before building, because `.data/` is deliberately not in git.
+
+**After the first deploy**, set `NEXT_PUBLIC_SITE_URL` to the real URL
+(Project → Settings → Environment Variables) and redeploy. Until then,
+`src/lib/site-metadata.ts` falls back to `http://localhost:3000`, which is
+harmless locally but wrong in `sitemap.xml`, `robots.txt` and the Open Graph
+tags.
+
+`.vercelignore` keeps `.data/`, `assets-source/`, `node_modules/` and the 402 MB
+4K master (`public/videos/nu-ceasefire.mp4`) out of every upload. The 84 MB
+`public/videos/nu-ceasefire-1080.mp4` **is** deployed — it is the encode the NU
+page plays.
+
+> Note: a local `out/` also contains the 4K master, because it sits in
+> `public/`. Only builds that respect `.vercelignore` drop it.
+
+## Re-enabling the contact form
+
+The contact page used to post a project brief to a Server Action, which stored
+it in the `inquiries` table. Static export cannot run Server Actions, so the
+page now opens the visitor's mail client with the same questions pre-written
+into the email body. No data is lost and nothing is faked.
+
+Everything below the form is still here and still tested: the `inquiries`
+table (`src/server/db/schema.ts`), `src/server/repositories/inquiries.repo.ts`,
+`src/server/services/inquiries.service.ts` and the shared form shape in
+`src/lib/contact-form.ts`.
+
+To bring the real form back you need three things:
+
+1. **A hosted Postgres.** Create one (Neon has a free tier) and point
+   `src/server/db/client.ts` at it. The schema is standard Postgres, so the
+   existing migrations in `drizzle/` apply unchanged.
+2. **A non-static build.** Remove `output: "export"` from `next.config.ts` and
+   move the headers back out of `vercel.json`. The site then deploys as a
+   normal Next.js app rather than a folder of HTML.
+3. **The two deleted files.** `src/app/(site)/contact/actions.ts` (the
+   `"use server"` adapter) and `src/components/site/ContactForm.tsx` (the form
+   itself). Both are in git history — recover them with
+   `git log --diff-filter=D -- src/components/site/ContactForm.tsx`, then render
+   `<ContactForm />` in place of the mailto panel on the contact page.
 
 ## Not built yet
 
-- Admin CMS (Google sign-in, edit content without touching code) — contact-form
-  inquiries are stored in the `inquiries` table, but nothing reads them yet
+- Admin CMS (Google sign-in, edit content without touching code) — the
+  `inquiries` table exists, but nothing reads or writes it right now
 - Real social links and a résumé download

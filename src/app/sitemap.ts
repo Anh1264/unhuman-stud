@@ -2,6 +2,9 @@ import type { MetadataRoute } from "next";
 import { getProjectSlugs } from "@/server/services/content.service";
 import { SITE_URL } from "@/lib/site-metadata";
 
+/** Static export writes this once at build time as `out/sitemap.xml`. */
+export const dynamic = "force-static";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = ["", "/work", "/films", "/gallery", "/about", "/contact"];
 

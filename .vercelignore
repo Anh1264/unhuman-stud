@@ -1,0 +1,30 @@
+# What Vercel must never receive. The site is a static export, so anything that
+# is not needed to run `next build` is dead weight on every deploy.
+
+# Dependencies and build output — Vercel installs and builds these itself.
+node_modules
+.next
+out
+coverage
+*.tsbuildinfo
+
+# The local PGlite database. Content is read at build time from the seed script,
+# which recreates it, so the data directory itself never travels.
+.data
+
+# Original Midjourney / render masters (~60 MB). Only `npm run media` needs them.
+assets-source
+
+# The 4K master (~402 MB). A local archive, not what the site plays.
+# public/videos/nu-ceasefire-1080.mp4 IS deployed — it is the encode the NU page
+# streams — so exclude the master by name rather than the whole videos folder.
+public/videos/nu-ceasefire.mp4
+
+# Archive of the previous single-file site.
+legacy
+
+# Repo-only material. `drizzle/` stays — the build seeds the database and needs
+# the migrations.
+.claude
+tests
+.DS_Store
