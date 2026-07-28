@@ -161,39 +161,6 @@ const PROJECTS: ProjectSeed[] = [
       },
     ],
   },
-
-  /* ------------------------------------------------------------------
-     The project below is written and designed, but none of its frames,
-     cuts or key art have been handed over yet. Its copy is real; its
-     media is not invented.
-
-     SWAP — it needs, from Aiden:
-       • a cover image (drop the master in `assets-source/`, add it to
-         `SOURCES` in `scripts/prepare-media.ts`, run `npm run media`, then
-         set `cover` to the manifest name below)
-       • gallery frames (same pipeline, then list the manifest names)
-       • the film itself (encode to `public/videos/`, add a `films` entry)
-     Until then `cover` stays null, `gallery` and `films` stay empty, and the
-     card renders without artwork rather than with a placeholder standing in
-     for work that does not exist.
-     ------------------------------------------------------------------ */
-  {
-    slug: "boop",
-    kind: "CLIENT_WORK",
-    year: 2026,
-    featured: false,
-    sortOrder: 4,
-    accentColor: "#e11d1d",
-    cover: null, // SWAP — key visual pending
-    title: "boop.",
-    tagline: "Cream interiors, arched windows, a six-checkpoint journey.",
-    summary:
-      "A warm, soft-futurist visual world for an app client — cream interiors, arched windows onto fantasy landscapes, and a six-checkpoint journey map.",
-    body: "boop. is a visual world built for an app client, in a register the brief called soft-futurist: warm rather than clinical, cream interiors instead of chrome, curves instead of edges.\n\nThe recurring device is an arched window — an interior that stays calm and domestic, opening onto a fantasy landscape that does the dreaming for it. The contrast is what makes the world feel inhabitable rather than merely rendered.\n\nOn top of that sits a six-checkpoint journey map: the product's progression drawn as places a user travels through, so the interface reads as a route rather than a menu.",
-    tags: ["Client Work", "Soft-Futurist"],
-    gallery: [], // SWAP — interior and journey-map frames pending
-    films: [],
-  },
 ];
 
 const SOCIALS = [
