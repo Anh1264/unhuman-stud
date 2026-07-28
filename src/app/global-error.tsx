@@ -36,7 +36,7 @@ export default function GlobalError({
       <body className="flex min-h-full flex-col">
         <title>Something went wrong — Unhuman Stud</title>
 
-        <main className="mx-auto flex max-w-[1140px] flex-1 flex-col justify-center px-6 py-24 sm:px-8">
+        <main className="mx-auto flex max-w-site flex-1 flex-col justify-center px-6 py-24 sm:px-8">
           <div className="max-w-[640px]">
             <span className="klabel">500 — Print destroyed</span>
 

@@ -49,6 +49,8 @@ Subtle only, and never ink: scroll-reveal fades (`.reveal`→`.in`), skill-bar f
 hover lifts, tab cross-fades. Any new motion must stay in this restrained register.
 
 ## Layout
-- Container `.wrap`: `max-width:1140px`, `padding:0 30px`, `width:100%`, `min-width:0`.
+- Container `.wrap`: `max-width:1760px`, `padding:0 30px`, `width:100%`, `min-width:0`.
+  Long-form copy stays capped at a readable measure (`56ch`, or `68ch` for prose
+  blocks) inside that container; headings and hero type may span wider.
 - Fixed blurred header; `.tab.active` underlined in crimson.
 - Responsive: 860px → hamburger + single columns; 480px → gallery single column.

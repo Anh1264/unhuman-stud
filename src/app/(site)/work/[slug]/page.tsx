@@ -48,7 +48,7 @@ export default async function ProjectPage({ params }: Props) {
 
   return (
     <article
-      className="mx-auto max-w-[1140px] px-6 py-16 sm:px-8"
+      className="mx-auto max-w-site px-6 py-16 sm:px-8"
       style={{ ["--accent" as string]: project.accentColor }}
     >
       {/* ---------------- header ---------------- */}
@@ -149,7 +149,7 @@ export default async function ProjectPage({ params }: Props) {
       )}
 
       <Reveal className="mt-16 border-t border-line pt-10">
-        <p className="text-[16px] text-bone-dim">
+        <p className="max-w-[56ch] text-[16px] text-bone-dim">
           Want something like this for your brand?{" "}
           <Link
             href="/contact"

@@ -29,6 +29,10 @@
   --font-mono: var(--font-space-mono), ui-monospace, monospace;
 
   --ease-out-expo: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* The site content container — the single source of the page width.
+     Consumed as `max-w-site` by the header, footer and every page section. */
+  --container-site: 1760px;
 }
 
 :root {

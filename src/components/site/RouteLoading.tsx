@@ -12,7 +12,7 @@
  */
 export function RouteLoading({ label = "Loading" }: { label?: string }) {
   return (
-    <div className="mx-auto max-w-[1140px] px-6 py-16 sm:px-8">
+    <div className="mx-auto max-w-site px-6 py-16 sm:px-8">
       <p role="status" className="klabel flex items-center gap-3">
         <span
           aria-hidden="true"
