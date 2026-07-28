@@ -14,3 +14,4 @@
 - [8103ec2] Removed the boop project (and its SWAP note) from scripts/seed.ts; three projects remain, sortOrder 1..3
 - [32f6ec3] Ceasefire media: six finals to lossless WebP (pixel-identical), 4K crf-31 playback encode + untouched master (gitignored) as download, video poster frame, images.unoptimized so nothing is re-compressed
 - [fb808c1] Ceasefire video: public/videos/nu-ceasefire.mp4 is now the untouched 402 MB master (faststart remux only), untracked + gitignored; prepare-media dropped the crf-31 encode and keeps the measured CRF ladder as a comment
+- [5c945cd] Seed cut to one project — NU & TIB: CEASEFIRE on /videos/nu-ceasefire.mp4 (68s, 4K, nu-first-frame poster) with the six real images in KEY_ART/FRAME/DESIGN sections; home, /work, /work/nu, /films and /gallery restructured around the single film (poster at true 2:3, film centrepiece, frames, character sheets in their own panel)
