@@ -166,8 +166,7 @@ const PROJECTS: ProjectSeed[] = [
   {
     slug: "the-unbothered-cyclops",
     kind: "ORIGINAL_FILM",
-    // No year: the owner has not dated the film. The Year fact drops out of
-    // the hero rather than being guessed from a file's timestamp.
+    year: 2026,
     featured: false,
     sortOrder: 2,
     // The film's own ground colour, and the closest thing to it in the brand
@@ -181,9 +180,7 @@ const PROJECTS: ProjectSeed[] = [
     tagline: "An army charges the giant. The giant does not look down.",
     summary: "An army charges the giant. The giant does not look down.",
     body: "Countless small, heavily armoured Greek soldiers march on a cyclops many times their size. They commit everything they have to the assault. The cyclops remains unbothered.",
-    // No tags. A chip has to come out of the work itself; "Original Film"
-    // only restated the section the film was already sitting in.
-    tags: [],
+    tags: ["Original Film", "Creature Design", "Comedy"],
     gallery: [
       { section: "KEY_ART", items: ["cyclops-poster"] },
       {
