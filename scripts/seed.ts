@@ -133,7 +133,9 @@ const PROJECTS: ProjectSeed[] = [
     films: [
       {
         slug: "nu-ceasefire",
-        video: "/videos/nu-ceasefire.mp4",
+        // The 1080p encode, not the 4K master: the master is a ~402 MB local
+        // archive that never leaves this machine. See scripts/prepare-media.ts.
+        video: "/videos/nu-ceasefire-1080.mp4",
         // The first frame of the film, from a true master — a better poster
         // than a still pulled back out of the encode.
         poster: "nu-first-frame",
@@ -144,7 +146,7 @@ const PROJECTS: ProjectSeed[] = [
         featured: true,
         sortOrder: 1,
         title: "NU & TIB: CEASEFIRE",
-        description: "The complete film, straight from the 4K master.",
+        description: "The complete film, encoded from the 4K master.",
       },
     ],
   },
