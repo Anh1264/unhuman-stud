@@ -63,6 +63,40 @@ export const inquiryStatus = pgEnum("inquiry_status", [
 export const DEFAULT_LOCALE = "en" as const;
 
 /* ============================================================
+   GALLERY SECTIONS
+   ============================================================ */
+
+/**
+ * A gallery image is one of three things, and the pages lay each out
+ * differently: key art is portrait and gets room, frames are stills lifted from
+ * a film, and design sheets are documents rather than shots.
+ *
+ * `gallery_items` has no section column, so the sort order carries it:
+ * `project * 1000 + section * 100 + index`. That keeps ordering and grouping in
+ * the one number the table already sorts by, and keeps the encode/decode pair
+ * here rather than spread between the seed and the pages.
+ */
+export const GALLERY_SECTIONS = ["KEY_ART", "FRAME", "DESIGN"] as const;
+
+export type GallerySection = (typeof GALLERY_SECTIONS)[number];
+
+export function gallerySortOrder(
+  projectOrder: number,
+  section: GallerySection,
+  index: number,
+): number {
+  return projectOrder * 1000 + GALLERY_SECTIONS.indexOf(section) * 100 + index;
+}
+
+/** Inverse of {@link gallerySortOrder}. Unrecognised orders read as frames. */
+export function gallerySection(
+  sortOrder: number | null | undefined,
+): GallerySection {
+  if (typeof sortOrder !== "number") return "FRAME";
+  return GALLERY_SECTIONS[Math.floor(sortOrder / 100) % 10] ?? "FRAME";
+}
+
+/* ============================================================
    USERS  (shape kept Auth.js-compatible for the admin phase)
    ============================================================ */
 

@@ -26,10 +26,10 @@ export type OgImage = {
  * so the description a crawler sees matches the one a screen reader gets.
  */
 export const DEFAULT_OG_IMAGE: OgImage = {
-  url: "/images/nu-willump.jpg",
-  width: 2560,
-  height: 1433,
-  alt: "A colossal horned snow creature with white and indigo fur stands on a green ridge between snowbanks, a modern city skyline rising in the haze behind it.",
+  url: "/images/nu-first-frame.webp",
+  width: 2944,
+  height: 1648,
+  alt: "Opening frame of the film: the blue horned monster hugs an enormous snowball on a green ridge between snowy peaks, a tiny figure standing on the grass below and a distant city skyline to the right.",
 };
 
 type PageMetadataInput = {

@@ -42,6 +42,14 @@ type FilmSeed = {
   description: string;
 };
 
+/**
+ * Gallery images grouped the way the pages lay them out. The order of the
+ * sections here is the order they appear on the project page; the order within
+ * a section is the order inside it. See `gallerySortOrder` in the schema for
+ * how both survive the trip through a table with no section column.
+ */
+type GallerySeed = { section: schema.GallerySection; items: string[] };
+
 type ProjectSeed = {
   slug: string;
   kind: (typeof schema.projectKind.enumValues)[number];
@@ -62,10 +70,15 @@ type ProjectSeed = {
   summary: string;
   body: string;
   tags: string[];
-  gallery: string[];
+  gallery: GallerySeed[];
   films: FilmSeed[];
 };
 
+/**
+ * One project. NU & TIB: CEASEFIRE is the studio's first long-form film and the
+ * only work on the site — the pages are built to present it as a feature rather
+ * than as one card in a grid.
+ */
 const PROJECTS: ProjectSeed[] = [
   {
     slug: "nu",
@@ -74,90 +87,35 @@ const PROJECTS: ProjectSeed[] = [
     featured: true,
     sortOrder: 1,
     accentColor: "#7C8CE8",
-    cover: "nu-willump",
-    title: "NU",
-    tagline: "A giant, a snowball, and a city that never looks up.",
+    // Landscape, and the cleanest master we have: it carries the project card
+    // and every share card on the site.
+    cover: "nu-first-frame",
+    title: "NU & TIB: CEASEFIRE",
+    tagline: "A monster, a bear, and a snowball the size of a building.",
     summary:
-      "NU is fierce, protective, loyal, and known for rolling massive snowballs. The city below has no idea.",
-    body: "NU began as a scale problem. A creature is only as big as the thing you put next to it — so the film puts a city there, and then rolls something at it.\n\nThe design work came first: a full character model sheet fixing NU's silhouette, four turnarounds, an expression range, and a six-colour palette. Locking that early is what lets the creature stay recognisably itself from a wide mountain shot down to a face in close-up.\n\nThe look is painterly matte work — flat indigo fur against packed snow, a hard horizon line, a skyline that stays hazy and indifferent in the distance. Every frame keeps two readings alive at once: the creature as a threat, and the creature as a child who has simply made the largest snowball anyone has ever made.",
-    tags: ["Original Film", "Creature Design", "Painterly"],
-    gallery: ["nu-willump", "nu-still", "nu-monster-face", "nu-snowball", "nu-snow"],
-    films: [
-      {
-        slug: "nu-first-cut",
-        video: "/videos/nu-original.mp4",
-        poster: "nu-original-poster",
-        kind: "SHORT",
-        durationSeconds: 15,
-        width: 1280,
-        height: 720,
-        featured: true,
-        sortOrder: 1,
-        title: "NU — First Cut",
-        description: "The earlier assembly, before the final grade and sound pass.",
-      },
+      "The studio's first long-form film. Nu rolls a snowball the size of a building down on a city that is still packing its own.",
+    body: "CEASEFIRE is the studio's first long-form film, and it began as a scale problem. A creature is only as big as the thing you put next to it — so the film puts a city there, and then rolls something at it.\n\nThe design work came first. Two character sheets fix the cast before a single frame is shot: Nu, horned and blue, and Tib, red and twice a person's height. Each sheet carries a full turnaround, the same four expressions — happy, angry, sad, neutral — and a face study, with a locked colour palette for Nu. Fixing that early is what lets both characters stay recognisably themselves from a wide mountain shot down to a face in close-up.\n\nThe film moves between two scales and lives in the gap between them: the city at ground level, where people in coats crouch in the snow packing snowballs by hand, and the ridge above it, where Nu builds one the size of a building. The title is the argument the two of them are having.",
+    tags: ["Original Film", "Creature Design", "Character Design"],
+    gallery: [
+      { section: "KEY_ART", items: ["nu-poster"] },
+      { section: "FRAME", items: ["nu-first-frame", "nu-snow", "nu-snowball"] },
+      { section: "DESIGN", items: ["nu-character-sheet", "tib-character-sheet"] },
     ],
-  },
-  {
-    slug: "a-new-pet",
-    kind: "ORIGINAL_FILM",
-    year: 2026,
-    featured: true,
-    sortOrder: 2,
-    accentColor: "#E0A46B",
-    cover: "pet-dog-1",
-    title: "A NEW PET",
-    tagline: "Golden Age cel animation, rebuilt frame by frame.",
-    summary:
-      "A daughter makes her case for a dog. Her father is not saying yes yet — built in the vocabulary of 1940s hand-painted cel animation.",
-    body: "A NEW PET is a character piece built inside a narrow and unforgiving vocabulary: tinted ink outlines instead of black, airbrushed shading, painted watercolour backgrounds, and the soft multiplane depth that studio animation used before cameras went digital.\n\nThe story is one negotiation. A girl wants a dog; her father, sunk into the sofa after work, has heard the argument before. She brings him candidates — the tall-eared stray at dusk, the spaniel in the grass, the terrier already behaving as though it lives there — and the film watches him run out of reasons.\n\nHolding that vocabulary consistently across a father, a child and an animal — three very different shapes, three different weights — is where the work sits. The warmth is deliberate. It is a film about a household, shot at the hour when the lamps come on.",
-    tags: ["Original Film", "Cel Animation", "Character Study"],
-    gallery: ["pet-dog-1", "pet-dad", "pet-daughter", "pet-dog-2", "pet-dog-3"],
     films: [
       {
-        slug: "a-new-pet-test",
-        video: "/videos/pet-dog.mp4",
-        poster: "pet-dog-poster",
+        slug: "nu-ceasefire",
+        video: "/videos/nu-ceasefire.mp4",
+        // The first frame of the film, from a true master — a better poster
+        // than a still pulled back out of the encode.
+        poster: "nu-first-frame",
         kind: "FEATURE",
-        durationSeconds: 15,
-        width: 864,
-        height: 496,
+        durationSeconds: 68,
+        width: 3840,
+        height: 2160,
         featured: true,
         sortOrder: 1,
-        title: "A NEW PET",
-        description:
-          "The painted cel look in motion, with the line quality holding steady frame to frame.",
-      },
-    ],
-  },
-  {
-    slug: "the-shopkeeper",
-    kind: "ORIGINAL_FILM",
-    year: 2026,
-    featured: true,
-    sortOrder: 3,
-    accentColor: "#4FA3D1",
-    cover: "shiba-kiosk",
-    title: "THE SHOPKEEPER",
-    tagline: "The shiba runs the shop. No further questions.",
-    summary:
-      "A corner tobacco shop in Japan, a sliding window, and the dog who owns the place.",
-    body: "One joke, told entirely through production design. The shiba is never explained and never needs to be — the film simply commits to the premise and then spends its runtime on the shop.\n\nThat is where the work actually is: the packed shelves, the hand-lettered signage, the blue rubber cash tray, the afternoon light coming off the street. The comedy only lands because the environment is played completely straight.",
-    tags: ["Original Film", "Environment Design", "Anime"],
-    gallery: ["shiba-kiosk"],
-    films: [
-      {
-        slug: "the-shopkeeper-film",
-        video: "/videos/shiba-kiosk.mp4",
-        poster: "shiba-kiosk-poster",
-        kind: "FEATURE",
-        durationSeconds: 17,
-        width: 1920,
-        height: 1080,
-        featured: true,
-        sortOrder: 1,
-        title: "THE SHOPKEEPER",
-        description: "Open for business.",
+        title: "NU & TIB: CEASEFIRE",
+        description: "The complete film, straight from the 4K master.",
       },
     ],
   },
@@ -325,16 +283,19 @@ async function main() {
       });
     }
 
-    for (const [i, name] of p.gallery.entries()) {
-      const assetId = assetIds.get(name);
-      if (!assetId) throw new Error(`Missing gallery asset "${name}"`);
-      await db.insert(schema.galleryItems).values({
-        assetId,
-        projectId: project.id,
-        status: "PUBLISHED",
-        sortOrder: p.sortOrder * 100 + i,
-      });
-      galleryCount++;
+    for (const group of p.gallery) {
+      for (const [i, name] of group.items.entries()) {
+        const assetId = assetIds.get(name);
+        if (!assetId) throw new Error(`Missing gallery asset "${name}"`);
+        await db.insert(schema.galleryItems).values({
+          assetId,
+          projectId: project.id,
+          status: "PUBLISHED",
+          // Carries both the position and the section — see the schema.
+          sortOrder: schema.gallerySortOrder(p.sortOrder, group.section, i),
+        });
+        galleryCount++;
+      }
     }
 
     for (const f of p.films) {

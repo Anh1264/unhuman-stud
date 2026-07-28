@@ -12,6 +12,10 @@ import { cn, formatDuration } from "@/lib/utils";
  * element (or provider iframe) is only mounted on click, so a page with five
  * films costs five images on load instead of five video streams. The browser
  * downloads nothing from /videos until the visitor asks for it.
+ *
+ * The masters are large — CEASEFIRE is a 400 MB 4K file — so the element also
+ * carries `preload="none"`: mounting it must not start a download on its own,
+ * only the play the visitor just asked for.
  */
 export function VideoPlayer({
   film,
@@ -44,6 +48,7 @@ export function VideoPlayer({
             poster={film.poster?.url}
             controls
             autoPlay
+            preload="none"
             playsInline
             aria-label={film.title}
           >

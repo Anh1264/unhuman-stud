@@ -1,6 +1,9 @@
 import "server-only";
 
 import * as repo from "../repositories/content.repo";
+import { gallerySection, type GallerySection } from "../db/schema";
+
+export type { GallerySection };
 
 /**
  * Business layer. Turns database rows into the shapes the UI actually renders,
@@ -44,13 +47,20 @@ export type ProjectSummary = {
   tags: string[];
 };
 
+/**
+ * A gallery image and the role it plays: key art, a frame from the film, or a
+ * design document. The pages lay each section out differently, so the grouping
+ * travels with the image rather than being re-guessed in the UI.
+ */
+export type GalleryImage = Media & { section: GallerySection };
+
 export type ProjectDetail = ProjectSummary & {
   body: string | null;
   films: Film[];
-  gallery: Media[];
+  gallery: GalleryImage[];
 };
 
-export type GalleryEntry = Media & {
+export type GalleryEntry = GalleryImage & {
   projectSlug: string | null;
   projectTitle: string | null;
 };
@@ -136,8 +146,11 @@ export async function getProject(slug: string): Promise<ProjectDetail | null> {
       projectTitle: t?.title ?? null,
     })),
     gallery: row.galleryItems
-      .map((g) => toMedia(g.asset))
-      .filter((m): m is Media => m !== null),
+      .map((g) => {
+        const media = toMedia(g.asset);
+        return media && { ...media, section: gallerySection(g.sortOrder) };
+      })
+      .filter((m): m is GalleryImage => Boolean(m)),
   };
 }
 
@@ -174,6 +187,7 @@ export async function getGallery(): Promise<GalleryEntry[]> {
       if (!media) return null;
       return {
         ...media,
+        section: gallerySection(g.sortOrder),
         projectSlug: g.project?.slug ?? null,
         projectTitle: g.project?.translations[0]?.title ?? null,
       };
@@ -195,13 +209,14 @@ export type Stat = { value: string; suffix?: string; label: string };
 /**
  * Home-page counters. Projects and films are counted from the database rather
  * than stored, so they cannot drift out of date the way hardcoded numbers do.
- * `suffix` is explicit — an exact count should not claim to be "3+".
+ * `suffix` is explicit — an exact count should not claim to be "3+", and a
+ * count of one should not read "1 Projects".
  */
 export async function getStudioStats(): Promise<Stat[]> {
   const { projects, films } = await repo.countPublished();
   return [
-    { value: String(projects), label: "Projects" },
-    { value: String(films), label: "Films & Cuts" },
+    { value: String(projects), label: projects === 1 ? "Project" : "Projects" },
+    { value: String(films), label: films === 1 ? "Film" : "Films & Cuts" },
     { value: "6", suffix: "+", label: "AI Tools" },
     { value: "1", label: "Person" },
   ];

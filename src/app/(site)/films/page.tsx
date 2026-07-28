@@ -1,20 +1,36 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { GalleryGrid } from "@/components/site/GalleryGrid";
 import { VideoPlayer } from "@/components/site/VideoPlayer";
 import { Reveal } from "@/components/site/Reveal";
-import { getFilms } from "@/server/services/content.service";
+import { getFilms, getGallery } from "@/server/services/content.service";
 import { pageMetadata } from "@/lib/site-metadata";
+import { formatDuration } from "@/lib/utils";
 
 export const metadata: Metadata = pageMetadata({
   title: "Films",
   description:
-    "Original short films and cuts from Unhuman Stud — AI-generated motion written, directed and edited by Aiden Vu.",
+    "NU & TIB: CEASEFIRE, the first long-form film from Unhuman Stud — written, directed, generated and cut by Aiden Vu.",
   path: "/films",
 });
 
 export default async function FilmsPage() {
-  const films = await getFilms();
+  const [films, gallery] = await Promise.all([getFilms(), getGallery()]);
   const [hero, ...rest] = films;
+
+  // Stills from the same project as the hero, so the page has the film and the
+  // frames it came from rather than one player and a lot of empty page.
+  const stills = gallery.filter(
+    (item) => item.section === "FRAME" && item.projectSlug === hero?.projectSlug,
+  );
+
+  const runtime = formatDuration(hero?.durationSeconds);
+  const facts = [
+    runtime ? { label: "Runtime", value: runtime } : null,
+    hero?.width && hero?.height
+      ? { label: "Master", value: `${hero.width} × ${hero.height}` }
+      : null,
+  ].filter((f): f is { label: string; value: string } => f !== null);
 
   return (
     <section className="mx-auto max-w-site px-6 py-16 sm:px-8">
@@ -32,24 +48,55 @@ export default async function FilmsPage() {
       {hero && (
         <Reveal>
           <VideoPlayer film={hero} priority />
-          <div className="mt-5 flex flex-wrap items-baseline justify-between gap-3">
+
+          <div className="mt-6 grid gap-8 border-t border-line pt-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-14">
             <div>
-              <h2 className="serif text-[27px]">{hero.title}</h2>
+              <h2 className="serif text-[clamp(24px,3.4vw,34px)]">
+                {hero.title}
+              </h2>
               {hero.description && (
-                <p className="mt-1.5 max-w-[70ch] text-[15px] text-bone-dim">
+                <p className="mt-2.5 max-w-[56ch] text-[15px] text-bone-dim">
                   {hero.description}
                 </p>
               )}
+              {hero.projectSlug && (
+                <Link
+                  href={`/work/${hero.projectSlug}`}
+                  className="mono mt-5 inline-block border-b border-ember pb-0.5 text-[12px] uppercase tracking-[0.06em] text-ember hover:border-gold hover:text-gold"
+                >
+                  Open the project →
+                </Link>
+              )}
             </div>
-            {hero.projectSlug && (
-              <Link
-                href={`/work/${hero.projectSlug}`}
-                className="mono border-b border-ember pb-0.5 text-[12px] uppercase tracking-[0.06em] text-ember hover:border-gold hover:text-gold"
-              >
-                Project →
-              </Link>
+
+            {facts.length > 0 && (
+              <dl className="flex flex-wrap gap-x-12 gap-y-5">
+                {facts.map((fact) => (
+                  <div key={fact.label}>
+                    <dt className="mono text-[11px] uppercase tracking-[0.2em] text-bone-faint">
+                      {fact.label}
+                    </dt>
+                    <dd className="serif mt-1.5 text-[20px]">{fact.value}</dd>
+                  </div>
+                ))}
+              </dl>
             )}
           </div>
+        </Reveal>
+      )}
+
+      {stills.length > 0 && (
+        <Reveal className="mt-16">
+          <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="klabel">Frames from the film</h2>
+            <Link
+              href="/gallery"
+              className="mono border-b border-ember pb-0.5 text-[12px] uppercase tracking-[0.06em] text-ember hover:border-gold hover:text-gold"
+            >
+              Full gallery →
+            </Link>
+          </div>
+          <GalleryGrid items={stills} columnsClass="sm:columns-2 lg:columns-3" />
         </Reveal>
       )}
 

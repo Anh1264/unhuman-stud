@@ -6,6 +6,7 @@ import { VideoPlayer } from "@/components/site/VideoPlayer";
 import { Reveal } from "@/components/site/Reveal";
 import { getProject, getProjectSlugs } from "@/server/services/content.service";
 import { pageMetadata } from "@/lib/site-metadata";
+import { formatDuration } from "@/lib/utils";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -46,6 +47,22 @@ export default async function ProjectPage({ params }: Props) {
 
   const [featured, ...rest] = project.films;
 
+  // The page runs in the order the material wants to be read: key art as the
+  // identity, the film as the centrepiece, then the frames it came from, then
+  // the design work that came before either of them.
+  const keyArt = project.gallery.filter((g) => g.section === "KEY_ART");
+  const frames = project.gallery.filter((g) => g.section === "FRAME");
+  const design = project.gallery.filter((g) => g.section === "DESIGN");
+
+  const runtime = formatDuration(featured?.durationSeconds);
+  const facts = [
+    project.year ? { label: "Year", value: String(project.year) } : null,
+    runtime ? { label: "Runtime", value: runtime } : null,
+    featured?.width && featured?.height
+      ? { label: "Master", value: `${featured.width} × ${featured.height}` }
+      : null,
+  ].filter((f): f is { label: string; value: string } => f !== null);
+
   return (
     <article
       className="mx-auto max-w-site px-6 py-16 sm:px-8"
@@ -76,11 +93,6 @@ export default async function ProjectPage({ params }: Props) {
               {tag}
             </span>
           ))}
-          {project.year && (
-            <span className="mono rounded-full border border-line-2 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-bone-faint">
-              {project.year}
-            </span>
-          )}
         </div>
 
         <h1 className="text-[clamp(38px,7vw,76px)] leading-[0.98]">
@@ -97,16 +109,59 @@ export default async function ProjectPage({ params }: Props) {
         )}
       </Reveal>
 
-      {/* ---------------- featured film ---------------- */}
+      {/* ---------------- key art + the facts ---------------- */}
+      <Reveal delay={120} className="mt-12">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:gap-14">
+          {keyArt.length > 0 && (
+            <div>
+              <h2 className="klabel mb-4">Key art</h2>
+              {/* Portrait, shown at its own ratio — never cropped, never boxed. */}
+              <GalleryGrid items={keyArt} columnsClass="" className="max-w-[420px]" />
+            </div>
+          )}
+
+          {/* The key art is tall; centring the copy against it splits the
+              remaining space instead of leaving a hole under the facts. */}
+          <div className="lg:self-center">
+            <p className="serif max-w-[46ch] text-[clamp(19px,2.4vw,26px)] leading-[1.35] text-bone">
+              {project.summary}
+            </p>
+
+            {facts.length > 0 && (
+              <dl className="mt-9 flex flex-wrap gap-x-12 gap-y-5 border-t border-line pt-7">
+                {facts.map((fact) => (
+                  <div key={fact.label}>
+                    <dt className="mono text-[11px] uppercase tracking-[0.2em] text-bone-faint">
+                      {fact.label}
+                    </dt>
+                    <dd className="serif mt-1.5 text-[20px]">{fact.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+          </div>
+        </div>
+      </Reveal>
+
+      {/* ---------------- the film ---------------- */}
       {featured && (
-        <Reveal delay={120} className="mt-12">
-          <VideoPlayer film={featured} priority />
+        <Reveal className="mt-16">
+          <h2 className="klabel mb-5">The film</h2>
+          <VideoPlayer film={featured} />
+          <div className="mt-4 flex flex-wrap items-baseline justify-between gap-3">
+            <p className="serif text-[19px]">{featured.title}</p>
+            {featured.description && (
+              <p className="max-w-[56ch] text-[14px] text-bone-dim">
+                {featured.description}
+              </p>
+            )}
+          </div>
         </Reveal>
       )}
 
       {/* ---------------- body ---------------- */}
-      <Reveal delay={160}>
-        <div className="prose-body mt-14 grid gap-10 border-t border-line pt-12 md:grid-cols-[220px_1fr]">
+      <Reveal>
+        <div className="prose-body mt-16 grid gap-10 border-t border-line pt-12 md:grid-cols-[220px_1fr]">
           <h2 className="klabel md:pt-1">About the film</h2>
           <div>
             {(project.body ?? project.summary)
@@ -141,10 +196,35 @@ export default async function ProjectPage({ params }: Props) {
       )}
 
       {/* ---------------- frames ---------------- */}
-      {project.gallery.length > 0 && (
+      {frames.length > 0 && (
         <Reveal className="mt-16">
-          <h2 className="klabel mb-6">Frames &amp; key art</h2>
-          <GalleryGrid items={project.gallery} columnsClass="sm:columns-2" />
+          <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="klabel">Frames from the film</h2>
+            <span className="klabel">click to enlarge</span>
+          </div>
+          <GalleryGrid items={frames} columnsClass="sm:columns-2 lg:columns-3" />
+        </Reveal>
+      )}
+
+      {/* ---------------- character design ---------------- */}
+      {design.length > 0 && (
+        <Reveal className="mt-16">
+          {/*
+            Sheets are documents, not frames: they sit inside a panel, keep
+            their labels visible and never mix into the run of stills.
+          */}
+          <div className="rounded-xl border border-line bg-panel p-6 sm:p-9">
+            <h2 className="klabel">Character design</h2>
+            <p className="mt-3 mb-7 max-w-[56ch] text-[15px] text-bone-dim">
+              The model sheets the film was built from — turnarounds,
+              expressions and colour, locked before the first frame.
+            </p>
+            <GalleryGrid
+              items={design}
+              columnsClass="sm:columns-2"
+              captions="below"
+            />
+          </div>
         </Reveal>
       )}
 

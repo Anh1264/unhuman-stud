@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { pageMetadata } from "@/lib/site-metadata";
 import { ProjectCard } from "@/components/site/ProjectCard";
+import { ProjectFeature } from "@/components/site/ProjectFeature";
 import { VideoPlayer } from "@/components/site/VideoPlayer";
 import { Reveal } from "@/components/site/Reveal";
 import {
   getFilms,
+  getProject,
   getProjects,
   getStudioStats,
 } from "@/server/services/content.service";
@@ -26,6 +28,11 @@ export default async function HomePage() {
   ]);
 
   const hero = films.find((f) => f.featured) ?? films[0];
+
+  // The lead project gets the feature treatment; anything after it falls back
+  // to the card grid. See ProjectFeature for why one card is not enough.
+  const [lead, ...rest] = projects;
+  const leadDetail = lead ? await getProject(lead.slug) : null;
 
   return (
     <>
@@ -77,7 +84,7 @@ export default async function HomePage() {
               <VideoPlayer film={hero} priority />
               <div className="mt-4 flex flex-wrap items-baseline justify-between gap-3">
                 <p className="mono text-[11px] uppercase tracking-[0.2em] text-bone-faint">
-                  Featured — {hero.projectTitle ?? hero.title}
+                  {hero.projectTitle ?? hero.title}
                 </p>
                 {hero.description && (
                   <p className="max-w-[56ch] text-[14px] text-bone-dim">
@@ -118,22 +125,26 @@ export default async function HomePage() {
             Projects &amp; <em className="italic text-crimson-br">worlds</em>
           </h2>
           <p className="mt-3 max-w-[56ch] text-[16px] text-bone-dim">
-            Original films and character work — each one built end to end by a
-            single operator.
+            Original film and character work, built end to end by a single
+            operator — key art, frames and the design that came before them.
           </p>
         </Reveal>
 
-        <div className="grid gap-5 md:grid-cols-2">
-          {projects.map((project, i) => (
-            <Reveal key={project.slug} delay={i * 60}>
-              <ProjectCard
-                project={project}
-                priority={i === 0}
-                className="h-full"
-              />
-            </Reveal>
-          ))}
-        </div>
+        {leadDetail && (
+          <Reveal>
+            <ProjectFeature project={leadDetail} headingLevel="h3" />
+          </Reveal>
+        )}
+
+        {rest.length > 0 && (
+          <div className="mt-16 grid gap-5 md:grid-cols-2">
+            {rest.map((project, i) => (
+              <Reveal key={project.slug} delay={i * 60}>
+                <ProjectCard project={project} className="h-full" />
+              </Reveal>
+            ))}
+          </div>
+        )}
       </section>
     </>
   );

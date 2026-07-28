@@ -10,15 +10,21 @@ import { cn } from "@/lib/utils";
  *
  * Keyboard: Escape closes, ArrowLeft/ArrowRight move between images, and focus
  * returns to the thumbnail that opened the dialog.
+ *
+ * `captions` decides where the label sits. Frames are pictures and hide it
+ * until hover; design sheets are documents, and a document keeps its label
+ * visible — which is also the only way a touch device ever sees it.
  */
 export function GalleryGrid({
   items,
   className,
   columnsClass = "sm:columns-2 lg:columns-3",
+  captions = "hover",
 }: {
   items: (Media & { projectTitle?: string | null })[];
   className?: string;
   columnsClass?: string;
+  captions?: "hover" | "below";
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const triggersRef = useRef<(HTMLButtonElement | null)[]>([]);
@@ -79,21 +85,30 @@ export function GalleryGrid({
             className="group relative mb-4 block w-full cursor-pointer overflow-hidden rounded-lg border border-line bg-panel break-inside-avoid"
             aria-label={`Enlarge: ${item.alt}`}
           >
-            <Image
-              src={item.url}
-              alt={item.alt}
-              width={item.width}
-              height={item.height}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              placeholder={item.blurDataUrl ? "blur" : "empty"}
-              blurDataURL={item.blurDataUrl ?? undefined}
-              className="w-full transition-transform duration-700 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.04]"
-            />
-            {item.caption && (
-              <span className="mono pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-3.5 text-left text-[11px] text-bone-dim opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                {item.caption}
-              </span>
-            )}
+            {/* Its own clipping box, so the hover zoom cannot spill over a
+                caption sitting underneath it. */}
+            <span className="block overflow-hidden">
+              <Image
+                src={item.url}
+                alt={item.alt}
+                width={item.width}
+                height={item.height}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                placeholder={item.blurDataUrl ? "blur" : "empty"}
+                blurDataURL={item.blurDataUrl ?? undefined}
+                className="w-full transition-transform duration-700 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.04]"
+              />
+            </span>
+            {item.caption &&
+              (captions === "below" ? (
+                <span className="mono block border-t border-line px-4 py-3 text-left text-[11px] uppercase tracking-[0.14em] text-bone-faint">
+                  {item.caption}
+                </span>
+              ) : (
+                <span className="mono pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-3.5 text-left text-[11px] text-bone-dim opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  {item.caption}
+                </span>
+              ))}
           </button>
         ))}
       </div>
