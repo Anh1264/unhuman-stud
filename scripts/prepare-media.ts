@@ -15,8 +15,8 @@
  *             produced by ffmpeg). Already built in public/images; we only
  *             measure them so their manifest entries survive.
  *
- * Video: each film gets a visually-lossless H.264 playback encode plus a
- * losslessly remuxed copy of the master offered as a download.
+ * Video: each film ships as its untouched master, losslessly remuxed so the
+ * moov atom sits at the front and the file streams. No re-encode.
  *
  * Run: npm run media          (add --force to rebuild videos that are up to date)
  */
@@ -45,23 +45,21 @@ if (!FFMPEG) throw new Error("ffmpeg-static did not resolve a binary for this pl
 const MAX_EDGE = 2560;
 const JPEG_QUALITY = 86;
 
-/**
- * Quality knob for the playback encode — lower is better and much larger.
+/*
+ * Why there is no playback encode.
  *
- * Ceasefire is 3840x2160 at 60 fps from a ~50 Mbit/s master, which is about the
- * least compressible thing there is, so the usual "visually lossless" numbers
- * do not apply. Measured over the full 67.5s at preset slow:
+ * Ceasefire is 3840x2160 at 60 fps from a ~50 Mbit/s master, about the least
+ * compressible thing there is, so the usual "visually lossless" CRF numbers do
+ * not apply. Measured over the full 67.5s with libx264 at preset slow:
  *
  *   crf 16 → 481 MB   crf 18 → 386 MB   crf 26 → 154 MB
  *   crf 31 →  86 MB   crf 32 →  78 MB
  *
- * crf 16 is *larger* than the 402 MB master, so it would be strictly worse than
- * shipping the master itself. 31 is the best quality that stays under GitHub's
- * 100 MB per-file limit, which is what lets this file be committed at all.
- * Anyone who wants true source quality gets `-master.mp4`, whose pixels are
- * untouched. Drop this number if the video ever moves to a CDN or Git LFS.
+ * crf 16 is *larger* than the 402 MB master, and everything small enough to
+ * commit is visibly worse than it. So the site serves the master itself and
+ * the file stays out of git. Kept here in case this ever moves to a CDN or Git
+ * LFS, where a ladder would be worth building again.
  */
-const VIDEO_CRF = 31;
 
 type ImageSource = {
   /** Output basename, also the manifest name and storage key stem. */
@@ -161,7 +159,7 @@ const LOSSY: ImageSource[] = [
 ];
 
 type Film = {
-  /** Basename for the playback encode, the master download and the poster. */
+  /** Basename for the shipped video and its poster. */
   name: string;
   from: string;
   /** Timestamp of the poster frame, as an ffmpeg `-ss` value. */
@@ -261,34 +259,15 @@ async function ffmpeg(args: string[]) {
 
 async function buildFilm(film: Film): Promise<MediaEntry> {
   const src = path.join(ROOT, film.from);
-  const playback = path.join(VIDEO_DIR, `${film.name}.mp4`);
-  const master = path.join(VIDEO_DIR, `${film.name}-master.mp4`);
+  const video = path.join(VIDEO_DIR, `${film.name}.mp4`);
   const posterPng = path.join(tmpdir(), `${film.name}-poster.png`);
   const posterOut = path.join(IMAGE_DIR, `${film.name}-poster.webp`);
 
   // The master, remuxed for streaming. -c copy means not a single pixel or
   // sample changes; only the moov atom moves to the front of the file.
-  if (!(await isFresh(master, src))) {
-    console.log(`  encoding ${film.name}-master.mp4 (remux, no re-encode)…`);
-    await ffmpeg(["-i", src, "-map", "0:v:0", "-map", "0:a:0", "-c", "copy", "-movflags", "+faststart", master]);
-  }
-
-  // Playback encode. Audio is copied when it is already AAC at a decent
-  // bitrate, otherwise re-encoded.
-  if (!(await isFresh(playback, src))) {
-    console.log(`  encoding ${film.name}.mp4 (libx264 crf ${VIDEO_CRF}, preset slow — this takes a while)…`);
-    await ffmpeg([
-      "-i", src,
-      "-map", "0:v:0",
-      "-map", "0:a:0",
-      "-c:v", "libx264",
-      "-crf", String(VIDEO_CRF),
-      "-preset", "slow",
-      "-pix_fmt", "yuv420p",
-      "-movflags", "+faststart",
-      ...(await audioArgs(src)),
-      playback,
-    ]);
+  if (!(await isFresh(video, src))) {
+    console.log(`  writing ${film.name}.mp4 (remux, no re-encode)…`);
+    await ffmpeg(["-i", src, "-map", "0:v:0", "-map", "0:a:0", "-c", "copy", "-movflags", "+faststart", video]);
   }
 
   // Poster frame, kept lossless so it matches the stills around it. ffmpeg has
@@ -299,15 +278,10 @@ async function buildFilm(film: Film): Promise<MediaEntry> {
     await rm(posterPng, { force: true });
   }
 
-  for (const [file, note] of [
-    [playback, `crf ${VIDEO_CRF} playback`],
-    [master, "master download (remuxed)"],
-  ] as const) {
-    const { size } = await stat(file);
-    console.log(
-      `  ${path.basename(file).padEnd(30)} ${(size / 1024 / 1024).toFixed(1).padStart(7)} MB  ${note}`,
-    );
-  }
+  const { size: videoBytes } = await stat(video);
+  console.log(
+    `  ${path.basename(video).padEnd(30)} ${(videoBytes / 1024 / 1024).toFixed(1).padStart(7)} MB  untouched master (remuxed)`,
+  );
 
   const meta = await sharp(posterOut).metadata();
   const { size } = await stat(posterOut);
@@ -324,23 +298,6 @@ async function buildFilm(film: Film): Promise<MediaEntry> {
     blurDataUrl: await blurPlaceholder(posterOut),
     alt: film.posterAlt,
   };
-}
-
-/** Copy AAC audio when the master already has a good stream; otherwise re-encode. */
-async function audioArgs(src: string): Promise<string[]> {
-  // ffprobe from ffprobe-static is unreliable on some platforms, so ask ffmpeg
-  // itself: it prints the stream table to stderr and exits non-zero with no
-  // output file, which is exactly what we want to parse.
-  let info = "";
-  try {
-    await run(FFMPEG!, ["-hide_banner", "-i", src]);
-  } catch (err) {
-    info = String((err as { stderr?: string }).stderr ?? "");
-  }
-  const audio = info.split("\n").find((line) => line.includes("Audio:"));
-  const bitrate = audio?.match(/(\d+)\s+kb\/s/)?.[1];
-  const isGoodAac = Boolean(audio?.includes("aac") && bitrate && Number(bitrate) >= 128);
-  return isGoodAac ? ["-c:a", "copy"] : ["-c:a", "aac", "-b:a", "192k"];
 }
 
 async function main() {
