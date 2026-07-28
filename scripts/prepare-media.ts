@@ -17,13 +17,14 @@
  * Nothing is built that the site does not use: public/ is the deploy payload,
  * so every file in it has to be reachable from `scripts/seed.ts`.
  *
- * Video: each film is built twice — the untouched master, losslessly remuxed
- * so it streams, and the 1080p encode the site actually plays. See the note
- * above FILMS for which one ships.
+ * Video: every film gets the 1080p encode the site actually plays. A film whose
+ * master is larger than that encode also gets a losslessly remuxed local
+ * archive of the master. See the note above FILMS for which one ships.
  *
  * Run: npm run media          (add --force to rebuild videos that are up to date)
  */
 import { execFile } from "node:child_process";
+import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { mkdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -123,6 +124,30 @@ const LOSSLESS: ImageSource[] = [
     alt: "A snowball the size of a building rolls down a green ridge toward a city skyline, throwing up a wave of snow.",
     caption: "Nu & Tib: Ceasefire · the snowball",
   },
+  {
+    name: "cyclops-poster",
+    from: "assets-source/the-unbothered-cyclops/the-unbothered-cyclops-poster.png",
+    alt: 'Poster for "The Unbothered Cyclops" — a colossal sand-coloured one-eyed giant stands hunched against a pale blue sky, dozens of tiny helmeted soldiers swarming up its arms and legs while a whole army lines up on the red ground at its feet. The title and the credit "a film by Aiden" are set above in raised stone lettering.',
+    caption: "The Unbothered Cyclops · poster",
+  },
+  {
+    name: "cyclops-frame-1",
+    from: "assets-source/the-unbothered-cyclops/image1.png",
+    alt: "Ranks of clay-figure soldiers in green helmets with red crests and red capes march toward the camera against a flat blue sky, several of them blowing curved horns while the one in front shouts.",
+    caption: "The Unbothered Cyclops · the army",
+  },
+  {
+    name: "cyclops-frame-2",
+    from: "assets-source/the-unbothered-cyclops/image2.png",
+    alt: "The giant's bare sand-coloured foot rests on red ground, filling the frame, with a handful of tiny soldiers climbing over its toes and a vast crowd of them massed on the ground below.",
+    caption: "The Unbothered Cyclops · the foot",
+  },
+  {
+    name: "cyclops-frame-3",
+    from: "assets-source/the-unbothered-cyclops/image3.png",
+    alt: "Seen from behind two crested helmets, a thin line of soldiers walks up the giant's outstretched arm toward its hand, while two dense swarms of troops spread across the red ground beyond.",
+    caption: "The Unbothered Cyclops · the climb",
+  },
 ];
 
 /**
@@ -138,12 +163,29 @@ type Film = {
   /** Basename for the shipped video. */
   name: string;
   from: string;
+  /**
+   * Whether to also write `<name>.mp4` — the master, remuxed for streaming, as
+   * a local archive. Only worth it when the master is bigger than what ships
+   * (a 4K original next to a 1080p encode). When the master is already 1080p,
+   * the archive would be a second copy of a file that is already backed up in
+   * `assets-source/`, and it would sit in `public/` — the deploy payload.
+   */
+  archiveMaster: boolean;
 };
 
 const FILMS: Film[] = [
   {
     name: "nu-ceasefire",
     from: "assets-source/NU/finals/nu&tib_ceasefire.mp4",
+    archiveMaster: true,
+  },
+  {
+    // 1920x1080, 15.07s, 24 fps, ~35 Mbit/s, AAC LC 129 kb/s stereo. The
+    // encode is built straight from the master: no archive copy, because the
+    // master is already 1080p and 62.7 MB of it would ship on every deploy.
+    name: "the-unbothered-cyclops",
+    from: "assets-source/the-unbothered-cyclops/the-unbothered-cyclops.mp4",
+    archiveMaster: false,
   },
 ];
 
@@ -176,6 +218,29 @@ function report(name: string, width: number, height: number, bytes: number, note
   console.log(`  ${name.padEnd(22)} ${`${width}x${height}`.padEnd(11)} ${size.padStart(9)} ${note}`);
 }
 
+/**
+ * Fingerprints an image's decoded pixels — alpha forced on, so a source PNG
+ * without an alpha channel and a WebP with one still compare as equal.
+ */
+async function pixelHash(input: string): Promise<string> {
+  const raw = await sharp(input).ensureAlpha().raw().toBuffer();
+  return createHash("sha256").update(raw).digest("hex");
+}
+
+/**
+ * Proves a "lossless" conversion really was lossless. Cheap insurance: a
+ * mis-set sharp option would otherwise re-compress a final silently.
+ */
+async function assertPixelIdentical(src: string, out: string): Promise<void> {
+  const [a, b] = await Promise.all([pixelHash(src), pixelHash(out)]);
+  if (a !== b) {
+    throw new Error(
+      `${path.basename(out)} is not pixel-identical to ${path.basename(src)} — ` +
+        `the conversion re-compressed it. Check the webp() options.`,
+    );
+  }
+}
+
 /** True when `out` exists and is at least as new as `src`. */
 async function isFresh(out: string, src: string): Promise<boolean> {
   if (FORCE || !existsSync(out)) return false;
@@ -191,9 +256,9 @@ async function ffmpeg(args: string[]) {
 }
 
 /**
- * Builds the two encodes of a film. No poster frame is cut: the NU page uses
- * `nu-first-frame`, a true master, as its poster, and an unused 3.6 MB WebP in
- * public/ would ship on every deploy for nothing.
+ * Builds a film's encodes. No poster frame is cut: each project's page uses a
+ * true master as its poster, and an unused multi-megabyte WebP in public/
+ * would ship on every deploy for nothing.
  */
 async function buildFilm(film: Film): Promise<void> {
   const src = path.join(ROOT, film.from);
@@ -202,19 +267,23 @@ async function buildFilm(film: Film): Promise<void> {
 
   // The master, remuxed for streaming. -c copy means not a single pixel or
   // sample changes; only the moov atom moves to the front of the file.
-  if (!(await isFresh(video, src))) {
+  // Skipped unless the film asked for an archive — see `archiveMaster`.
+  if (film.archiveMaster && !(await isFresh(video, src))) {
     console.log(`  writing ${film.name}.mp4 (remux, no re-encode)…`);
     await ffmpeg(["-i", src, "-map", "0:v:0", "-map", "0:a:0", "-c", "copy", "-movflags", "+faststart", video]);
   }
 
+  // Encode from the archive when there is one — it is pixel-identical to the
+  // master — and straight from the master otherwise.
+  const encodeFrom = film.archiveMaster ? video : src;
+
   // The playback encode — the only video file that goes into git and out to
-  // the web. Built from the remuxed master, which is pixel-identical to the
-  // source. Audio is copied rather than re-encoded: the masters are already
-  // AAC LC 192 kb/s stereo, so a second AAC pass would only lose to itself.
-  if (!(await isFresh(playback, video))) {
+  // the web. Audio is copied rather than re-encoded: the masters are already
+  // AAC LC stereo, so a second AAC pass would only lose to itself.
+  if (!(await isFresh(playback, encodeFrom))) {
     console.log(`  writing ${film.name}-1080.mp4 (libx264 crf ${PLAYBACK_CRF}, preset slow — slow)…`);
     await ffmpeg([
-      "-i", video,
+      "-i", encodeFrom,
       "-map", "0:v:0", "-map", "0:a:0",
       "-vf", `scale=-2:${PLAYBACK_HEIGHT}:flags=lanczos`,
       "-c:v", "libx264",
@@ -227,10 +296,12 @@ async function buildFilm(film: Film): Promise<void> {
     ]);
   }
 
-  const { size: videoBytes } = await stat(video);
-  console.log(
-    `  ${path.basename(video).padEnd(30)} ${(videoBytes / 1024 / 1024).toFixed(1).padStart(7)} MB  4K master — local archive, not shipped`,
-  );
+  if (film.archiveMaster) {
+    const { size: videoBytes } = await stat(video);
+    console.log(
+      `  ${path.basename(video).padEnd(30)} ${(videoBytes / 1024 / 1024).toFixed(1).padStart(7)} MB  master — local archive, not shipped`,
+    );
+  }
 
   const { size: playbackBytes } = await stat(playback);
   console.log(
@@ -258,6 +329,7 @@ async function main() {
     const outPath = path.join(IMAGE_DIR, outName);
 
     const info = await sharp(abs).webp({ lossless: true, effort: 6 }).toFile(outPath);
+    await assertPixelIdentical(abs, outPath);
 
     entries.push({
       name: src.name,
@@ -271,7 +343,7 @@ async function main() {
       alt: src.alt,
       caption: src.caption,
     });
-    report(src.name, info.width, info.height, info.size);
+    report(src.name, info.width, info.height, info.size, "pixel-identical ✓");
   }
 
   if (LOSSY.length) console.log("\nJPEG");

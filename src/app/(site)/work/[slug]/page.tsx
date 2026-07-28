@@ -70,6 +70,12 @@ export default async function ProjectPage({ params }: Props) {
   // filled in yet drop out here, and the whole block disappears with them.
   const worldFields = project.worldFields.filter((f) => f.value);
 
+  // The synopsis is the owner's prose, and a film can be finished long before
+  // it is written. Until it exists the section goes with it — a "Synopsis"
+  // label over an empty rule reads as a page that failed, not as a page with
+  // nothing to say yet.
+  const synopsis = (project.body ?? project.summary).trim();
+
   const runtime = formatDuration(featured?.durationSeconds);
   const facts = [
     project.year ? { label: "Year", value: String(project.year) } : null,
@@ -220,24 +226,24 @@ export default async function ProjectPage({ params }: Props) {
       )}
 
       {/* ---------------- 3. synopsis ---------------- */}
-      <section aria-labelledby="synopsis-heading">
-        <Reveal>
-          <div className="prose-body mt-20 grid gap-10 border-t border-line pt-14 md:grid-cols-[220px_1fr]">
-            <h2 id="synopsis-heading" className="klabel md:pt-1">
-              Synopsis
-            </h2>
-            <div>
-              {(project.body ?? project.summary)
-                .split("\n\n")
-                .map((paragraph, i) => (
+      {synopsis && (
+        <section aria-labelledby="synopsis-heading">
+          <Reveal>
+            <div className="prose-body mt-20 grid gap-10 border-t border-line pt-14 md:grid-cols-[220px_1fr]">
+              <h2 id="synopsis-heading" className="klabel md:pt-1">
+                Synopsis
+              </h2>
+              <div>
+                {synopsis.split("\n\n").map((paragraph, i) => (
                   <p key={i} className="text-[16px]">
                     {paragraph}
                   </p>
                 ))}
+              </div>
             </div>
-          </div>
-        </Reveal>
-      </section>
+          </Reveal>
+        </section>
+      )}
 
       {/* ---------------- 4. characters ---------------- */}
       {characters.length > 0 && (

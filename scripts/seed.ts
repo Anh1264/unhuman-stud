@@ -39,7 +39,8 @@ type FilmSeed = {
   featured: boolean;
   sortOrder: number;
   title: string;
-  description: string;
+  /** One line under the player. Optional — the owner's to write. */
+  description?: string;
 };
 
 /**
@@ -69,10 +70,20 @@ type CharacterSeed = {
  */
 type WorldFieldSeed = { label: string; value: string };
 
+/**
+ * A project.
+ *
+ * Everything the owner writes — the year, the logline, the summary, the
+ * synopsis — is optional here, because a film can arrive as finished pictures
+ * long before it has a word of copy. Absent means absent: the pages drop the
+ * blocks they have nothing to put in. Nothing on this list is ever filled with
+ * a guess or a placeholder on the owner's behalf.
+ */
 type ProjectSeed = {
   slug: string;
   kind: (typeof schema.projectKind.enumValues)[number];
-  year: number;
+  /** Release year. Omitted until the owner sets one; the Year fact drops out. */
+  year?: number;
   featured: boolean;
   sortOrder: number;
   accentColor: string;
@@ -85,9 +96,12 @@ type ProjectSeed = {
   title: string;
   /** Secondary title, e.g. the Vietnamese title shown beside the English one. */
   titleAlt?: string;
-  tagline: string;
-  summary: string;
-  body: string;
+  /** The logline, in quotes under the title. */
+  tagline?: string;
+  /** One or two sentences: the card blurb and the meta description. */
+  summary?: string;
+  /** The synopsis, paragraphs separated by a blank line. */
+  body?: string;
   tags: string[];
   gallery: GallerySeed[];
   characters: CharacterSeed[];
@@ -96,9 +110,8 @@ type ProjectSeed = {
 };
 
 /**
- * One project. NU & TIB: CEASEFIRE is the studio's first long-form film and the
- * only work on the site — the pages are built to present it as a feature rather
- * than as one card in a grid.
+ * The studio's work, in the order it is shown. The first entry is the lead:
+ * /work presents it in full and puts everything after it in the grid beneath.
  */
 const PROJECTS: ProjectSeed[] = [
   {
@@ -147,6 +160,53 @@ const PROJECTS: ProjectSeed[] = [
         sortOrder: 1,
         title: "NU & TIB: CEASEFIRE",
         description: "The complete film, encoded from the 4K master.",
+      },
+    ],
+  },
+  {
+    slug: "the-unbothered-cyclops",
+    kind: "ORIGINAL_FILM",
+    // No year: the owner has not dated the film. The Year fact drops out of
+    // the hero rather than being guessed from a file's timestamp.
+    featured: false,
+    sortOrder: 2,
+    // The film's own ground colour, and the closest thing to it in the brand
+    // palette — the ember token. No new colours enter the site for a project.
+    accentColor: "#e0654d",
+    // Landscape, and the shot that carries the premise at card size.
+    cover: "cyclops-frame-2",
+    title: "THE UNBOTHERED CYCLOPS",
+    // No tagline, summary or body. The logline and the synopsis are the
+    // owner's to write, and every one of these fields is absent rather than
+    // filled with placeholder prose. The pages render the film, the poster and
+    // the frames, and leave the copy blocks out entirely until they exist.
+    tags: ["Original Film"],
+    gallery: [
+      { section: "KEY_ART", items: ["cyclops-poster"] },
+      {
+        section: "FRAME",
+        items: ["cyclops-frame-1", "cyclops-frame-2", "cyclops-frame-3"],
+      },
+    ],
+    // No character sheets were made for this film, so it has no characters.
+    // The Characters section disappears with them.
+    characters: [],
+    worldFields: [],
+    films: [
+      {
+        slug: "the-unbothered-cyclops",
+        // The 1080p encode. There is no 4K master here — the film's own master
+        // is 1080p, so nothing larger exists. See scripts/prepare-media.ts.
+        video: "/videos/the-unbothered-cyclops-1080.mp4",
+        poster: "cyclops-frame-2",
+        kind: "SHORT",
+        durationSeconds: 15,
+        width: 1920,
+        height: 1080,
+        featured: true,
+        sortOrder: 1,
+        title: "THE UNBOTHERED CYCLOPS",
+        // No description: nothing to say about the cut that the owner has said.
       },
     ],
   },
@@ -289,7 +349,7 @@ async function main() {
         slug: p.slug,
         kind: p.kind,
         status: "PUBLISHED",
-        year: p.year,
+        year: p.year ?? null,
         featured: p.featured,
         sortOrder: p.sortOrder,
         coverAssetId: coverId,
@@ -298,16 +358,19 @@ async function main() {
       })
       .returning({ id: schema.projects.id });
 
+    // `summary` is the one NOT NULL copy column, so an unwritten summary is
+    // stored as the empty string. Everything else that is unwritten is NULL,
+    // which is what the pages test for when they decide to drop a block.
     await db.insert(schema.projectTranslations).values({
       projectId: project.id,
       locale: L,
       title: p.title,
       titleAlt: p.titleAlt ?? null,
-      tagline: p.tagline,
-      summary: p.summary,
-      body: p.body,
+      tagline: p.tagline ?? null,
+      summary: p.summary ?? "",
+      body: p.body ?? null,
       seoTitle: `${p.title} — Unhuman Stud`,
-      seoDescription: p.summary,
+      seoDescription: p.summary ?? null,
     });
 
     for (const [i, label] of p.tags.entries()) {
@@ -402,7 +465,7 @@ async function main() {
         filmId: film.id,
         locale: L,
         title: f.title,
-        description: f.description,
+        description: f.description ?? null,
       });
       filmCount++;
     }
