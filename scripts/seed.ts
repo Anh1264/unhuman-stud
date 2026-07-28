@@ -176,11 +176,14 @@ const PROJECTS: ProjectSeed[] = [
     // Landscape, and the shot that carries the premise at card size.
     cover: "cyclops-frame-2",
     title: "THE UNBOTHERED CYCLOPS",
-    // No tagline, summary or body. The logline and the synopsis are the
-    // owner's to write, and every one of these fields is absent rather than
-    // filled with placeholder prose. The pages render the film, the poster and
-    // the frames, and leave the copy blocks out entirely until they exist.
-    tags: ["Original Film"],
+    // The owner's copy, verbatim. The summary is the logline: the card says
+    // the same thing the page does, because there is nothing more to say.
+    tagline: "An army charges the giant. The giant does not look down.",
+    summary: "An army charges the giant. The giant does not look down.",
+    body: "Countless small, heavily armoured Greek soldiers march on a cyclops many times their size. They commit everything they have to the assault. The cyclops remains unbothered.",
+    // No tags. A chip has to come out of the work itself; "Original Film"
+    // only restated the section the film was already sitting in.
+    tags: [],
     gallery: [
       { section: "KEY_ART", items: ["cyclops-poster"] },
       {
@@ -191,7 +194,7 @@ const PROJECTS: ProjectSeed[] = [
     // No character sheets were made for this film, so it has no characters.
     // The Characters section disappears with them.
     characters: [],
-    worldFields: [],
+    worldFields: [{ label: "TONE", value: "Unhurried. Enormous. Faintly bored." }],
     films: [
       {
         slug: "the-unbothered-cyclops",

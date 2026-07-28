@@ -80,9 +80,11 @@ export function ProjectCard({
           </p>
         )}
 
-        <p className="mt-3 max-w-[48ch] text-[14.5px] text-bone-dim">
-          {project.summary}
-        </p>
+        {project.summary && (
+          <p className="mt-3 max-w-[48ch] text-[14.5px] text-bone-dim">
+            {project.summary}
+          </p>
+        )}
 
         <span className="mono mt-5 inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.08em] text-bone-faint transition-all duration-300 group-hover:gap-3 group-hover:text-[color:var(--accent)]">
           View project →

@@ -98,9 +98,11 @@ export function ProjectFeature({
           </p>
         )}
 
-        <p className="mt-5 max-w-[56ch] text-[16px] text-bone-dim">
-          {project.summary}
-        </p>
+        {project.summary && (
+          <p className="mt-5 max-w-[56ch] text-[16px] text-bone-dim">
+            {project.summary}
+          </p>
+        )}
 
         {facts.length > 0 && (
           <dl className="mt-7 flex flex-wrap gap-x-12 gap-y-5 border-t border-line pt-6">
