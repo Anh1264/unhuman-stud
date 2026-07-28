@@ -1,66 +1,124 @@
 /**
  * Media pipeline.
  *
- * Reads the original Midjourney PNGs out of assets-source/, writes
- * web-appropriate JPEGs into public/images/, and emits a manifest containing
- * the real dimensions plus a base64 LQIP for each one.
+ * Turns the masters in assets-source/ into the files the site actually ships,
+ * then writes a manifest containing the real dimensions, byte sizes and a
+ * base64 LQIP for each one. The manifest is what the database seed reads, so
+ * image metadata in the DB is always measured rather than hand-typed.
  *
- * The manifest is what the database seed reads, so image metadata in the DB is
- * always measured rather than hand-typed.
+ * Three kinds of image asset:
+ *   LOSSLESS  the NU / Ceasefire finals — converted to *lossless* WebP, so the
+ *             shipped pixels are identical to the master. Serving them
+ *             untouched is why next.config.ts turns the image optimiser off.
+ *   LOSSY     older Midjourney stills — resized and re-encoded as JPEG.
+ *   MEASURED  assets whose master is no longer on disk (and video poster frames
+ *             produced by ffmpeg). Already built in public/images; we only
+ *             measure them so their manifest entries survive.
  *
- * Run: npm run media
+ * Video: each film gets a visually-lossless H.264 playback encode plus a
+ * losslessly remuxed copy of the master offered as a download.
+ *
+ * Run: npm run media          (add --force to rebuild videos that are up to date)
  */
-import { writeFile, mkdir, stat } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { existsSync } from "node:fs";
+import { mkdir, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { tmpdir } from "node:os";
+import { promisify } from "node:util";
+import ffmpegStatic from "ffmpeg-static";
 import sharp from "sharp";
 
+const run = promisify(execFile);
+
 const ROOT = process.cwd();
-const OUT_DIR = path.join(ROOT, "public/images");
+const IMAGE_DIR = path.join(ROOT, "public/images");
+const VIDEO_DIR = path.join(ROOT, "public/videos");
 const MANIFEST = path.join(ROOT, "src/content/media-manifest.json");
 
-/** Longest edge we ever ship. next/image derives smaller sizes from this. */
-const MAX_EDGE = 2560;
-const QUALITY = 86;
+const FORCE = process.argv.includes("--force");
 
-type Source = {
-  /** Output basename, also the storage key stem. */
+const FFMPEG = ffmpegStatic;
+if (!FFMPEG) throw new Error("ffmpeg-static did not resolve a binary for this platform");
+
+/** Longest edge for the lossy JPEG set. next/image derives smaller sizes from this. */
+const MAX_EDGE = 2560;
+const JPEG_QUALITY = 86;
+
+/**
+ * Quality knob for the playback encode — lower is better and much larger.
+ *
+ * Ceasefire is 3840x2160 at 60 fps from a ~50 Mbit/s master, which is about the
+ * least compressible thing there is, so the usual "visually lossless" numbers
+ * do not apply. Measured over the full 67.5s at preset slow:
+ *
+ *   crf 16 → 481 MB   crf 18 → 386 MB   crf 26 → 154 MB
+ *   crf 31 →  86 MB   crf 32 →  78 MB
+ *
+ * crf 16 is *larger* than the 402 MB master, so it would be strictly worse than
+ * shipping the master itself. 31 is the best quality that stays under GitHub's
+ * 100 MB per-file limit, which is what lets this file be committed at all.
+ * Anyone who wants true source quality gets `-master.mp4`, whose pixels are
+ * untouched. Drop this number if the video ever moves to a CDN or Git LFS.
+ */
+const VIDEO_CRF = 31;
+
+type ImageSource = {
+  /** Output basename, also the manifest name and storage key stem. */
   name: string;
   from: string;
   alt: string;
   caption?: string;
 };
 
-const SOURCES: Source[] = [
-  // ---- NU ----
+/** Converted pixel-for-pixel to lossless WebP — no re-compression, ever. */
+const LOSSLESS: ImageSource[] = [
   {
-    name: "nu-willump",
-    from: "assets-source/NU/quocanhvu_httpss.mj.runvdKLHjGYieY_big_willump_with_a_big_sno_59f09105-cca9-4284-a836-93a6855b1c63_2.png",
-    alt: "A colossal horned snow creature with white and indigo fur stands on a green ridge between snowbanks, a modern city skyline rising in the haze behind it.",
-    caption: "NU · the creature and the city",
+    name: "nu-poster",
+    from: "assets-source/NU/finals/Nu-poster.png",
+    alt: 'Poster for "Nu & Tib: Ceasefire" — a shaggy blue horned monster and a towering red teddy bear square off in a snowbound city at night, a small girl in a pink coat standing between them, the title set in ice-blue and ember-red lettering above.',
+    caption: "Nu & Tib: Ceasefire · poster",
   },
+  {
+    name: "nu-character-sheet",
+    from: "assets-source/NU/finals/nu-character-sheet.png",
+    alt: "Character model sheet for Nu: four turnaround views of the blue horned monster, four expression studies labelled happy, angry, sad and neutral, a face detail panel, and the character's colour palette.",
+    caption: "Nu · character model sheet",
+  },
+  {
+    name: "tib-character-sheet",
+    from: "assets-source/NU/finals/tib-character-sheet.png",
+    alt: "Character model sheet for Tib: three-quarter, front, three-quarter and back views of the red teddy bear, four expression studies labelled happy, angry, sad and neutral, and a face detail panel.",
+    caption: "Tib · character model sheet",
+  },
+  {
+    name: "nu-first-frame",
+    from: "assets-source/NU/finals/nu-first-frame.png",
+    alt: "Opening frame of the film: the blue horned monster hugs an enormous snowball on a green ridge between snowy peaks, a tiny figure standing on the grass below and a distant city skyline to the right.",
+    caption: "Nu & Tib: Ceasefire · opening frame",
+  },
+  {
+    name: "nu-snow",
+    from: "assets-source/NU/finals/snow.png",
+    alt: "A young man in a red beanie and pale blue puffer coat crouches in deep snow in a city park, packing a snowball, while other people roll snowballs around him and towers rise behind.",
+    caption: "Nu & Tib: Ceasefire · the city, before",
+  },
+  {
+    name: "nu-snowball",
+    from: "assets-source/NU/finals/snowball.png",
+    alt: "A snowball the size of a building rolls down a green ridge toward a city skyline, throwing up a wave of snow.",
+    caption: "Nu & Tib: Ceasefire · the snowball",
+  },
+];
+
+/** Older stills — resized and re-encoded as JPEG. */
+const LOSSY: ImageSource[] = [
+  // ---- NU ----
   {
     name: "nu-monster-face",
     from: "assets-source/NU/monster_face.png",
     alt: "Close view of the snow creature scowling over a large packed snowball, orange eyes narrowed, city towers visible beyond the ridge.",
     caption: "NU · the snowball",
-  },
-  {
-    name: "nu-snow",
-    from: "assets-source/NU/snow.png",
-    alt: "A young man in a red beanie and pale blue puffer coat crouches in deep snow in a city park, packing a snowball, while other people build snowballs around him and towers rise behind.",
-    caption: "NU · the city, before",
-  },
-  {
-    name: "nu-snowball",
-    from: "assets-source/NU/snowball.png",
-    alt: "The snow creature stands on a green ridge behind a large packed snowball, scowling, with city towers hazy in the distance.",
-    caption: "NU · the snowball",
-  },
-  {
-    name: "nu-still",
-    from: "assets-source/NU/e240d53b-7be5-4c7f-b846-5b3aa2b07aff.png",
-    alt: "Character model sheet for NU: four turnaround views, four expression studies labelled happy, angry, sad and neutral, a face detail panel, and the character's colour palette.",
-    caption: "NU · character model sheet",
   },
   // ---- OLD FRIEND ----
   {
@@ -102,15 +160,55 @@ const SOURCES: Source[] = [
   },
 ];
 
-/** Video poster frames already extracted by ffmpeg — measured, not converted. */
-const POSTERS = [
+type Film = {
+  /** Basename for the playback encode, the master download and the poster. */
+  name: string;
+  from: string;
+  /** Timestamp of the poster frame, as an ffmpeg `-ss` value. */
+  posterAt: string;
+  alt: string;
+  posterAlt: string;
+  caption?: string;
+};
+
+const FILMS: Film[] = [
+  {
+    name: "nu-ceasefire",
+    from: "assets-source/NU/finals/nu&tib_ceasefire.mp4",
+    posterAt: "00:00:00.000",
+    alt: 'Still from "Nu & Tib: Ceasefire".',
+    posterAlt:
+      "Poster frame from Nu & Tib: Ceasefire — the blue horned monster hugs an enormous snowball on a green ridge above a distant city skyline.",
+    caption: "Nu & Tib: Ceasefire",
+  },
+];
+
+/**
+ * Already-built files we only measure. Their masters were superseded or are no
+ * longer on disk, so re-deriving them is not possible — but the seed still
+ * references these names, so their manifest entries have to survive.
+ */
+const MEASURED: { name: string; file: string; alt: string; caption?: string }[] = [
+  {
+    name: "nu-willump",
+    file: "nu-willump.jpg",
+    alt: "A colossal horned snow creature with white and indigo fur stands on a green ridge between snowbanks, a modern city skyline rising in the haze behind it.",
+    caption: "NU · the creature and the city",
+  },
+  {
+    name: "nu-still",
+    file: "nu-still.jpg",
+    alt: "Character model sheet for NU: four turnaround views, four expression studies labelled happy, angry, sad and neutral, a face detail panel, and the character's colour palette.",
+    caption: "NU · character model sheet",
+  },
   {
     name: "shiba-kiosk-poster",
+    file: "shiba-kiosk-poster.jpg",
     alt: "Poster frame from The Shopkeeper.",
   },
-  { name: "nu-social-poster", alt: "Poster frame from NU." },
-  { name: "nu-original-poster", alt: "Poster frame from NU." },
-  { name: "pet-dog-poster", alt: "Poster frame from Old Friend." },
+  { name: "nu-social-poster", file: "nu-social-poster.jpg", alt: "Poster frame from NU." },
+  { name: "nu-original-poster", file: "nu-original-poster.jpg", alt: "Poster frame from NU." },
+  { name: "pet-dog-poster", file: "pet-dog-poster.jpg", alt: "Poster frame from Old Friend." },
 ];
 
 export type MediaEntry = {
@@ -126,6 +224,11 @@ export type MediaEntry = {
   caption?: string;
 };
 
+const MIME: Record<string, string> = {
+  ".jpg": "image/jpeg",
+  ".webp": "image/webp",
+};
+
 async function blurPlaceholder(input: Buffer | string): Promise<string> {
   const buf = await sharp(input)
     .resize(16, 16, { fit: "inside" })
@@ -134,23 +237,152 @@ async function blurPlaceholder(input: Buffer | string): Promise<string> {
   return `data:image/jpeg;base64,${buf.toString("base64")}`;
 }
 
+function report(name: string, width: number, height: number, bytes: number, note = "") {
+  const size =
+    bytes >= 1024 * 1024
+      ? `${(bytes / 1024 / 1024).toFixed(1)} MB`
+      : `${(bytes / 1024).toFixed(0)} KB`;
+  console.log(`  ${name.padEnd(22)} ${`${width}x${height}`.padEnd(11)} ${size.padStart(9)} ${note}`);
+}
+
+/** True when `out` exists and is at least as new as `src`. */
+async function isFresh(out: string, src: string): Promise<boolean> {
+  if (FORCE || !existsSync(out)) return false;
+  const [a, b] = await Promise.all([stat(out), stat(src)]);
+  return a.mtimeMs >= b.mtimeMs;
+}
+
+async function ffmpeg(args: string[]) {
+  // maxBuffer: ffmpeg is quiet at this log level, but 4K encodes run long.
+  await run(FFMPEG!, ["-hide_banner", "-loglevel", "error", "-y", ...args], {
+    maxBuffer: 32 * 1024 * 1024,
+  });
+}
+
+async function buildFilm(film: Film): Promise<MediaEntry> {
+  const src = path.join(ROOT, film.from);
+  const playback = path.join(VIDEO_DIR, `${film.name}.mp4`);
+  const master = path.join(VIDEO_DIR, `${film.name}-master.mp4`);
+  const posterPng = path.join(tmpdir(), `${film.name}-poster.png`);
+  const posterOut = path.join(IMAGE_DIR, `${film.name}-poster.webp`);
+
+  // The master, remuxed for streaming. -c copy means not a single pixel or
+  // sample changes; only the moov atom moves to the front of the file.
+  if (!(await isFresh(master, src))) {
+    console.log(`  encoding ${film.name}-master.mp4 (remux, no re-encode)…`);
+    await ffmpeg(["-i", src, "-map", "0:v:0", "-map", "0:a:0", "-c", "copy", "-movflags", "+faststart", master]);
+  }
+
+  // Playback encode. Audio is copied when it is already AAC at a decent
+  // bitrate, otherwise re-encoded.
+  if (!(await isFresh(playback, src))) {
+    console.log(`  encoding ${film.name}.mp4 (libx264 crf ${VIDEO_CRF}, preset slow — this takes a while)…`);
+    await ffmpeg([
+      "-i", src,
+      "-map", "0:v:0",
+      "-map", "0:a:0",
+      "-c:v", "libx264",
+      "-crf", String(VIDEO_CRF),
+      "-preset", "slow",
+      "-pix_fmt", "yuv420p",
+      "-movflags", "+faststart",
+      ...(await audioArgs(src)),
+      playback,
+    ]);
+  }
+
+  // Poster frame, kept lossless so it matches the stills around it. ffmpeg has
+  // to land somewhere on disk first, so use a temp file outside public/.
+  if (!(await isFresh(posterOut, src))) {
+    await ffmpeg(["-ss", film.posterAt, "-i", src, "-frames:v", "1", posterPng]);
+    await sharp(posterPng).webp({ lossless: true }).toFile(posterOut);
+    await rm(posterPng, { force: true });
+  }
+
+  for (const [file, note] of [
+    [playback, `crf ${VIDEO_CRF} playback`],
+    [master, "master download (remuxed)"],
+  ] as const) {
+    const { size } = await stat(file);
+    console.log(
+      `  ${path.basename(file).padEnd(30)} ${(size / 1024 / 1024).toFixed(1).padStart(7)} MB  ${note}`,
+    );
+  }
+
+  const meta = await sharp(posterOut).metadata();
+  const { size } = await stat(posterOut);
+  report(`${film.name}-poster`, meta.width ?? 0, meta.height ?? 0, size, "(video poster, lossless)");
+
+  return {
+    name: `${film.name}-poster`,
+    url: `/images/${film.name}-poster.webp`,
+    storageKey: `images/${film.name}-poster.webp`,
+    width: meta.width ?? 0,
+    height: meta.height ?? 0,
+    bytes: size,
+    mimeType: "image/webp",
+    blurDataUrl: await blurPlaceholder(posterOut),
+    alt: film.posterAlt,
+  };
+}
+
+/** Copy AAC audio when the master already has a good stream; otherwise re-encode. */
+async function audioArgs(src: string): Promise<string[]> {
+  // ffprobe from ffprobe-static is unreliable on some platforms, so ask ffmpeg
+  // itself: it prints the stream table to stderr and exits non-zero with no
+  // output file, which is exactly what we want to parse.
+  let info = "";
+  try {
+    await run(FFMPEG!, ["-hide_banner", "-i", src]);
+  } catch (err) {
+    info = String((err as { stderr?: string }).stderr ?? "");
+  }
+  const audio = info.split("\n").find((line) => line.includes("Audio:"));
+  const bitrate = audio?.match(/(\d+)\s+kb\/s/)?.[1];
+  const isGoodAac = Boolean(audio?.includes("aac") && bitrate && Number(bitrate) >= 128);
+  return isGoodAac ? ["-c:a", "copy"] : ["-c:a", "aac", "-b:a", "192k"];
+}
+
 async function main() {
-  await mkdir(OUT_DIR, { recursive: true });
+  await mkdir(IMAGE_DIR, { recursive: true });
+  await mkdir(VIDEO_DIR, { recursive: true });
   await mkdir(path.dirname(MANIFEST), { recursive: true });
 
   const entries: MediaEntry[] = [];
 
-  for (const src of SOURCES) {
+  console.log("\nlossless WebP (pixel-identical to the master)");
+  for (const src of LOSSLESS) {
+    const abs = path.join(ROOT, src.from);
+    const outName = `${src.name}.webp`;
+    const outPath = path.join(IMAGE_DIR, outName);
+
+    const info = await sharp(abs).webp({ lossless: true, effort: 6 }).toFile(outPath);
+
+    entries.push({
+      name: src.name,
+      url: `/images/${outName}`,
+      storageKey: `images/${outName}`,
+      width: info.width,
+      height: info.height,
+      bytes: info.size,
+      mimeType: "image/webp",
+      blurDataUrl: await blurPlaceholder(abs),
+      alt: src.alt,
+      caption: src.caption,
+    });
+    report(src.name, info.width, info.height, info.size);
+  }
+
+  console.log("\nJPEG");
+  for (const src of LOSSY) {
     const abs = path.join(ROOT, src.from);
     const outName = `${src.name}.jpg`;
-    const outPath = path.join(OUT_DIR, outName);
+    const outPath = path.join(IMAGE_DIR, outName);
 
-    const pipeline = sharp(abs)
+    const info = await sharp(abs)
       .resize(MAX_EDGE, MAX_EDGE, { fit: "inside", withoutEnlargement: true })
-      .jpeg({ quality: QUALITY, mozjpeg: true });
-
-    const info = await pipeline.toFile(outPath);
-    const blurDataUrl = await blurPlaceholder(abs);
+      .jpeg({ quality: JPEG_QUALITY, mozjpeg: true })
+      .toFile(outPath);
 
     entries.push({
       name: src.name,
@@ -160,39 +392,40 @@ async function main() {
       height: info.height,
       bytes: info.size,
       mimeType: "image/jpeg",
-      blurDataUrl,
+      blurDataUrl: await blurPlaceholder(abs),
       alt: src.alt,
       caption: src.caption,
     });
-
-    console.log(
-      `  ${src.name.padEnd(20)} ${info.width}x${info.height}  ${(info.size / 1024).toFixed(0)} KB`,
-    );
+    report(src.name, info.width, info.height, info.size);
   }
 
-  for (const poster of POSTERS) {
-    const outName = `${poster.name}.jpg`;
-    const outPath = path.join(OUT_DIR, outName);
+  console.log("\nvideo");
+  for (const film of FILMS) {
+    entries.push(await buildFilm(film));
+  }
+
+  console.log("\nmeasured in place (master no longer on disk)");
+  for (const item of MEASURED) {
+    const outPath = path.join(IMAGE_DIR, item.file);
     const meta = await sharp(outPath).metadata();
     const { size } = await stat(outPath);
     entries.push({
-      name: poster.name,
-      url: `/images/${outName}`,
-      storageKey: `images/${outName}`,
+      name: item.name,
+      url: `/images/${item.file}`,
+      storageKey: `images/${item.file}`,
       width: meta.width ?? 0,
       height: meta.height ?? 0,
       bytes: size,
-      mimeType: "image/jpeg",
+      mimeType: MIME[path.extname(item.file)] ?? "application/octet-stream",
       blurDataUrl: await blurPlaceholder(outPath),
-      alt: poster.alt,
+      alt: item.alt,
+      caption: item.caption,
     });
-    console.log(
-      `  ${poster.name.padEnd(20)} ${meta.width}x${meta.height}  ${(size / 1024).toFixed(0)} KB (poster)`,
-    );
+    report(item.name, meta.width ?? 0, meta.height ?? 0, size);
   }
 
   await writeFile(MANIFEST, JSON.stringify(entries, null, 2) + "\n", "utf8");
-  console.log(`\n  manifest → ${path.relative(ROOT, MANIFEST)} (${entries.length} assets)`);
+  console.log(`\n  manifest → ${path.relative(ROOT, MANIFEST)} (${entries.length} assets)\n`);
 }
 
 main().catch((err) => {
