@@ -106,11 +106,11 @@ const PROJECTS: ProjectSeed[] = [
     sortOrder: 2,
     accentColor: "#E0A46B",
     cover: "pet-dog-1",
-    title: "A new pet",
+    title: "A NEW PET",
     tagline: "Golden Age cel animation, rebuilt frame by frame.",
     summary:
       "A daughter makes her case for a dog. Her father is not saying yes yet — built in the vocabulary of 1940s hand-painted cel animation.",
-    body: "A new pet is a technique study that turned into a character piece. The brief was narrow and unforgiving: tinted ink outlines instead of black, airbrushed shading, painted watercolour backgrounds, and the soft multiplane depth that studio animation used before cameras went digital.\n\nThe story is one negotiation. A girl wants a dog; her father, sunk into the sofa after work, has heard the argument before. She brings him candidates — the tall-eared stray at dusk, the spaniel in the grass, the terrier already behaving as though it lives there — and the film watches him run out of reasons.\n\nHolding that vocabulary consistently across a father, a child and an animal — three very different shapes, three different weights — is the whole exercise. The warmth is deliberate. It is a film about a household, shot at the hour when the lamps come on.",
+    body: "A NEW PET is a character piece built inside a narrow and unforgiving vocabulary: tinted ink outlines instead of black, airbrushed shading, painted watercolour backgrounds, and the soft multiplane depth that studio animation used before cameras went digital.\n\nThe story is one negotiation. A girl wants a dog; her father, sunk into the sofa after work, has heard the argument before. She brings him candidates — the tall-eared stray at dusk, the spaniel in the grass, the terrier already behaving as though it lives there — and the film watches him run out of reasons.\n\nHolding that vocabulary consistently across a father, a child and an animal — three very different shapes, three different weights — is where the work sits. The warmth is deliberate. It is a film about a household, shot at the hour when the lamps come on.",
     tags: ["Original Film", "Cel Animation", "Character Study"],
     gallery: ["pet-dog-1", "pet-dad", "pet-daughter", "pet-dog-2", "pet-dog-3"],
     films: [
@@ -124,9 +124,9 @@ const PROJECTS: ProjectSeed[] = [
         height: 496,
         featured: true,
         sortOrder: 1,
-        title: "A new pet — Motion Test",
+        title: "A NEW PET",
         description:
-          "Bringing the painted cel look into motion while holding the line quality steady.",
+          "The painted cel look in motion, with the line quality holding steady frame to frame.",
       },
     ],
   },
