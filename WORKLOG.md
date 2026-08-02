@@ -25,3 +25,4 @@
 - [1618c65] THE UNBOTHERED CYCLOPS gets its copy: logline "An army charges the giant. The giant does not look down." as tagline + summary, the synopsis as body, a TONE world field ("Unhurried. Enormous. Faintly bored."), still no year; dropped the "Original Film" chip; ProjectCard/ProjectFeature guard the summary <p> so an empty summary leaves no dead space
 - [c270ef3] Seeded The Unbothered Cyclops with tags (Original Film, Creature Design, Comedy) and year 2026
 - [c2039da] /films: both films rendered identically (player + title + link + facts + frames), removed the "More films" grid and the duplicated title, priority poster on the first player only
+- [8da3b78] Saved the Samurai vs Robot prompt verbatim as content/prompts/2026-08-02-samurai-vs-robot-fight.md (YAML frontmatter, unconfirmed samurai reference flagged); holding action, no library system yet
