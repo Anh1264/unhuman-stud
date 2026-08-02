@@ -21,12 +21,15 @@
  * master is larger than that encode also gets a losslessly remuxed local
  * archive of the master. See the note above FILMS for which one ships.
  *
+ * Prompt library: a third stage, driven by folders rather than by a list in
+ * this file — see PROMPTS below.
+ *
  * Run: npm run media          (add --force to rebuild videos that are up to date)
  */
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
-import { mkdir, stat, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import ffmpegStatic from "ffmpeg-static";
@@ -39,6 +42,12 @@ const IMAGE_DIR = path.join(ROOT, "public/images");
 const VIDEO_DIR = path.join(ROOT, "public/videos");
 const MANIFEST = path.join(ROOT, "src/content/media-manifest.json");
 
+/* ---- prompt library -------------------------------------------------- */
+/** One folder per entry: assets-source/prompts/<entry-slug>/<file>. */
+const PROMPT_SOURCE_DIR = path.join(ROOT, "assets-source/prompts");
+const PROMPT_OUT_DIR = path.join(ROOT, "public/prompts");
+const PROMPT_MANIFEST = path.join(ROOT, "src/content/prompt-media-manifest.json");
+
 const FORCE = process.argv.includes("--force");
 
 const FFMPEG = ffmpegStatic;
@@ -47,6 +56,16 @@ if (!FFMPEG) throw new Error("ffmpeg-static did not resolve a binary for this pl
 /** Longest edge for the lossy JPEG set. next/image derives smaller sizes from this. */
 const MAX_EDGE = 2560;
 const JPEG_QUALITY = 86;
+
+/**
+ * Prompt-library images are lossy WebP, deliberately.
+ *
+ * These are working references and results, not artwork: what matters is that
+ * the owner can recognise the picture he fed the model, and that a page of
+ * twenty of them loads. Lossless WebP — the treatment the finished films get —
+ * would multiply the size of the library for a fidelity nobody looks for here.
+ */
+const PROMPT_WEBP_QUALITY = 82;
 
 /*
  * The master and the playback encode.
@@ -315,6 +334,226 @@ async function buildFilm(film: Film): Promise<void> {
   }
 }
 
+/* ==================================================================
+   PROMPT LIBRARY
+   ==================================================================
+
+   The owner drops the reference images he fed a model, and whatever came back,
+   into `assets-source/prompts/<entry-slug>/`. This stage walks those folders —
+   there is no list to edit here, because adding a prompt should be dropping a
+   folder — and writes web files to `public/prompts/<entry-slug>/`.
+
+   Images become lossy WebP at quality 82 (see PROMPT_WEBP_QUALITY) with their
+   real measured dimensions.
+
+   Video is copied through untouched when it is already something a browser
+   plays (.mp4, .m4v, .webm) and skipped with a warning otherwise. Re-encoding
+   is deliberately not attempted: an AI video tool hands back an mp4, a second
+   pass would only cost quality, and a .mov that needs converting is a five-
+   second export the owner does once — telling him beats silently transcoding
+   a file he may not have meant to publish.
+
+   Everything is keyed by `<entry-slug>/<original filename>`, which is exactly
+   what the markdown file's `file:` fields say, so the seed can join the two.
+*/
+
+const PROMPT_IMAGE_EXT = new Set([
+  ".png",
+  ".jpg",
+  ".jpeg",
+  ".webp",
+  ".avif",
+  ".tif",
+  ".tiff",
+  ".gif",
+]);
+/** Web-playable already — copied byte for byte. */
+const PROMPT_VIDEO_COPY_EXT = new Set([".mp4", ".m4v", ".webm"]);
+/** Video a browser will not play. Warned about, never silently transcoded. */
+const PROMPT_VIDEO_SKIP_EXT = new Set([
+  ".mov",
+  ".avi",
+  ".mkv",
+  ".wmv",
+  ".mpg",
+  ".mpeg",
+  ".flv",
+]);
+
+export type PromptMediaEntry = {
+  /** Folder name under assets-source/prompts — the entry's slug. */
+  entrySlug: string;
+  /** Original filename, as written in the markdown file's `file:` field. */
+  file: string;
+  kind: "IMAGE" | "VIDEO";
+  url: string;
+  storageKey: string;
+  /** Measured. Null only for a video ffprobe could not read. */
+  width: number | null;
+  height: number | null;
+  bytes: number;
+  mimeType: string;
+  blurDataUrl: string | null;
+};
+
+/** Filename → URL-safe output stem. Spaces, parentheses and case all go. */
+function outputStem(fileName: string): string {
+  const stem = fileName.slice(0, fileName.length - path.extname(fileName).length);
+  return (
+    stem
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 80) || "file"
+  );
+}
+
+/**
+ * Measures a video by decoding its first frame in memory, and returns a blur
+ * placeholder cut from that same frame.
+ *
+ * ffprobe would be the obvious tool, but the `ffprobe-static` package ships an
+ * x86_64 binary in its darwin/arm64 folder and cannot run on this machine.
+ * ffmpeg is already here, already works, and one frame answers both questions
+ * at once. Nothing is written to disk.
+ */
+async function videoPoster(file: string): Promise<{
+  width: number | null;
+  height: number | null;
+  blurDataUrl: string | null;
+}> {
+  try {
+    const { stdout } = await run(
+      FFMPEG!,
+      [
+        "-hide_banner", "-loglevel", "error",
+        "-i", file,
+        "-frames:v", "1",
+        "-f", "image2pipe",
+        "-vcodec", "png",
+        "-",
+      ],
+      { encoding: "buffer", maxBuffer: 64 * 1024 * 1024 },
+    );
+    const frame = stdout as unknown as Buffer;
+    const meta = await sharp(frame).metadata();
+    return {
+      width: meta.width ?? null,
+      height: meta.height ?? null,
+      blurDataUrl: await blurPlaceholder(frame),
+    };
+  } catch {
+    return { width: null, height: null, blurDataUrl: null };
+  }
+}
+
+async function buildPromptEntry(entrySlug: string): Promise<PromptMediaEntry[]> {
+  const srcDir = path.join(PROMPT_SOURCE_DIR, entrySlug);
+  const outDir = path.join(PROMPT_OUT_DIR, entrySlug);
+  const files = (await readdir(srcDir, { withFileTypes: true }))
+    .filter((d) => d.isFile() && !d.name.startsWith("."))
+    .map((d) => d.name)
+    .sort((a, b) => a.localeCompare(b));
+
+  if (!files.length) return [];
+  await mkdir(outDir, { recursive: true });
+
+  const entries: PromptMediaEntry[] = [];
+  const used = new Set<string>();
+
+  for (const file of files) {
+    const ext = path.extname(file).toLowerCase();
+    const abs = path.join(srcDir, file);
+
+    // Two source names can slugify to the same stem; keep both files.
+    let stem = outputStem(file);
+    for (let n = 2; used.has(stem); n++) stem = `${outputStem(file)}-${n}`;
+    used.add(stem);
+
+    if (PROMPT_IMAGE_EXT.has(ext)) {
+      const outName = `${stem}.webp`;
+      const info = await sharp(abs)
+        .resize(MAX_EDGE, MAX_EDGE, { fit: "inside", withoutEnlargement: true })
+        .webp({ quality: PROMPT_WEBP_QUALITY })
+        .toFile(path.join(outDir, outName));
+
+      entries.push({
+        entrySlug,
+        file,
+        kind: "IMAGE",
+        url: `/prompts/${entrySlug}/${outName}`,
+        storageKey: `prompts/${entrySlug}/${outName}`,
+        width: info.width,
+        height: info.height,
+        bytes: info.size,
+        mimeType: "image/webp",
+        blurDataUrl: await blurPlaceholder(abs),
+      });
+      report(`${entrySlug}/${file}`, info.width, info.height, info.size);
+      continue;
+    }
+
+    if (PROMPT_VIDEO_COPY_EXT.has(ext)) {
+      const outName = `${stem}${ext}`;
+      const outPath = path.join(outDir, outName);
+      if (!(await isFresh(outPath, abs))) await copyFile(abs, outPath);
+
+      const { size } = await stat(outPath);
+      const { width, height, blurDataUrl } = await videoPoster(outPath);
+      entries.push({
+        entrySlug,
+        file,
+        kind: "VIDEO",
+        url: `/prompts/${entrySlug}/${outName}`,
+        storageKey: `prompts/${entrySlug}/${outName}`,
+        width,
+        height,
+        bytes: size,
+        mimeType: ext === ".webm" ? "video/webm" : "video/mp4",
+        blurDataUrl,
+      });
+      report(`${entrySlug}/${file}`, width ?? 0, height ?? 0, size, "copied");
+      continue;
+    }
+
+    console.warn(
+      PROMPT_VIDEO_SKIP_EXT.has(ext)
+        ? `  skipped ${entrySlug}/${file} — browsers do not play ${ext}. ` +
+            `Export it as .mp4 and drop that in instead.`
+        : `  skipped ${entrySlug}/${file} — not an image or a video.`,
+    );
+  }
+
+  return entries;
+}
+
+/**
+ * Builds every prompt-library folder. Absent or empty is a normal state — the
+ * owner writes an entry before he files its pictures — so this stage never
+ * fails the run over missing folders, and always writes the manifest, even
+ * when it is empty.
+ */
+async function buildPrompts(): Promise<PromptMediaEntry[]> {
+  if (!existsSync(PROMPT_SOURCE_DIR)) {
+    console.log("  no assets-source/prompts/ yet — nothing to build");
+    return [];
+  }
+
+  const slugs = (await readdir(PROMPT_SOURCE_DIR, { withFileTypes: true }))
+    .filter((d) => d.isDirectory() && !d.name.startsWith("."))
+    .map((d) => d.name)
+    .sort((a, b) => a.localeCompare(b));
+
+  if (!slugs.length) {
+    console.log("  assets-source/prompts/ is empty — nothing to build");
+    return [];
+  }
+
+  const entries: PromptMediaEntry[] = [];
+  for (const slug of slugs) entries.push(...(await buildPromptEntry(slug)));
+  return entries;
+}
+
 async function main() {
   await mkdir(IMAGE_DIR, { recursive: true });
   await mkdir(VIDEO_DIR, { recursive: true });
@@ -377,8 +616,20 @@ async function main() {
     await buildFilm(film);
   }
 
+  console.log(`\nprompt library (lossy WebP q${PROMPT_WEBP_QUALITY})`);
+  const promptEntries = await buildPrompts();
+
   await writeFile(MANIFEST, JSON.stringify(entries, null, 2) + "\n", "utf8");
-  console.log(`\n  manifest → ${path.relative(ROOT, MANIFEST)} (${entries.length} assets)\n`);
+  console.log(`\n  manifest → ${path.relative(ROOT, MANIFEST)} (${entries.length} assets)`);
+
+  await writeFile(
+    PROMPT_MANIFEST,
+    JSON.stringify(promptEntries, null, 2) + "\n",
+    "utf8",
+  );
+  console.log(
+    `  manifest → ${path.relative(ROOT, PROMPT_MANIFEST)} (${promptEntries.length} assets)\n`,
+  );
 }
 
 main().catch((err) => {

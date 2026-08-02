@@ -6,6 +6,12 @@
  * `npm run media`, so widths, heights and blur placeholders are measured
  * values rather than hand-typed guesses.
  *
+ * Two sources of content:
+ *   - the studio's projects and films, written as data in this file;
+ *   - the prompt library, written as markdown in `content/prompts/*.md` and
+ *     read from there. Those files are the source of truth; the database is
+ *     the read model the site queries.
+ *
  * Idempotent: it truncates the content tables before inserting.
  *
  * Run: npm run seed
@@ -13,12 +19,13 @@
 import { PGlite } from "@electric-sql/pglite";
 import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
-import { readFile, mkdir } from "node:fs/promises";
+import { readdir, readFile, mkdir } from "node:fs/promises";
 import { createConnection } from "node:net";
 import path from "node:path";
-import { sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import * as schema from "../src/server/db/schema";
-import type { MediaEntry } from "./prepare-media";
+import { parsePromptEntry, type ParsedPromptEntry } from "../src/lib/prompt-entry";
+import type { MediaEntry, PromptMediaEntry } from "./prepare-media";
 
 const ROOT = process.cwd();
 const DATA_DIR = process.env.PGLITE_DATA_DIR ?? ".data/pglite";
@@ -220,6 +227,194 @@ const SOCIALS = [
 ];
 
 /* ------------------------------------------------------------------
+   Prompt library  (content/prompts/*.md → prompt_* tables)
+   ------------------------------------------------------------------ */
+
+const PROMPTS_DIR = path.join(ROOT, "content/prompts");
+const PROMPT_MANIFEST = path.join(ROOT, "src/content/prompt-media-manifest.json");
+
+function createDb(client: PGlite) {
+  return drizzle(client, { schema });
+}
+type Db = ReturnType<typeof createDb>;
+
+/** Reads and parses every entry, newest first. README.md is documentation. */
+async function readPromptEntries(): Promise<ParsedPromptEntry[]> {
+  let names: string[];
+  try {
+    names = await readdir(PROMPTS_DIR);
+  } catch {
+    return [];
+  }
+
+  const files = names
+    .filter((n) => n.toLowerCase().endsWith(".md") && n.toLowerCase() !== "readme.md")
+    .sort();
+
+  const entries: ParsedPromptEntry[] = [];
+  for (const file of files) {
+    const raw = await readFile(path.join(PROMPTS_DIR, file), "utf8");
+    entries.push(parsePromptEntry(raw, file));
+  }
+
+  // Newest first, so the insert order matches the order the site reads them in.
+  return entries.sort(
+    (a, b) => b.date.localeCompare(a.date) || a.slug.localeCompare(b.slug),
+  );
+}
+
+/**
+ * The built files, keyed the way the markdown refers to them:
+ * `<entry-slug>/<original filename>`.
+ */
+async function readPromptMedia(): Promise<Map<string, PromptMediaEntry>> {
+  let raw: string;
+  try {
+    raw = await readFile(PROMPT_MANIFEST, "utf8");
+  } catch {
+    console.warn(
+      "  no prompt media manifest — run `npm run media` to build the pictures",
+    );
+    return new Map();
+  }
+  const list: PromptMediaEntry[] = JSON.parse(raw);
+  return new Map(list.map((m) => [`${m.entrySlug}/${m.file}`, m]));
+}
+
+async function seedPrompts(db: Db) {
+  const entries = await readPromptEntries();
+  const media = await readPromptMedia();
+
+  await db.execute(sql`
+    TRUNCATE TABLE prompt_tags, prompt_blocks, prompt_assets, prompt_entries
+    RESTART IDENTITY CASCADE
+  `);
+
+  if (!entries.length) {
+    console.log("  0 prompt entries");
+    return;
+  }
+
+  const ids = new Map<string, string>();
+  const used = new Set<string>();
+  let blockCount = 0;
+  let assetCount = 0;
+  let missingFiles = 0;
+
+  for (const entry of entries) {
+    if (ids.has(entry.slug)) {
+      throw new Error(
+        `Two prompt entries claim the slug "${entry.slug}" — rename one of the files.`,
+      );
+    }
+
+    const [row] = await db
+      .insert(schema.promptEntries)
+      .values({
+        slug: entry.slug,
+        title: entry.title,
+        entryDate: entry.date,
+        status: entry.status.toUpperCase() as (typeof schema.promptStatus.enumValues)[number],
+        // Verbatim. Nothing between the markdown file and this column touches it.
+        promptText: entry.promptText,
+        tool: entry.tool,
+        outcomeRating: entry.outcome?.rating ?? null,
+        outcomeWorked: entry.outcome?.worked ?? null,
+        outcomeFailed: entry.outcome?.failed ?? null,
+      })
+      .returning({ id: schema.promptEntries.id });
+
+    ids.set(entry.slug, row.id);
+
+    for (const [i, block] of entry.blocks.entries()) {
+      await db.insert(schema.promptBlocks).values({
+        entryId: row.id,
+        label: block.label,
+        text: block.text,
+        sortOrder: i,
+      });
+      blockCount++;
+    }
+
+    // Duplicate tags on one entry would collide on the primary key, and mean
+    // the same thing twice anyway.
+    const seenTags = new Set<string>();
+    for (const [i, tag] of entry.tags.entries()) {
+      if (seenTags.has(tag)) continue;
+      seenTags.add(tag);
+      await db
+        .insert(schema.promptTags)
+        .values({ entryId: row.id, tag, sortOrder: i });
+    }
+
+    for (const [role, list] of [
+      ["REFERENCE", entry.references],
+      ["OUTPUT", entry.outputs],
+    ] as const) {
+      for (const [i, asset] of list.entries()) {
+        const key = `${entry.slug}/${asset.file}`;
+        const built = media.get(key);
+        used.add(key);
+
+        // A file that has not been dropped into assets-source yet is a known
+        // gap, not an error: the note is still worth keeping, and the row
+        // fills in the moment `npm run media` finds the picture.
+        if (!built) {
+          missingFiles++;
+          console.warn(
+            `  ! ${key} is not built — put the file in assets-source/prompts/${entry.slug}/ and run \`npm run media\``,
+          );
+        }
+
+        await db.insert(schema.promptAssets).values({
+          entryId: row.id,
+          role,
+          kind: built?.kind ?? "IMAGE",
+          file: asset.file,
+          url: built?.url ?? null,
+          storageKey: built?.storageKey ?? null,
+          width: built?.width ?? null,
+          height: built?.height ?? null,
+          bytes: built?.bytes ?? null,
+          mimeType: built?.mimeType ?? null,
+          blurDataUrl: built?.blurDataUrl ?? null,
+          note: asset.note,
+          sortOrder: i,
+        });
+        assetCount++;
+      }
+    }
+  }
+
+  // Second pass: lineage can point at an entry that had not been inserted yet.
+  for (const entry of entries) {
+    if (!entry.derivedFrom) continue;
+    const parentId = ids.get(entry.derivedFrom);
+    if (!parentId) {
+      console.warn(
+        `  ! ${entry.slug}: derivedFrom "${entry.derivedFrom}" matches no entry — left unlinked`,
+      );
+      continue;
+    }
+    await db
+      .update(schema.promptEntries)
+      .set({ derivedFromId: parentId })
+      .where(eq(schema.promptEntries.id, ids.get(entry.slug)!));
+  }
+
+  for (const key of media.keys()) {
+    if (!used.has(key)) {
+      console.warn(`  ! ${key} is built but no entry mentions it — check the file: name`);
+    }
+  }
+
+  console.log(
+    `  ${entries.length} prompt entries, ${blockCount} blocks, ${assetCount} files` +
+      (missingFiles ? ` (${missingFiles} not built yet)` : ""),
+  );
+}
+
+/* ------------------------------------------------------------------
    Seed
    ------------------------------------------------------------------ */
 
@@ -260,7 +455,7 @@ async function main() {
   await mkdir(path.dirname(path.resolve(DATA_DIR)), { recursive: true });
 
   const client = new PGlite(DATA_DIR);
-  const db = drizzle(client, { schema });
+  const db = createDb(client);
 
   console.log("  applying migrations…");
   await migrate(db, { migrationsFolder: path.join(ROOT, "drizzle") });
@@ -474,6 +669,9 @@ async function main() {
     `  ${PROJECTS.length} projects, ${filmCount} films, ${galleryCount} gallery items`,
   );
   console.log(`  ${characterCount} characters, ${worldFieldCount} world fields`);
+
+  // ---- prompt library ----------------------------------------------
+  await seedPrompts(db);
 
   // ---- site settings -----------------------------------------------
   await db.insert(schema.siteSettings).values({

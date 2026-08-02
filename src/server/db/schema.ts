@@ -5,11 +5,13 @@ import {
   text,
   integer,
   boolean,
+  date,
   timestamp,
   jsonb,
   primaryKey,
   index,
   uniqueIndex,
+  type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -51,6 +53,25 @@ export const videoProvider = pgEnum("video_provider", [
 ]);
 
 export const mediaKind = pgEnum("media_kind", ["IMAGE", "VIDEO_POSTER"]);
+
+/**
+ * How far a prompt has been proven in production. Lowercase in the markdown the
+ * owner writes, uppercase here because every other enum in this schema is.
+ */
+export const promptStatus = pgEnum("prompt_status", [
+  "DRAFT",
+  "TESTED",
+  "PROVEN",
+  "ABANDONED",
+]);
+
+/** What a file attached to a prompt entry is: an input, or a result. */
+export const promptAssetRole = pgEnum("prompt_asset_role", [
+  "REFERENCE",
+  "OUTPUT",
+]);
+
+export const promptAssetKind = pgEnum("prompt_asset_kind", ["IMAGE", "VIDEO"]);
 
 export const inquiryStatus = pgEnum("inquiry_status", [
   "NEW",
@@ -418,6 +439,141 @@ export const projectTags = pgTable(
 );
 
 /* ============================================================
+   PROMPT LIBRARY
+   ============================================================ */
+
+/**
+ * One prompt from the owner's AI film production: the text he actually sent to
+ * a model, the reference images he fed it, what came back, and his verdict.
+ *
+ * Authored as markdown in `content/prompts/*.md` and seeded from there — the
+ * markdown file is the source of truth, this table is the read model the site
+ * queries. `promptText` is the file's body stored **verbatim**: nothing in the
+ * pipeline reflows, re-wraps or otherwise normalises it, because a prompt that
+ * has been tidied is no longer the prompt that produced the result.
+ *
+ * These are the owner's working notes, not translated copy, so unlike projects
+ * and films there is no `*_translations` table — a prompt has one text and one
+ * language: the one it was written in.
+ */
+export const promptEntries = pgTable(
+  "prompt_entries",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    /** Stable key, from the filename minus any leading date. */
+    slug: text("slug").notNull(),
+    title: text("title").notNull(),
+    /** The day the prompt was written or run. Date-only: no timezone to shift. */
+    entryDate: date("entry_date", { mode: "string" }).notNull(),
+    status: promptStatus("status").notNull().default("DRAFT"),
+    /** The full prompt, byte-for-byte as authored. */
+    promptText: text("prompt_text").notNull(),
+    /** Free text — model, version, settings. Null until the owner records it. */
+    tool: text("tool"),
+    /**
+     * Lineage: the entry this one was composed from. Self-referencing, so a
+     * chain of revisions stays walkable in both directions.
+     */
+    derivedFromId: uuid("derived_from_id").references(
+      (): AnyPgColumn => promptEntries.id,
+      { onDelete: "set null" },
+    ),
+    /** The owner's verdict. All three are null until he has run the prompt. */
+    outcomeRating: integer("outcome_rating"),
+    outcomeWorked: text("outcome_worked"),
+    outcomeFailed: text("outcome_failed"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("prompt_entries_slug_idx").on(t.slug),
+    index("prompt_entries_date_idx").on(t.entryDate),
+  ],
+);
+
+/**
+ * A named, reusable part of a prompt — "Camera", "Lighting", "Ending". These
+ * are the pieces the owner recombines into the next prompt, which is why they
+ * are rows rather than headings inside the body: a block is addressable, and a
+ * future page can list every "Camera" block he has ever proven.
+ */
+export const promptBlocks = pgTable(
+  "prompt_blocks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entryId: uuid("entry_id")
+      .notNull()
+      .references(() => promptEntries.id, { onDelete: "cascade" }),
+    label: text("label").notNull(),
+    text: text("text").notNull(),
+    sortOrder: integer("sort_order").notNull().default(0),
+  },
+  (t) => [index("prompt_blocks_sort_idx").on(t.entryId, t.sortOrder)],
+);
+
+/**
+ * A file attached to an entry: a reference fed to the model, or a result it
+ * produced. Built by `npm run media` from `assets-source/prompts/<slug>/`.
+ *
+ * `url`, `width`, `height` and the rest are nullable on purpose: the owner
+ * writes the entry — including the note explaining what a reference was — long
+ * before he drops the file in `assets-source/`, and a row whose file is not
+ * there yet is a known gap rather than a seed failure. A null `url` means
+ * exactly that: the note is real, the picture is not built yet.
+ *
+ * These do not reuse `media_assets` because that table requires measured
+ * dimensions and non-null alt text — right for published artwork, wrong for a
+ * working reference that may be a video, may be missing, and is described by
+ * the owner's note rather than by alt copy.
+ */
+export const promptAssets = pgTable(
+  "prompt_assets",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entryId: uuid("entry_id")
+      .notNull()
+      .references(() => promptEntries.id, { onDelete: "cascade" }),
+    role: promptAssetRole("role").notNull(),
+    kind: promptAssetKind("kind").notNull().default("IMAGE"),
+    /** Source filename inside `assets-source/prompts/<slug>/`, as authored. */
+    file: text("file").notNull(),
+    /** Path under /public, or null when the file has not been built yet. */
+    url: text("url"),
+    storageKey: text("storage_key"),
+    width: integer("width"),
+    height: integer("height"),
+    bytes: integer("bytes"),
+    mimeType: text("mime_type"),
+    blurDataUrl: text("blur_data_url"),
+    /** The owner's note: what this reference was for, or what the result shows. */
+    note: text("note"),
+    sortOrder: integer("sort_order").notNull().default(0),
+  },
+  (t) => [index("prompt_assets_sort_idx").on(t.entryId, t.role, t.sortOrder)],
+);
+
+/**
+ * Free-form tags typed straight into the markdown. Plain strings rather than a
+ * join onto `tags`: those are curated, translated project labels shown on the
+ * public work pages, while these are the owner's own filing words.
+ */
+export const promptTags = pgTable(
+  "prompt_tags",
+  {
+    entryId: uuid("entry_id")
+      .notNull()
+      .references(() => promptEntries.id, { onDelete: "cascade" }),
+    tag: text("tag").notNull(),
+    sortOrder: integer("sort_order").notNull().default(0),
+  },
+  (t) => [
+    primaryKey({ columns: [t.entryId, t.tag] }),
+    index("prompt_tags_tag_idx").on(t.tag),
+  ],
+);
+
+/* ============================================================
    INQUIRIES  (contact form persistence)
    ============================================================ */
 
@@ -605,4 +761,46 @@ export const projectTagsRelations = relations(projectTags, ({ one }) => ({
     references: [projects.id],
   }),
   tag: one(tags, { fields: [projectTags.tagId], references: [tags.id] }),
+}));
+
+/**
+ * `PROMPT_LINEAGE` names both halves of the self-join so Drizzle can tell the
+ * parent side (`derivedFrom`) from the children side (`derivatives`).
+ */
+const PROMPT_LINEAGE = "promptLineage";
+
+export const promptEntriesRelations = relations(
+  promptEntries,
+  ({ one, many }) => ({
+    blocks: many(promptBlocks),
+    assets: many(promptAssets),
+    tags: many(promptTags),
+    derivedFrom: one(promptEntries, {
+      fields: [promptEntries.derivedFromId],
+      references: [promptEntries.id],
+      relationName: PROMPT_LINEAGE,
+    }),
+    derivatives: many(promptEntries, { relationName: PROMPT_LINEAGE }),
+  }),
+);
+
+export const promptBlocksRelations = relations(promptBlocks, ({ one }) => ({
+  entry: one(promptEntries, {
+    fields: [promptBlocks.entryId],
+    references: [promptEntries.id],
+  }),
+}));
+
+export const promptAssetsRelations = relations(promptAssets, ({ one }) => ({
+  entry: one(promptEntries, {
+    fields: [promptAssets.entryId],
+    references: [promptEntries.id],
+  }),
+}));
+
+export const promptTagsRelations = relations(promptTags, ({ one }) => ({
+  entry: one(promptEntries, {
+    fields: [promptTags.entryId],
+    references: [promptEntries.id],
+  }),
 }));
