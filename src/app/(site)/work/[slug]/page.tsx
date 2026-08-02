@@ -271,7 +271,8 @@ export default async function ProjectPage({ params }: Props) {
                   {character.image && (
                     <GalleryGrid
                       items={[character.image]}
-                      columnsClass=""
+                      layout="grid"
+                      columnsClass="grid-cols-1"
                       sizes="(max-width: 1024px) 92vw, 860px"
                     />
                   )}
@@ -319,7 +320,13 @@ export default async function ProjectPage({ params }: Props) {
               </h2>
               <span className="klabel">click to enlarge</span>
             </div>
-            <GalleryGrid items={frames} columnsClass="sm:columns-2 lg:columns-3" />
+            <GalleryGrid
+              items={frames}
+              layout="grid"
+              aspect="video"
+              columnsClass="grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+              sizes="(max-width: 640px) 92vw, (max-width: 768px) 46vw, 31vw"
+            />
           </Reveal>
         </section>
       )}

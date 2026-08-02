@@ -6,10 +6,20 @@ import type { Media } from "@/server/services/content.service";
 import { cn } from "@/lib/utils";
 
 /**
- * Masonry gallery with an accessible lightbox.
+ * Image gallery with an accessible lightbox.
  *
  * Keyboard: Escape closes, ArrowLeft/ArrowRight move between images, and focus
  * returns to the thumbnail that opened the dialog.
+ *
+ * `layout` picks the arrangement. `"masonry"` is the CSS-columns flow, which
+ * packs images of mixed height but orders them down each column before across.
+ * `"grid"` is a real grid: rows line up, the reading order is left-to-right,
+ * and the bottom edge is straight. `columnsClass` carries the column classes
+ * either way — `columns-*` for masonry, `grid-cols-*` for the grid.
+ *
+ * `aspect` is only meaningful in the grid: `"video"` crops every cell to 16:9
+ * so a row of frames is one continuous band, while `"natural"` lets each image
+ * keep its own ratio and top-aligns the cells.
  *
  * `captions` decides where the label sits. Frames are pictures and hide it
  * until hover; design sheets are documents, and a document keeps its label
@@ -24,14 +34,20 @@ export function GalleryGrid({
   className,
   columnsClass = "sm:columns-2 lg:columns-3",
   captions = "hover",
+  layout = "masonry",
+  aspect = "natural",
   sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw",
 }: {
   items: (Media & { projectTitle?: string | null })[];
   className?: string;
   columnsClass?: string;
   captions?: "hover" | "below";
+  layout?: "masonry" | "grid";
+  aspect?: "natural" | "video";
   sizes?: string;
 }) {
+  const isGrid = layout === "grid";
+  const cropped = isGrid && aspect === "video";
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const triggersRef = useRef<(HTMLButtonElement | null)[]>([]);
   const closeRef = useRef<HTMLButtonElement | null>(null);
@@ -79,7 +95,14 @@ export function GalleryGrid({
 
   return (
     <>
-      <div className={cn("gap-4", columnsClass, className)}>
+      <div
+        className={cn(
+          "gap-4",
+          isGrid && "grid items-start",
+          columnsClass,
+          className,
+        )}
+      >
         {items.map((item, i) => (
           <button
             key={`${item.url}-${i}`}
@@ -88,12 +111,19 @@ export function GalleryGrid({
             }}
             type="button"
             onClick={() => setOpenIndex(i)}
-            className="group relative mb-4 block w-full cursor-pointer overflow-hidden rounded-lg border border-line bg-panel break-inside-avoid"
+            className={cn(
+              "group relative block w-full cursor-pointer overflow-hidden rounded-lg border border-line bg-panel",
+              // Column flow needs its own spacing and has to keep an image from
+              // being split across a column break; a real grid does both itself.
+              !isGrid && "mb-4 break-inside-avoid",
+            )}
             aria-label={`Enlarge: ${item.alt}`}
           >
             {/* Its own clipping box, so the hover zoom cannot spill over a
                 caption sitting underneath it. */}
-            <span className="block overflow-hidden">
+            <span
+              className={cn("block overflow-hidden", cropped && "aspect-video")}
+            >
               <Image
                 src={item.url}
                 alt={item.alt}
@@ -102,7 +132,10 @@ export function GalleryGrid({
                 sizes={sizes}
                 placeholder={item.blurDataUrl ? "blur" : "empty"}
                 blurDataURL={item.blurDataUrl ?? undefined}
-                className="w-full transition-transform duration-700 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.04]"
+                className={cn(
+                  "w-full transition-transform duration-700 ease-[cubic-bezier(.22,.61,.36,1)] group-hover:scale-[1.04]",
+                  cropped && "h-full object-cover",
+                )}
               />
             </span>
             {item.caption &&

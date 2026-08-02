@@ -217,6 +217,91 @@ const PROJECTS: ProjectSeed[] = [
       },
     ],
   },
+  {
+    slug: "the-war-of-two-crowns",
+    kind: "ORIGINAL_FILM",
+    year: 2026,
+    featured: false,
+    sortOrder: 3,
+    // The gold brand token. No new colours enter the site for a project.
+    accentColor: "#e3b23c",
+    // Landscape, and the shot that reads at card size.
+    cover: "elf-frame-1",
+    // The title as it is lettered on the film's own poster. The source folder
+    // is named "majestic-elf-ghost"; the poster wins.
+    title: "THE WAR OF TWO CROWNS",
+    // DESCRIPTIVE — written from the poster and the stills. The owner's own
+    // logline for this film is pending; nothing here claims plot or intent.
+    tagline: "Two crowned monsters face off, and two armies line up below.",
+    summary:
+      "A 30-second fantasy piece: elf archers in red and white cross a flowering meadow toward ranks of black cone-shaped soldiers, under a blue crowned monster and a black horned one.",
+    body: "A 30-second piece, painted in flat colour on a visible canvas texture. On one side, a white-haired elf in a gold crown and red cape walks a yellow-flowered meadow with a drawn bow while a column of archers in red tunics and white fur helmets marches behind her; on the other, rows of black cone-shaped soldiers with glowing red eyes stand under a starry sky behind a commander with a red-tipped spear and a round red shield. The two crowned creatures of the title appear as well — a blue one with white feathered spines and a small gold crown lying among the flowers, and a black horned one with red eyes facing it across a flat red sun on the poster.",
+    tags: ["Original Film", "Creature Design", "Fantasy"],
+    gallery: [
+      { section: "KEY_ART", items: ["elf-poster"] },
+      { section: "FRAME", items: ["elf-frame-1", "elf-frame-2", "elf-frame-3"] },
+    ],
+    // No character sheets were made for this film, and the owner's in-world
+    // copy is unwritten. Both are valid empty states.
+    characters: [],
+    worldFields: [],
+    films: [
+      {
+        slug: "the-war-of-two-crowns",
+        // The encode is named after the source folder, not the poster title.
+        video: "/videos/majestic-elf-ghost-1080.mp4",
+        poster: "elf-frame-1",
+        kind: "SHORT",
+        durationSeconds: 30,
+        width: 1920,
+        height: 1080,
+        featured: true,
+        sortOrder: 1,
+        title: "THE WAR OF TWO CROWNS",
+        // No description: nothing to say about the cut that the owner has said.
+      },
+    ],
+  },
+  {
+    slug: "red-moon-ronin",
+    kind: "ORIGINAL_FILM",
+    year: 2026,
+    featured: false,
+    sortOrder: 4,
+    // The brighter crimson brand token. No new colours enter the site.
+    accentColor: "#e11d1d",
+    // Landscape, and the shot that reads at card size.
+    cover: "ronin-frame-1",
+    title: "RED MOON RONIN",
+    // DESCRIPTIVE — written from the poster and the stills. The owner's own
+    // logline for this film is pending; nothing here claims plot or intent.
+    tagline: "A samurai crosses blades with a robot far taller than he is.",
+    summary:
+      "A 30-second piece: a samurai in a horned helmet meets a tall black robot on a mirror-flat plain, under an enormous orange moon.",
+    body: "A 30-second piece set on a wet blue plain that mirrors the sky, with an enormous orange cratered moon low in the star-flecked dark. The samurai is small, in a pale robe and a horned helmet; the robot facing him stands far taller, black-panelled and round-headed, with an orange visor and a glowing blade. On the poster the two are locked blade to blade on cracked ice, his lit blade crossed with the robot's burning orange sword and walls of fire standing on either side of them.",
+    tags: ["Original Film", "Creature Design", "Action"],
+    gallery: [
+      { section: "KEY_ART", items: ["ronin-poster"] },
+      { section: "FRAME", items: ["ronin-frame-1"] },
+    ],
+    characters: [],
+    worldFields: [],
+    films: [
+      {
+        slug: "red-moon-ronin",
+        video: "/videos/red-moon-ronin-1080.mp4",
+        poster: "ronin-frame-1",
+        kind: "SHORT",
+        durationSeconds: 30,
+        width: 1920,
+        height: 1080,
+        featured: true,
+        sortOrder: 1,
+        title: "RED MOON RONIN",
+        // No description: nothing to say about the cut that the owner has said.
+      },
+    ],
+  },
 ];
 
 const SOCIALS = [

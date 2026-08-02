@@ -118,5 +118,77 @@
     "blurDataUrl": "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAJABADASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAgMEBf/EACQQAAEEAAMJAAAAAAAAAAAAAAEAAgMRBRITITEzNEJRcnOx/8QAFQEBAQAAAAAAAAAAAAAAAAAABAX/xAAZEQACAwEAAAAAAAAAAAAAAAAAAgEDERL/2gAMAwEAAhEDEQA/ABYHTVphzmk1bRdJUM2rNJENuTqJ3nsr8K5NnkViN48/sd9Q+YwqrYzWYf/Z",
     "alt": "Seen from behind two crested helmets, a thin line of soldiers walks up the giant's outstretched arm toward its hand, while two dense swarms of troops spread across the red ground beyond.",
     "caption": "The Unbothered Cyclops · the climb"
+  },
+  {
+    "name": "elf-poster",
+    "url": "/images/elf-poster.webp",
+    "storageKey": "images/elf-poster.webp",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 2746682,
+    "mimeType": "image/webp",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAQAAsDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAABAX/xAAgEAACAgEDBQAAAAAAAAAAAAABAgMRACEiMRIUUWGB/8QAFAEBAAAAAAAAAAAAAAAAAAAAA//EABgRAQADAQAAAAAAAAAAAAAAAAEAAhFR/9oADAMBAAIRAxEAPwAM8bTR9axKLFArxk0wyE7iinxXGMknPbAQyU9bta09ZPcOHNMT9w9bMUyp2f/Z",
+    "alt": "Painted poster reading \"The War of Two Crowns — a film by Aiden\" in gold lettering: a blue feathered monster in a gold crown faces a black horned monster with red eyes across a red sun, and below them a white-haired elf in a gold crown and red cape leads a column of elf archers over a green meadow toward ranks of dark cone-shaped soldiers led by a blue-helmeted figure with a red crest and a round red shield.",
+    "caption": "Majestic Elf Ghost · poster"
+  },
+  {
+    "name": "elf-frame-1",
+    "url": "/images/elf-frame-1.webp",
+    "storageKey": "images/elf-frame-1.webp",
+    "width": 1672,
+    "height": 941,
+    "bytes": 2139998,
+    "mimeType": "image/webp",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAJABADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAQP/xAAeEAACAgICAwAAAAAAAAAAAAABAgADESESMjGBkf/EABQBAQAAAAAAAAAAAAAAAAAAAAP/xAAZEQACAwEAAAAAAAAAAAAAAAABAgADEQT/2gAMAwEAAhEDEQA/AIUm0KDwRWOuw+bjWqsrh7K6wrKCSc4zEeTCvt6gDoYRWpQ4Mn//2Q==",
+    "alt": "A white-haired elf in a gold crown, red cape and white dress walks across a yellow-flowered meadow with a drawn bow, while behind her a column of elf archers in red tunics and white fur helmets march the other way under a flat blue sky.",
+    "caption": "Majestic Elf Ghost · the march"
+  },
+  {
+    "name": "elf-frame-2",
+    "url": "/images/elf-frame-2.webp",
+    "storageKey": "images/elf-frame-2.webp",
+    "width": 1672,
+    "height": 941,
+    "bytes": 2024432,
+    "mimeType": "image/webp",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAJABADASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAQAD/8QAHBAAAQQDAQAAAAAAAAAAAAAAAQACAxESMVFB/8QAFQEBAQAAAAAAAAAAAAAAAAAAAQP/xAAYEQADAQEAAAAAAAAAAAAAAAAAAQIEQf/aAAwDAQACEQMRAD8AIpozBRip4O8bsLN7bfTWnE+8T1TtKK10uDWaWf/Z",
+    "alt": "A huge blue horned creature with white feathered spines, round orange-ringed eyes and a small gold crown rests its head on a yellow flowering field, its spiked back curving away to the right past a cluster of red trees under a plain blue sky.",
+    "caption": "Majestic Elf Ghost · the blue crown"
+  },
+  {
+    "name": "elf-frame-3",
+    "url": "/images/elf-frame-3.webp",
+    "storageKey": "images/elf-frame-3.webp",
+    "width": 1672,
+    "height": 941,
+    "bytes": 2253794,
+    "mimeType": "image/webp",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAJABADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAgX/xAAeEAACAgICAwAAAAAAAAAAAAABAgARBCEDM0Ny0f/EABUBAQEAAAAAAAAAAAAAAAAAAAAC/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAEREhNBYf/aAAwDAQACEQMRAD8Airm5AalFjZqt1E+TlMy8YG2AqvsCd6+sfnMjI4jQqrdP/9k=",
+    "alt": "Rows of black cone-shaped soldiers with glowing red eyes and blue steel caps stand in grass under a starry blue sky and a flat red sun, their commander in front holding a red-tipped spear and a round red shield, orange-leaved trees and red-capped mushrooms at the edges of the frame.",
+    "caption": "Majestic Elf Ghost · the dark ranks"
+  },
+  {
+    "name": "ronin-poster",
+    "url": "/images/ronin-poster.webp",
+    "storageKey": "images/ronin-poster.webp",
+    "width": 1664,
+    "height": 2496,
+    "bytes": 3240462,
+    "mimeType": "image/webp",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAQAAsDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABQME/8QAIBAAAQMEAgMAAAAAAAAAAAAAAQIDEgAEESEFEzJhcf/EABUBAQEAAAAAAAAAAAAAAAAAAAAB/8QAGBEBAQADAAAAAAAAAAAAAAAAAQACEiH/2gAMAwEAAhEDEQA/AMHFW9uphYe6wvO5gHVGLYE1Q8cmPym3bS2Uy9BYAGMEp3VGba06hIrURqQxg+6gIrMnYDhf/9k=",
+    "alt": "Painted poster reading \"Red Moon Ronin — a film by Aiden\" across a huge orange moon in a starry blue sky: on cracked pale ice below, a small samurai in a white robe and horned helmet crosses a glowing blade with a tall black round-headed robot holding a burning orange sword, walls of fire rising on either side.",
+    "caption": "Red Moon Ronin · poster"
+  },
+  {
+    "name": "ronin-frame-1",
+    "url": "/images/ronin-frame-1.webp",
+    "storageKey": "images/ronin-frame-1.webp",
+    "width": 2944,
+    "height": 1648,
+    "bytes": 5644036,
+    "mimeType": "image/webp",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAJABADASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABQME/8QAHhAAAgIBBQEAAAAAAAAAAAAAAQIAAxEEIzEzcbH/xAAUAQEAAAAAAAAAAAAAAAAAAAAB/8QAGxEAAgIDAQAAAAAAAAAAAAAAAQIAAwQRElH/2gAMAwEAAhEDEQA/AJG3aZSjEkYxiHLpLGsVFRiTEm6DMtnK+D7GlAAdQyrWZh15P//Z",
+    "alt": "A small samurai in a pale blue robe and horned helmet stands with his back to the camera on a wet blue plain that mirrors the sky, facing a tall black round-headed robot with an orange visor and a glowing yellow blade, an enormous orange cratered moon filling the left of the star-flecked sky.",
+    "caption": "Red Moon Ronin · the standoff"
   }
 ]

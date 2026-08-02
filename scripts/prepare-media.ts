@@ -167,6 +167,42 @@ const LOSSLESS: ImageSource[] = [
     alt: "Seen from behind two crested helmets, a thin line of soldiers walks up the giant's outstretched arm toward its hand, while two dense swarms of troops spread across the red ground beyond.",
     caption: "The Unbothered Cyclops · the climb",
   },
+  {
+    name: "elf-poster",
+    from: "assets-source/majestic-elf-ghost/poster.png",
+    alt: 'Painted poster reading "The War of Two Crowns — a film by Aiden" in gold lettering: a blue feathered monster in a gold crown faces a black horned monster with red eyes across a red sun, and below them a white-haired elf in a gold crown and red cape leads a column of elf archers over a green meadow toward ranks of dark cone-shaped soldiers led by a blue-helmeted figure with a red crest and a round red shield.',
+    caption: "Majestic Elf Ghost · poster",
+  },
+  {
+    name: "elf-frame-1",
+    from: "assets-source/majestic-elf-ghost/elft.png",
+    alt: "A white-haired elf in a gold crown, red cape and white dress walks across a yellow-flowered meadow with a drawn bow, while behind her a column of elf archers in red tunics and white fur helmets march the other way under a flat blue sky.",
+    caption: "Majestic Elf Ghost · the march",
+  },
+  {
+    name: "elf-frame-2",
+    from: "assets-source/majestic-elf-ghost/white-dragon.png",
+    alt: "A huge blue horned creature with white feathered spines, round orange-ringed eyes and a small gold crown rests its head on a yellow flowering field, its spiked back curving away to the right past a cluster of red trees under a plain blue sky.",
+    caption: "Majestic Elf Ghost · the blue crown",
+  },
+  {
+    name: "elf-frame-3",
+    from: "assets-source/majestic-elf-ghost/ghost.png",
+    alt: "Rows of black cone-shaped soldiers with glowing red eyes and blue steel caps stand in grass under a starry blue sky and a flat red sun, their commander in front holding a red-tipped spear and a round red shield, orange-leaved trees and red-capped mushrooms at the edges of the frame.",
+    caption: "Majestic Elf Ghost · the dark ranks",
+  },
+  {
+    name: "ronin-poster",
+    from: "assets-source/red-moon-ronin/Official_theatrical_27HQtWfKNg.png",
+    alt: 'Painted poster reading "Red Moon Ronin — a film by Aiden" across a huge orange moon in a starry blue sky: on cracked pale ice below, a small samurai in a white robe and horned helmet crosses a glowing blade with a tall black round-headed robot holding a burning orange sword, walls of fire rising on either side.',
+    caption: "Red Moon Ronin · poster",
+  },
+  {
+    name: "ronin-frame-1",
+    from: "assets-source/red-moon-ronin/quocanhvu_starry_night_mars_in_the_sky_infinite_glossy_ground_2051121f-74b7-4e8f-9d28-7eb782d66104_1.png",
+    alt: "A small samurai in a pale blue robe and horned helmet stands with his back to the camera on a wet blue plain that mirrors the sky, facing a tall black round-headed robot with an orange visor and a glowing yellow blade, an enormous orange cratered moon filling the left of the star-flecked sky.",
+    caption: "Red Moon Ronin · the standoff",
+  },
 ];
 
 /**
@@ -204,6 +240,21 @@ const FILMS: Film[] = [
     // master is already 1080p and 62.7 MB of it would ship on every deploy.
     name: "the-unbothered-cyclops",
     from: "assets-source/the-unbothered-cyclops/the-unbothered-cyclops.mp4",
+    archiveMaster: false,
+  },
+  {
+    // 1920x1080, 30.07s, 30 fps, ~14.5 Mbit/s, AAC stereo. No archive copy: the
+    // master is already 1080p, so the archive would just be a second copy of it
+    // sitting in the deploy payload.
+    name: "majestic-elf-ghost",
+    from: "assets-source/majestic-elf-ghost/finalIG.mp4",
+    archiveMaster: false,
+  },
+  {
+    // 1920x1080, 30.07s, 30 fps, ~15.2 Mbit/s, AAC stereo. Same story — already
+    // 1080p, so nothing to archive that assets-source/ does not already hold.
+    name: "red-moon-ronin",
+    from: "assets-source/red-moon-ronin/red-moon-ronin-final.mp4",
     archiveMaster: false,
   },
 ];

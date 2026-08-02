@@ -138,7 +138,10 @@ export default async function FilmsPage() {
                 </div>
                 <GalleryGrid
                   items={frames}
-                  columnsClass="sm:columns-2 lg:columns-3"
+                  layout="grid"
+                  aspect="video"
+                  columnsClass="grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+                  sizes="(max-width: 640px) 92vw, (max-width: 768px) 46vw, 31vw"
                 />
               </Reveal>
             )}
