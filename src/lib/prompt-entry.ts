@@ -12,6 +12,9 @@
  * end are dropped, because those belong to the file, not to the prompt. A
  * prompt that has been tidied is no longer the prompt that produced the result.
  *
+ * The second rule: **an entry is public.** Frontmatter text that carries a path
+ * from the owner's computer is refused outright — see the privacy guard below.
+ *
  * The format is documented for the owner in `content/prompts/README.md`.
  */
 import yaml from "js-yaml";
@@ -59,22 +62,70 @@ export type ParsedPromptEntry = {
   promptText: string;
 };
 
+/* -------------------------------------------------------- privacy guard */
+
+/**
+ * Every field of an entry's frontmatter is published, verbatim, on a public
+ * page. A note that records where a file sits on the owner's Mac would put his
+ * home directory — and the username inside it — on the open web, so any value
+ * carrying an absolute or home-relative path is refused here: before the
+ * database, before a build, before a page can render it.
+ *
+ * Relative paths (`assets-source/prompts/<slug>/`) and URLs are ordinary
+ * writing and pass through untouched.
+ */
+const LOCAL_PATH_PATTERNS: RegExp[] = [
+  // ~/Downloads/… and ~\Downloads\…
+  /(?:^|[\s"'`([<])~[/\\]/,
+  // $HOME/… , %USERPROFILE%\…
+  /\$HOME\b|%USERPROFILE%/i,
+  // /Users/aiden/… — a slash that starts a token, not one inside a word or a URL
+  /(?<![\w:~/\\])\/[^\s/\\]+\/[^\s]/,
+  // C:\Users\…
+  /(?<![\w])[A-Za-z]:\\/,
+  // \\server\share
+  /\\\\[^\s\\]+\\/,
+];
+
+/** True when `text` contains something that looks like a path on a computer. */
+export function containsLocalPath(text: string): boolean {
+  return LOCAL_PATH_PATTERNS.some((pattern) => pattern.test(text));
+}
+
+/**
+ * The message deliberately does not echo what it found: the whole point is to
+ * keep that string from being copied anywhere else.
+ */
+const LOCAL_PATH_MESSAGE =
+  "must not contain a path from your computer (`~/…`, `/Users/…`, `C:\\…`) — " +
+  "every field of an entry is published on the site. Describe what the file " +
+  "is instead, and keep private working notes out of the file.";
+
 /* ------------------------------------------------------------------ schema */
 
 /** `key:` with nothing after it parses as null — that means "not written". */
 const optionalText = z
   .union([z.string(), z.number(), z.null()])
   .optional()
-  .transform((v) => {
+  .transform((v, ctx) => {
     if (v === null || v === undefined) return null;
     const text = String(v).trim();
-    return text === "" ? null : text;
+    if (text === "") return null;
+    if (containsLocalPath(text)) {
+      ctx.addIssue({ code: "custom", message: LOCAL_PATH_MESSAGE });
+      return z.NEVER;
+    }
+    return text;
   });
 
 const requiredText = z.union([z.string(), z.number()]).transform((v, ctx) => {
   const text = String(v).trim();
   if (text === "") {
     ctx.addIssue({ code: "custom", message: "must not be empty" });
+    return z.NEVER;
+  }
+  if (containsLocalPath(text)) {
+    ctx.addIssue({ code: "custom", message: LOCAL_PATH_MESSAGE });
     return z.NEVER;
   }
   return text;

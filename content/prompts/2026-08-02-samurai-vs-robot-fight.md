@@ -40,15 +40,12 @@ blocks:
 references:
   - file: setting-glassy-ground.png
     note: |
-      The setting — the owner's words were "the setting". The master is
-      ~/Downloads/quocanhvu_starry_night_mars_in_the_sky_infinite_glossy_ground_2051121f-74b7-4e8f-9d28-7eb782d66104_1 (1).png
-      Copy that file into assets-source/prompts/samurai-vs-robot-fight/ under the name above, then run `npm run media`.
+      The setting — a starry night sky with Mars hanging in it, over an endless,
+      glossy ground that runs unbroken to the horizon.
   - file: samurai-front-view.png
     note: |
-      UNCONFIRMED — the samurai, front view. The owner referred to a file called `image.png`, which does not
-      exist in ~/Downloads. The likely candidate is
-      ~/Downloads/quocanhvu_httpss.mj.runLqqHzRu9Pnw_male_samurai_--ar_23_--sre_dea54d30-f036-4849-8e39-18115be1e81f_2.png
-      He needs to confirm which file is the samurai reference before it is copied in.
+      The samurai, front view — the character reference for his armour, silhouette
+      and stick.
 outputs:
 outcome:
 ---

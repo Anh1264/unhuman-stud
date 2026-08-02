@@ -112,8 +112,9 @@ export function PromptAssetSection({
                     {asset.file}
                   </p>
                   {asset.note && (
-                    // Notes can carry a file path the owner pasted in; without
-                    // this a 100-character path would run off a phone screen.
+                    // A note is published as written — the parser refuses one
+                    // that carries a local path. Long words still wrap so a
+                    // filename cannot run off a phone screen.
                     <p className="mt-2.5 whitespace-pre-line break-words text-[14px] leading-[1.6] text-bone-dim">
                       {asset.note.trim()}
                     </p>

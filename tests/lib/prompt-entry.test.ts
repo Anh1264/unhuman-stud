@@ -256,3 +256,101 @@ describe("bad input", () => {
     ).toThrow(/not valid YAML/);
   });
 });
+
+/**
+ * An entry is published verbatim. A note that says where a file lives on the
+ * owner's Mac would put his home directory, and the username in it, on a public
+ * page — so the parser refuses one, and nothing downstream has to remember to.
+ */
+describe("the privacy guard", () => {
+  const withNote = (note: string) =>
+    file(`${MINIMAL}\nreferences:\n  - file: setting.png\n    note: ${note}`);
+
+  const LOCAL_PATHS = [
+    "~/Downloads/aiden_starry_night.png",
+    "The master is ~/Downloads/a (1).png",
+    "~\\Downloads\\a.png",
+    "$HOME/Downloads/a.png",
+    "%USERPROFILE%\\Downloads\\a.png",
+    "/Users/aiden/Downloads/a.png",
+    "Copy it from /Users/aiden/Downloads/a.png please",
+    "/home/aiden/pictures/a.png",
+    "/Volumes/Media/refs/a.png",
+    "C:\\Users\\aiden\\a.png",
+    "\\\\studio-nas\\refs\\a.png",
+  ];
+
+  for (const path of LOCAL_PATHS) {
+    it(`refuses a note carrying ${path}`, () => {
+      expect(() => parsePromptEntry(withNote(JSON.stringify(path)), "x.md"))
+        .toThrow(/references\.0\.note/);
+    });
+  }
+
+  it("never echoes the path it refused", () => {
+    let message = "";
+    try {
+      parsePromptEntry(withNote('"~/Downloads/secret-name.png"'), "x.md");
+    } catch (err) {
+      message = err instanceof Error ? err.message : String(err);
+    }
+    expect(message).not.toBe("");
+    expect(message).not.toContain("secret-name");
+    expect(message).not.toContain("Downloads");
+  });
+
+  it("guards every text field, not just notes", () => {
+    const cases: [string, RegExp][] = [
+      [`title: "/Users/aiden/a fight"\ndate: 2026-08-02`, /title/],
+      [`${MINIMAL}\ntool: "Midjourney, config at ~/mj/settings.json"`, /tool/],
+      [
+        `${MINIMAL}\nblocks:\n  - label: Camera\n    text: "see ~/Downloads/notes.txt"`,
+        /blocks\.0\.text/,
+      ],
+      [
+        `${MINIMAL}\nreferences:\n  - file: "/Users/aiden/setting.png"`,
+        /references\.0\.file/,
+      ],
+      [
+        `${MINIMAL}\noutputs:\n  - file: take-01.mp4\n    note: "saved to ~/Movies/out.mp4"`,
+        /outputs\.0\.note/,
+      ],
+      [
+        `${MINIMAL}\noutcome:\n  failed: "compare against /Users/aiden/ref.png"`,
+        /outcome\.failed/,
+      ],
+    ];
+    for (const [frontmatter, field] of cases) {
+      expect(() => parsePromptEntry(file(frontmatter), "x.md")).toThrow(field);
+    }
+  });
+
+  it("leaves ordinary writing alone", () => {
+    const ordinary = [
+      "The street, the look I was after",
+      "Drop it in assets-source/prompts/shiba-city-run/ first",
+      "From https://example.com/refs/a/b.png",
+      "A three-quarter view, 16/9, shot 3/4 of the way in",
+      "Front and/or side — either works",
+      "Ratio 2:3, seed 4051121",
+    ];
+    for (const note of ordinary) {
+      const entry = parsePromptEntry(withNote(JSON.stringify(note)), "x.md");
+      expect(entry.references[0].note).toBe(note);
+    }
+  });
+
+  it("passes the shipped entries", async () => {
+    const { readdir, readFile } = await import("node:fs/promises");
+    const path = await import("node:path");
+    const dir = path.join(process.cwd(), "content", "prompts");
+    const files = (await readdir(dir)).filter(
+      (f) => f.toLowerCase().endsWith(".md") && f.toLowerCase() !== "readme.md",
+    );
+    expect(files.length).toBeGreaterThan(0);
+    for (const name of files) {
+      const raw = await readFile(path.join(dir, name), "utf8");
+      expect(() => parsePromptEntry(raw, name)).not.toThrow();
+    }
+  });
+});

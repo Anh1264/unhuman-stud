@@ -88,7 +88,7 @@ blocks:
     text: wet neon reflections, everything lit from below
 references:
   - file: setting.png
-    note: The street, the look I was after
+    note: The street at night, wet neon, seen from above
   - file: shiba-turnaround.png
     note: The dog, front and side
 outputs:
@@ -156,8 +156,12 @@ tells the file "everything indented below is the text":
 ### References and outputs
 
 Both are lists of a `file` and a `note`. The `file` is the name of the file
-sitting in `assets-source/prompts/<slug>/`; the `note` is you, telling yourself
-what it was for.
+sitting in `assets-source/prompts/<slug>/`; the `note` is a short, public
+description of what the picture is.
+
+> **Everything in an entry goes on the public site exactly as you wrote it, so a
+> note must never contain a path on your Mac (`~/Downloads/…`, `/Users/…`) or a
+> private working note.** `npm run seed` refuses the file if it finds one.
 
 ```yaml
 references:
@@ -192,6 +196,8 @@ These are the only things that will stop `npm run seed` and tell you off:
 - There is a `title` and a `date`, and there is prompt text under the fields.
 - `status` is one of the four words; `rating` is a whole number from 1 to 5.
 - Two entries cannot share the same `slug`.
+- No field contains a path from your computer — `~/Downloads/…`, `/Users/…`,
+  `C:\…`. The entry is published as written, so those never go in it.
 
 If something is wrong, the message names the file and the field. Fix it and run
 `npm run seed` again.
