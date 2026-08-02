@@ -10,6 +10,9 @@ export function SiteFooter() {
             <Link href="/work" className="hover:text-ember">
               Work
             </Link>
+            <Link href="/lab" className="hover:text-ember">
+              Lab
+            </Link>
             <Link href="/contact" className="hover:text-ember">
               Contact
             </Link>

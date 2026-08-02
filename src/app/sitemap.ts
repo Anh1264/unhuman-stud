@@ -1,14 +1,26 @@
 import type { MetadataRoute } from "next";
 import { getProjectSlugs } from "@/server/services/content.service";
+import { getPromptEntries } from "@/server/services/prompts.service";
 import { SITE_URL } from "@/lib/site-metadata";
 
 /** Static export writes this once at build time as `out/sitemap.xml`. */
 export const dynamic = "force-static";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const staticRoutes = ["", "/work", "/films", "/gallery", "/about", "/contact"];
+  const staticRoutes = [
+    "",
+    "/work",
+    "/films",
+    "/gallery",
+    "/lab",
+    "/about",
+    "/contact",
+  ];
 
-  const projects = await getProjectSlugs();
+  const [projects, prompts] = await Promise.all([
+    getProjectSlugs(),
+    getPromptEntries(),
+  ]);
 
   return [
     ...staticRoutes.map((route) => ({
@@ -22,6 +34,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: updatedAt ?? new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.9,
+    })),
+    // The entry date is the day the prompt was written or run, which is also
+    // the last day its text meant anything different.
+    ...prompts.map(({ slug, date }) => ({
+      url: `${SITE_URL}/lab/${slug}`,
+      lastModified: new Date(`${date}T00:00:00Z`),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
     })),
   ];
 }

@@ -86,9 +86,16 @@ export default function RootLayout({
           Reveal-on-scroll starts at opacity 0 and is un-hidden by an
           IntersectionObserver. Without JavaScript that observer never runs and
           the page would render blank, so force everything visible instead.
+
+          `.js-only` is the opposite case: controls that can only work with
+          scripts — the prompt lab's filter bar and its copy buttons. Every one
+          of them is an extra way to reach content that is already on the page,
+          so hiding them is a loss of convenience, never of information.
         */}
         <noscript>
-          <style>{`.reveal{opacity:1 !important;transform:none !important}`}</style>
+          <style>
+            {`.reveal{opacity:1 !important;transform:none !important}.js-only{display:none !important}`}
+          </style>
         </noscript>
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
